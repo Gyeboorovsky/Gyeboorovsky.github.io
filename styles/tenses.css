@@ -1,0 +1,88 @@
+body{
+    font-size: 1.5em;
+}
+.PagePart{
+    margin-top: 7vw;
+    float: left;
+    position: relative;
+}
+
+#leftSide{
+    width: 40%;
+}
+
+#rightSide{
+    width: 60%;
+}
+
+.Description{
+    background: rgb(255, 255, 255);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 50%, rgba(0, 183, 255, 0.722) 100%);
+    border-radius: 50px;
+    border-width: 5px;
+    width: 90%;
+
+    margin: auto;
+    margin-bottom: 100px;
+    padding: 20px;
+}
+
+.Video{
+    width: 38vw;
+    height: 25vw;
+    margin: auto;
+}
+
+iframe{
+    width: 38%;
+    height: 25vw;
+    position: fixed;
+    display: block;
+    border-radius: 50px;
+}
+
+.Description h1, h3{
+    text-align: center;
+    margin: 3vw;
+}
+
+
+
+table, th, td{
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 1vw;
+}
+
+li{
+    margin-bottom: 10px;
+}
+
+
+
+
+@media (max-width: 1200px) {
+    #leftSide, #rightSide{
+        width: 100vw;
+    }
+    .Description{
+        width: 85vw;
+    }
+
+    .Video{
+        width: 90vw;
+        height: 60vw;
+    }
+
+    iframe{
+        position: relative;
+        width: 90vw;
+        height: 60vw;
+    }
+  }
+
+  @media (max-width: 800px) {
+    body{
+        font-size: 1em;
+    }
+  }
