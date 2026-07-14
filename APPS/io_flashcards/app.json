@@ -1,0 +1,11 @@
+{
+  "title": "Crazy Flashcards",
+  "description": "Leitner-system flashcards with swipe study, per-day stats and JSON/CSV import-export. Runs fully offline in your browser.",
+  "repoUrl": "https://github.com/Gyeboorovsky/flashcards",
+  "demoUrl": "https://gyeboorovsky.github.io/flashcards/",
+  "tags": ["app"],
+  "status": "live",
+  "added": "2026-07-14",
+  "year": 2026,
+  "role": "Design & code"
+}

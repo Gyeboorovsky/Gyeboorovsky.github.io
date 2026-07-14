@@ -1,0 +1,6 @@
+{
+  "note": "Grid presentation per app. `name` -> APPS/io_<name>/ (all content — description, links, tags, thumbnail — lives there). Fields here are design-only: size ('<cols>x<rows>', each 1-3, default '1x1'), accentHue / accentHue2 (0-360 cover gradient; default derived from the name when omitted), glow (0-3, highlight the most interesting apps). Array order = display order on the grid.",
+  "apps": [
+    { "name": "flashcards", "size": "2x2", "accentHue": 330, "accentHue2": 275, "glow": 3 }
+  ]
+}

@@ -1,6 +1,8 @@
 node_modules/
 dist/
 portfolio/src/generated/
+# Build-copied grid thumbnails (source of truth is APPS/io_<name>/grid-thumbnail.png)
+portfolio/public/external/*.png
 *.local
 .DS_Store
 
@@ -9,6 +11,3 @@ CLAUDE.md
 **/CLAUDE.md
 **/CLAUDE.md.tpl
 .claude/
-
-# Local design reference comps — inspiration only, never shipped
-apps/flashcards/design inspiration/

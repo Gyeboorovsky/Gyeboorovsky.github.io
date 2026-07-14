@@ -52,21 +52,23 @@ function cardHtml(app: ManifestApp, index: number): string {
       : app.status === 'archived'
         ? '<span class="card__status card__status--archived">Archived</span>'
         : '';
+  const glow = Math.min(3, Math.max(0, Math.round(app.glow ?? 0)));
   const classes = [
     'card',
     prominent ? 'card--featured' : '',
     w === 2 ? 'card--w2' : w === 3 ? 'card--w3' : '',
     h === 2 ? 'card--h2' : h === 3 ? 'card--h3' : '',
+    glow > 0 ? `card--glow${glow}` : '',
     app.status === 'archived' ? 'card--archived' : '',
   ]
     .filter(Boolean)
     .join(' ');
-  // Apps in other repos open in a new tab; in-repo apps navigate in place.
-  const targetAttr = app.kind === 'external' ? ' target="_blank" rel="noopener"' : '';
+  // --card-hue tints the highlight glow to the app's accent colour.
+  // Every app lives in its own repo, so tiles always open in a new tab.
   return `
-    <a class="${classes}" href="${esc(app.url)}"${targetAttr}>
+    <a class="${classes}" style="--card-hue:${app.accentHue}" href="${esc(app.url)}" target="_blank" rel="noopener">
       <div class="card__cover" style="${coverStyle(app)}">
-        <span class="card__tag ${catClass}">${esc(tag)}${prominent ? ' · Featured' : ''}</span>
+        <span class="card__tag ${catClass}">${esc(tag)}</span>
         ${statusBadge}
         <span class="card__num">${num}</span>
       </div>
@@ -123,7 +125,7 @@ export function renderPage(
       <section class="grid">
         ${
           filtered.length === 0
-            ? '<p class="empty">Nothing here yet.</p>'
+            ? '<p class="empty">Nothing to see.</p>'
             : filtered.map((a, i) => cardHtml(a, i)).join('')
         }
       </section>

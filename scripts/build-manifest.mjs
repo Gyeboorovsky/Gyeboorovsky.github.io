@@ -1,13 +1,16 @@
 #!/usr/bin/env node
-// Aggregates apps/*/app.meta.json + external-apps.json into the manifest the
-// portfolio shell imports at build time. Dependency-free by design.
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+// Aggregates the app catalog into the manifest the portfolio shell imports at
+// build time. Content per app lives in APPS/io_<name>/ (app.json + optional
+// grid-thumbnail.png); grid presentation (size/color/glow, order) lives in
+// grid-config.json. Dependency-free by design.
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const APPS_DIR = join(ROOT, 'apps');
-const EXTERNAL_FILE = join(ROOT, 'external-apps.json');
+const APPS_DIR = join(ROOT, 'APPS');
+const CONFIG_FILE = join(ROOT, 'grid-config.json');
+const THUMBS_OUT = join(ROOT, 'portfolio', 'public', 'external');
 const OUT_FILE = join(ROOT, 'portfolio', 'src', 'generated', 'manifest.json');
 
 const STATUSES = ['live', 'wip', 'archived'];
@@ -16,14 +19,15 @@ const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 // Tile size on the grid: "<cols>x<rows>", each 1-3. Default "1x1".
 const SIZE_RE = /^[1-3]x[1-3]$/;
 
-/** Deterministic 0-360 hue from a slug, for the gradient cover fallback. */
+/** Deterministic 0-360 hue from a name, for the gradient cover fallback. */
 export function hueFromSlug(slug) {
   let h = 7;
   for (const c of slug) h = (h * 31 + c.charCodeAt(0)) % 100000;
   return h % 360;
 }
 
-function validate(entry, source, errors) {
+/** Validate the content file (APPS/io_<name>/app.json). */
+function validateContent(entry, source, errors) {
   const req = (field, type) => {
     if (typeof entry[field] !== type || (type === 'string' && !entry[field].trim())) {
       errors.push(`${source}: "${field}" is required (${type})`);
@@ -41,119 +45,102 @@ function validate(entry, source, errors) {
   if (entry.tags != null && (!Array.isArray(entry.tags) || entry.tags.some((t) => typeof t !== 'string'))) {
     errors.push(`${source}: "tags" must be an array of strings`);
   }
-  if (entry.accentHue != null && (typeof entry.accentHue !== 'number' || entry.accentHue < 0 || entry.accentHue > 360)) {
-    errors.push(`${source}: "accentHue" must be a number 0-360`);
-  }
-  if (entry.accentHue2 != null && (typeof entry.accentHue2 !== 'number' || entry.accentHue2 < 0 || entry.accentHue2 > 360)) {
-    errors.push(`${source}: "accentHue2" must be a number 0-360`);
-  }
-  if (entry.size != null && (typeof entry.size !== 'string' || !SIZE_RE.test(entry.size))) {
-    errors.push(`${source}: "size" must be "<cols>x<rows>" with each 1-3 (e.g. "1x1", "2x2"), got "${entry.size}"`);
+  if (typeof entry.repoUrl !== 'string' && typeof entry.demoUrl !== 'string') {
+    errors.push(`${source}: needs "repoUrl" or "demoUrl"`);
   }
 }
 
-function normalize(entry, slug, kind) {
-  const year = entry.year ?? Number(String(entry.added).slice(0, 4));
-  const base = {
-    slug,
-    kind,
-    title: entry.title,
-    description: entry.description,
-    tags: entry.tags ?? [],
-    status: entry.status ?? 'live',
-    added: entry.added,
-    year,
-    role: entry.role ?? null,
-    accentHue: entry.accentHue ?? hueFromSlug(slug),
-    accentHue2: entry.accentHue2 ?? null,
-    // Back-compat: legacy `featured: true` maps to the big 2x2 tile.
-    size: entry.size ?? (entry.featured ? '2x2' : '1x1'),
-    featured: entry.featured ?? false,
-  };
-  if (kind === 'internal') {
-    return {
-      ...base,
-      url: `/apps/${slug}/`,
-      repoUrl:
-        entry.repoUrl ??
-        `https://github.com/Gyeboorovsky/Gyeboorovsky.github.io/tree/main/apps/${slug}`,
-      demoUrl: null,
-      screenshot: entry.screenshot ? `/apps/${slug}/${entry.screenshot}` : null,
-    };
+/** Validate the design entry (grid-config.json). */
+function validateDesign(entry, source, errors) {
+  if (entry.size != null && (typeof entry.size !== 'string' || !SIZE_RE.test(entry.size))) {
+    errors.push(`${source}: "size" must be "<cols>x<rows>" with each 1-3 (e.g. "1x1", "2x2"), got "${entry.size}"`);
   }
-  return {
-    ...base,
-    url: entry.demoUrl ?? entry.repoUrl,
-    repoUrl: entry.repoUrl ?? null,
-    demoUrl: entry.demoUrl ?? null,
-    screenshot: entry.screenshot ? `/${entry.screenshot}` : null,
-  };
+  for (const hue of ['accentHue', 'accentHue2']) {
+    if (entry[hue] != null && (typeof entry[hue] !== 'number' || entry[hue] < 0 || entry[hue] > 360)) {
+      errors.push(`${source}: "${hue}" must be a number 0-360`);
+    }
+  }
+  if (entry.glow != null && (!Number.isInteger(entry.glow) || entry.glow < 0 || entry.glow > 3)) {
+    errors.push(`${source}: "glow" must be an integer 0-3`);
+  }
 }
 
 export function buildManifest() {
   const errors = [];
   const apps = [];
-  const seenSlugs = new Set();
+  const seenNames = new Set();
 
-  // Internal apps: every apps/<slug>/app.meta.json
-  if (existsSync(APPS_DIR)) {
-    for (const dir of readdirSync(APPS_DIR, { withFileTypes: true })) {
-      if (!dir.isDirectory()) continue;
-      const slug = dir.name;
-      const metaPath = join(APPS_DIR, slug, 'app.meta.json');
-      if (!existsSync(metaPath)) {
-        console.warn(`WARN apps/${slug}: no app.meta.json — skipped`);
-        continue;
-      }
-      const source = `apps/${slug}/app.meta.json`;
-      if (!SLUG_RE.test(slug)) {
-        errors.push(`${source}: folder name must match ${SLUG_RE} to be a valid slug`);
-        continue;
-      }
-      let meta;
-      try {
-        meta = JSON.parse(readFileSync(metaPath, 'utf8'));
-      } catch (e) {
-        errors.push(`${source}: invalid JSON — ${e.message}`);
-        continue;
-      }
-      validate(meta, source, errors);
-      seenSlugs.add(slug);
-      if (meta.hidden === true) continue;
-      apps.push(normalize(meta, slug, 'internal'));
+  let config = { apps: [] };
+  if (existsSync(CONFIG_FILE)) {
+    try {
+      config = JSON.parse(readFileSync(CONFIG_FILE, 'utf8'));
+    } catch (e) {
+      errors.push(`grid-config.json: invalid JSON — ${e.message}`);
     }
+  } else {
+    errors.push('grid-config.json: not found');
   }
 
-  // External apps
-  let externalCount = 0;
-  if (existsSync(EXTERNAL_FILE)) {
-    let external;
+  mkdirSync(THUMBS_OUT, { recursive: true });
+
+  for (const design of config.apps ?? []) {
+    const name = design.name ?? '(missing name)';
+    const source = `grid-config.json [${name}]`;
+    if (typeof design.name !== 'string' || !SLUG_RE.test(design.name)) {
+      errors.push(`${source}: "name" is required and must match ${SLUG_RE}`);
+      continue;
+    }
+    if (seenNames.has(design.name)) {
+      errors.push(`${source}: "name" collides with another app`);
+      continue;
+    }
+    seenNames.add(design.name);
+    validateDesign(design, source, errors);
+
+    const dir = join(APPS_DIR, `io_${name}`);
+    const contentPath = join(dir, 'app.json');
+    if (!existsSync(contentPath)) {
+      errors.push(`${source}: missing content folder APPS/io_${name}/app.json`);
+      continue;
+    }
+    let content;
     try {
-      external = JSON.parse(readFileSync(EXTERNAL_FILE, 'utf8'));
+      content = JSON.parse(readFileSync(contentPath, 'utf8'));
     } catch (e) {
-      errors.push(`external-apps.json: invalid JSON — ${e.message}`);
-      external = { apps: [] };
+      errors.push(`APPS/io_${name}/app.json: invalid JSON — ${e.message}`);
+      continue;
     }
-    for (const entry of external.apps ?? []) {
-      const slug = entry.slug ?? '(missing slug)';
-      const source = `external-apps.json [${slug}]`;
-      if (typeof entry.slug !== 'string' || !SLUG_RE.test(entry.slug)) {
-        errors.push(`${source}: "slug" is required and must match ${SLUG_RE}`);
-        continue;
-      }
-      if (seenSlugs.has(entry.slug)) {
-        errors.push(`${source}: slug collides with another app`);
-        continue;
-      }
-      seenSlugs.add(entry.slug);
-      validate(entry, source, errors);
-      if (typeof entry.repoUrl !== 'string' && typeof entry.demoUrl !== 'string') {
-        errors.push(`${source}: needs "repoUrl" or "demoUrl"`);
-      }
-      if (entry.hidden === true) continue;
-      externalCount++;
-      apps.push(normalize(entry, entry.slug, 'external'));
+    validateContent(content, `APPS/io_${name}/app.json`, errors);
+    if (content.hidden === true) continue;
+
+    // Thumbnail: copy APPS/io_<name>/grid-thumbnail.png -> portfolio/public/external/<name>.png
+    let screenshot = null;
+    const thumb = join(dir, 'grid-thumbnail.png');
+    if (existsSync(thumb)) {
+      copyFileSync(thumb, join(THUMBS_OUT, `${name}.png`));
+      screenshot = `/external/${name}.png`;
     }
+
+    const year = content.year ?? Number(String(content.added).slice(0, 4));
+    apps.push({
+      slug: name,
+      kind: 'external',
+      title: content.title,
+      description: content.description,
+      tags: content.tags ?? [],
+      status: content.status ?? 'live',
+      added: content.added,
+      year,
+      role: content.role ?? null,
+      url: content.demoUrl ?? content.repoUrl,
+      repoUrl: content.repoUrl ?? null,
+      demoUrl: content.demoUrl ?? null,
+      screenshot,
+      accentHue: design.accentHue ?? hueFromSlug(name),
+      accentHue2: design.accentHue2 ?? null,
+      size: design.size ?? '1x1',
+      glow: design.glow ?? 0,
+    });
   }
 
   if (errors.length > 0) {
@@ -162,25 +149,11 @@ export function buildManifest() {
     process.exit(1);
   }
 
-  // Sort: archived last; larger tiles first; then newest first.
-  const area = (s) => {
-    const [w, h] = String(s ?? '1x1').split('x').map(Number);
-    return (w || 1) * (h || 1);
-  };
-  apps.sort((a, b) => {
-    const arch = (a.status === 'archived' ? 1 : 0) - (b.status === 'archived' ? 1 : 0);
-    if (arch !== 0) return arch;
-    const size = area(b.size) - area(a.size);
-    if (size !== 0) return size;
-    return b.added.localeCompare(a.added);
-  });
-
+  // Display order follows grid-config.json (curated); no auto-sort.
   const manifest = { generatedAt: new Date().toISOString(), apps };
   mkdirSync(dirname(OUT_FILE), { recursive: true });
   writeFileSync(OUT_FILE, JSON.stringify(manifest, null, 2) + '\n');
-  console.log(
-    `Manifest: ${apps.length} app(s) — ${apps.length - externalCount} internal, ${externalCount} external`,
-  );
+  console.log(`Manifest: ${apps.length} app(s) from grid-config.json + APPS/`);
 }
 
 const isMain =
