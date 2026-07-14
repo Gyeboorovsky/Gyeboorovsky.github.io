@@ -21,6 +21,13 @@ function categoryKey(tag: string): string {
   return CATEGORY_KEYS[tag.toLowerCase()] ?? 'default';
 }
 
+/** Parse a "<cols>x<rows>" size into [w, h], clamped to 1-3, defaulting to 1x1. */
+function tileSize(size: string): [number, number] {
+  const [w, h] = String(size ?? '1x1').split('x').map((n) => Number(n));
+  const clamp = (n: number) => Math.min(3, Math.max(1, Number.isFinite(n) ? n : 1));
+  return [clamp(w), clamp(h)];
+}
+
 function coverStyle(app: ManifestApp): string {
   if (app.screenshot) {
     return (
@@ -28,10 +35,14 @@ function coverStyle(app: ManifestApp): string {
       'background-size:cover;background-position:center;'
     );
   }
-  return `background:linear-gradient(150deg, oklch(0.62 0.17 ${app.accentHue}), oklch(0.32 0.13 ${app.accentHue}));`;
+  const h2 = app.accentHue2 ?? app.accentHue;
+  return `background:linear-gradient(150deg, oklch(0.62 0.17 ${app.accentHue}), oklch(0.32 0.13 ${h2}));`;
 }
 
-function cardHtml(app: ManifestApp, index: number, featured: boolean): string {
+function cardHtml(app: ManifestApp, index: number): string {
+  const [w, h] = tileSize(app.size);
+  // Tiles with area >= 4 (e.g. 2x2) get the larger "featured" typography.
+  const prominent = w * h >= 4;
   const num = String(index + 1).padStart(2, '0');
   const tag = app.tags[0] ?? 'app';
   const catClass = `card__tag--${categoryKey(tag)}`;
@@ -43,15 +54,19 @@ function cardHtml(app: ManifestApp, index: number, featured: boolean): string {
         : '';
   const classes = [
     'card',
-    featured ? 'card--featured' : '',
+    prominent ? 'card--featured' : '',
+    w === 2 ? 'card--w2' : w === 3 ? 'card--w3' : '',
+    h === 2 ? 'card--h2' : h === 3 ? 'card--h3' : '',
     app.status === 'archived' ? 'card--archived' : '',
   ]
     .filter(Boolean)
     .join(' ');
+  // Apps in other repos open in a new tab; in-repo apps navigate in place.
+  const targetAttr = app.kind === 'external' ? ' target="_blank" rel="noopener"' : '';
   return `
-    <a class="${classes}" href="${esc(app.url)}">
+    <a class="${classes}" href="${esc(app.url)}"${targetAttr}>
       <div class="card__cover" style="${coverStyle(app)}">
-        <span class="card__tag ${catClass}">${esc(tag)}${featured ? ' · Featured' : ''}</span>
+        <span class="card__tag ${catClass}">${esc(tag)}${prominent ? ' · Featured' : ''}</span>
         ${statusBadge}
         <span class="card__num">${num}</span>
       </div>
@@ -66,42 +81,19 @@ function cardHtml(app: ManifestApp, index: number, featured: boolean): string {
     </a>`;
 }
 
-function otherProjectsHtml(externalApps: ManifestApp[]): string {
-  if (externalApps.length === 0) return '';
-  return `
-    <section class="other">
-      <h2 class="other__title">Other projects</h2>
-      <ul class="other__list">
-        ${externalApps
-          .map(
-            (a) => `
-          <li class="other__item">
-            <a href="${esc(a.url)}" target="_blank" rel="noopener">
-              ${esc(a.title)} <span class="other__ext">↗</span>
-            </a>
-            <span class="other__meta">${a.role ? esc(a.role) + ' · ' : ''}${a.year}</span>
-          </li>`,
-          )
-          .join('')}
-      </ul>
-    </section>`;
-}
-
 export function renderPage(
   root: HTMLElement,
   manifest: Manifest,
   activeFilter: string,
   onFilter: (filter: string) => void,
 ): void {
-  const internalApps = manifest.apps.filter((a) => a.kind === 'internal');
-  const externalApps = manifest.apps.filter((a) => a.kind === 'external');
+  const apps = manifest.apps;
 
-  const tags = ['All', ...new Set(internalApps.flatMap((a) => a.tags))];
+  const tags = ['All', ...new Set(apps.flatMap((a) => a.tags))];
   const filtered =
-    activeFilter === 'All' ? internalApps : internalApps.filter((a) => a.tags.includes(activeFilter));
-  const [first, ...rest] = filtered;
+    activeFilter === 'All' ? apps : apps.filter((a) => a.tags.includes(activeFilter));
 
-  const years = manifest.apps.map((a) => a.year);
+  const years = apps.map((a) => a.year);
   const minYear = Math.min(...years);
   const maxYear = Math.max(...years);
   const yearRange =
@@ -129,10 +121,12 @@ export function renderPage(
           .join('')}
       </nav>
       <section class="grid">
-        ${first ? cardHtml(first, 0, true) : '<p class="empty">Nothing here yet.</p>'}
-        ${rest.map((a, i) => cardHtml(a, i + 1, false)).join('')}
+        ${
+          filtered.length === 0
+            ? '<p class="empty">Nothing here yet.</p>'
+            : filtered.map((a, i) => cardHtml(a, i)).join('')
+        }
       </section>
-      ${otherProjectsHtml(externalApps)}
       <footer class="footer">
         <a href="https://github.com/Gyeboorovsky/Gyeboorovsky.github.io" target="_blank" rel="noopener">source ↗</a>
       </footer>

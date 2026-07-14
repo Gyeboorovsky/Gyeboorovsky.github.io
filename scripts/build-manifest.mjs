@@ -13,6 +13,8 @@ const OUT_FILE = join(ROOT, 'portfolio', 'src', 'generated', 'manifest.json');
 const STATUSES = ['live', 'wip', 'archived'];
 const SLUG_RE = /^[a-z][a-z0-9-]*$/;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+// Tile size on the grid: "<cols>x<rows>", each 1-3. Default "1x1".
+const SIZE_RE = /^[1-3]x[1-3]$/;
 
 /** Deterministic 0-360 hue from a slug, for the gradient cover fallback. */
 export function hueFromSlug(slug) {
@@ -42,6 +44,12 @@ function validate(entry, source, errors) {
   if (entry.accentHue != null && (typeof entry.accentHue !== 'number' || entry.accentHue < 0 || entry.accentHue > 360)) {
     errors.push(`${source}: "accentHue" must be a number 0-360`);
   }
+  if (entry.accentHue2 != null && (typeof entry.accentHue2 !== 'number' || entry.accentHue2 < 0 || entry.accentHue2 > 360)) {
+    errors.push(`${source}: "accentHue2" must be a number 0-360`);
+  }
+  if (entry.size != null && (typeof entry.size !== 'string' || !SIZE_RE.test(entry.size))) {
+    errors.push(`${source}: "size" must be "<cols>x<rows>" with each 1-3 (e.g. "1x1", "2x2"), got "${entry.size}"`);
+  }
 }
 
 function normalize(entry, slug, kind) {
@@ -57,6 +65,9 @@ function normalize(entry, slug, kind) {
     year,
     role: entry.role ?? null,
     accentHue: entry.accentHue ?? hueFromSlug(slug),
+    accentHue2: entry.accentHue2 ?? null,
+    // Back-compat: legacy `featured: true` maps to the big 2x2 tile.
+    size: entry.size ?? (entry.featured ? '2x2' : '1x1'),
     featured: entry.featured ?? false,
   };
   if (kind === 'internal') {
@@ -151,12 +162,16 @@ export function buildManifest() {
     process.exit(1);
   }
 
-  // Sort: archived last; featured first; then newest first.
+  // Sort: archived last; larger tiles first; then newest first.
+  const area = (s) => {
+    const [w, h] = String(s ?? '1x1').split('x').map(Number);
+    return (w || 1) * (h || 1);
+  };
   apps.sort((a, b) => {
     const arch = (a.status === 'archived' ? 1 : 0) - (b.status === 'archived' ? 1 : 0);
     if (arch !== 0) return arch;
-    const feat = (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
-    if (feat !== 0) return feat;
+    const size = area(b.size) - area(a.size);
+    if (size !== 0) return size;
     return b.added.localeCompare(a.added);
   });
 

@@ -1,6 +1,22 @@
 {
-  "note": "Cards for apps hosted in OTHER repositories. Screenshots go in portfolio/public/external/ and are referenced as 'external/<file>'.",
+  "note": "Cards for apps hosted in OTHER repositories — each renders as a full tile on the grid. Optional screenshots go in portfolio/public/external/ and are referenced as 'external/<file>'. Fields: slug, title, description, repoUrl, demoUrl (the live link the tile opens), tags, status, added, year, role, size ('<cols>x<rows>', each 1-3, default 1x1), accentHue (0-360), accentHue2 (optional 2nd gradient hue), screenshot.",
   "apps": [
+    {
+      "slug": "flashcards",
+      "title": "Crazy Flashcards",
+      "description": "Leitner-system flashcards with swipe study, per-day stats and JSON/CSV import-export. Runs fully offline in your browser.",
+      "repoUrl": "https://github.com/Gyeboorovsky/flashcards",
+      "demoUrl": "https://gyeboorovsky.github.io/flashcards/",
+      "tags": ["app"],
+      "status": "live",
+      "added": "2026-07-14",
+      "year": 2026,
+      "role": "Design & code",
+      "size": "2x2",
+      "accentHue": 330,
+      "accentHue2": 275,
+      "screenshot": null
+    },
     {
       "slug": "cs2-utility-app",
       "title": "CS2 Utility",
@@ -12,9 +28,10 @@
       "added": "2026-07-14",
       "year": 2026,
       "role": "Full-stack",
-      "screenshot": null,
+      "size": "1x1",
       "accentHue": 150,
-      "featured": false
+      "accentHue2": null,
+      "screenshot": null
     }
   ]
 }
