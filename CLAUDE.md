@@ -24,7 +24,8 @@ together; one combined `dist/` is deployed by GitHub Actions on every push to
 ## GitHub Pages constraints (every app must respect these)
 
 - Static hosting only: no server code, no env secrets — everything shipped is
-  public. Backend = Supabase from the browser (see Conventions).
+  public. Backend = a BaaS called from the browser, chosen per app (see
+  "Backend & database" below).
 - Site ≤ 1 GB total; ~100 GB/month bandwidth (soft limit). Keep apps small.
 - The CDN caches assets for ~10 minutes — after a deploy, changes can take a
   few minutes to show up. Hard-refresh when verifying.
@@ -35,10 +36,90 @@ together; one combined `dist/` is deployed by GitHub Actions on every push to
   paths.
 - Deploys take ~1–2 minutes via Actions after pushing to `main`.
 
+## Backend & database (optional, per app)
+
+Backend choice is **each app's own decision**, not a repo-wide one — this
+follows directly from the isolation rules above. One app can use Supabase,
+another Firebase, another nothing at all, and they never interact. This also
+means each app can have its own database: you are not forced to share one
+backend project across every app on the site.
+
+Whatever you pick, the same rule applies everywhere: **static hosting only,
+so only public/publishable keys are ever committed — never a secret/admin/
+service-role key.** Access control lives in the backend itself (RLS for
+Postgres/Supabase, Security Rules for Firebase/Firestore), not in keeping the
+key hidden, because it can't be hidden on GitHub Pages.
+
+### Supabase (the built-in path)
+
+`shared/supabase.ts` provides `createAppClient({ url, anonKey })` for exactly
+this reason. To use it in an app:
+
+1. Create a table in your Supabase project's dashboard (SQL editor or table
+   editor), then **enable Row Level Security on it** — RLS on every table, no
+   exceptions. A minimal read-only-to-everyone policy looks like:
+   ```sql
+   alter table my_table enable row level security;
+   create policy "public read" on my_table for select using (true);
+   -- add a separate policy for insert/update/delete, scoped as tightly as
+   -- your app needs — e.g. restrict writes entirely, or key them off a
+   -- per-row secret/device id if you don't have real user auth.
+   ```
+2. `node scripts/new-app.mjs <slug> --supabase` scaffolds
+   `src/supabase-config.ts` (paste your project URL + anon key from
+   Settings → API) and `src/supabase-example.ts` (a working query to build
+   from). Already have an app? Copy those two files by hand instead.
+3. Import `createAppClient` from `@portfolio/shared/supabase` — nothing else
+   needs to change; apps that never import it don't bundle `supabase-js` at
+   all (the shared package's exports are per-file, so it's opt-in per app).
+
+**Free-tier realities to plan around** (check Supabase's current pricing
+page for exact numbers — these move over time, treat what follows as
+directional, not a guarantee):
+- Free projects **pause automatically after about a week with no API
+  activity**. A hobby app that isn't visited often *will* go dark until
+  someone opens the Supabase dashboard and manually resumes it — there's no
+  free way to prevent this, so it's an accepted tradeoff of staying free, not
+  a bug to fix.
+- A free account has a **limited number of simultaneously active free
+  projects**. Because of this, prefer **reusing one Supabase project across
+  several small apps** (prefix tables per app, e.g. `tetris_scores`,
+  `habits_entries`, or use a separate Postgres schema per app for stronger
+  separation within one project) over spinning up a new project for every
+  app — that's the fastest way to run out of free projects.
+- Database size, bandwidth, and storage are all capped on the free tier too.
+  Keep payloads small; this is a portfolio of hobby apps, not a product.
+
+### Firebase or another BaaS (equally valid, per app)
+
+Nothing here is Supabase-specific by requirement — it's just the one with a
+shared helper. If an app is better served by Firebase (or anything else):
+add its SDK as *that app's own* dependency in `apps/<slug>/package.json`
+(never in `shared/`), commit a per-app public config file the same way, and
+enforce access with that backend's own rules (Firestore/RTDB Security Rules
+for Firebase). There's no scaffold for this yet — ask for a `--firebase`
+generator template (mirroring `--supabase`) once you're actually building one
+this way, rather than hand-rolling it each time.
+
+Firebase's free **Spark** plan is worth knowing about as a contrast to
+Supabase: it does **not** auto-pause on inactivity, and a free Google account
+can hold many separate Spark projects, each with its own free quota — no
+shared-project juggling the way Supabase's project limit forces. The
+tradeoff is Spark's per-service quotas (Firestore reads/writes, Auth,
+Hosting, etc.) are hard caps with no billing account attached, so check
+Firebase's current pricing page for what those caps actually are before
+relying on it for anything with real traffic.
+
+**Rule of thumb:** many small, low-traffic apps that can tolerate an
+occasional "asleep" backend → share one Supabase project. An app you want
+always-on for free, or you're hitting Supabase's project-count ceiling →
+consider a separate Firebase Spark project for just that app.
+
 ## How to add a new internal app
 
 1. `node scripts/new-app.mjs <slug>` (add `--react` for a React app,
-   `--title "Display Name"` to override the title)
+   `--supabase` to scaffold Supabase config, `--title "Display Name"` to
+   override the title)
 2. `npm install` (links the new workspace)
 3. Build the app — work only inside `apps/<slug>/`
 4. Fill in `apps/<slug>/app.meta.json`; optionally set
@@ -48,8 +129,11 @@ together; one combined `dist/` is deployed by GitHub Actions on every push to
 
 ## How to add an external app card (app lives in another repo)
 
-Append one entry to `external-apps.json`. Optional screenshot goes in
-`portfolio/public/external/` and is referenced as `"external/<file>"`.
+Append one entry to `external-apps.json`. These show as a small link in the
+"Other projects" list below the grid, not as a full tile — the main grid is
+reserved for apps that actually run in-browser (internal apps). Optional
+screenshot goes in `portfolio/public/external/` and is referenced as
+`"external/<file>"`, though it's currently unused by the list view.
 
 ## Commands (repo root, Windows-friendly — all scripts are Node .mjs)
 
@@ -58,7 +142,8 @@ Append one entry to `external-apps.json`. Optional screenshot goes in
 - `npm run build` — build everything into `dist/`
 - `npm run preview` — serve the assembled `dist/` at http://localhost:4173
 - `npm run manifest` — regenerate the app manifest only
-- `npm run new-app -- <slug> [--react] [--title "..."]` — scaffold a new app
+- `npm run new-app -- <slug> [--react] [--supabase] [--title "..."]` —
+  scaffold a new app
 - Per app: `cd apps/<slug>` then `npm run dev`
 
 ## app.meta.json fields (internal apps)
@@ -87,12 +172,11 @@ Append one entry to `external-apps.json`. Optional screenshot goes in
   only.
 - Fonts: Google Fonts `<link>` in each app's `index.html` (Space Grotesk,
   Instrument Sans, JetBrains Mono) — the generator templates include it.
-- Supabase: browser + PUBLIC anon key + Row Level Security only. The anon key
-  is committed on purpose; NEVER a service_role key. Use
-  `import { createAppClient } from '@portfolio/shared/supabase'` plus a
-  per-app `src/supabase-config.ts`. Start with one free-tier Supabase project
-  shared by all apps (prefix tables per app, e.g. `myapp_scores`); RLS on
-  every table, no exceptions.
+- Responsive by default: every app and the shell must work from ~360px mobile
+  up to desktop. The `viewport` meta tag ships in every `index.html`; use fluid
+  units (`clamp`, `%`, `min/max`) and media queries, and verify at both a phone
+  width and a desktop width before shipping.
+- Backend/database: see "Backend & database" above — it's a per-app choice.
 
 ## Troubleshooting
 

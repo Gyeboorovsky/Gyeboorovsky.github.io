@@ -21,7 +21,7 @@ button {
   border-radius: var(--radius-pill);
   cursor: pointer;
   background: var(--accent);
-  color: var(--accent-ink);
+  color: var(--ink);
   border: 1px solid var(--accent);
 }
 

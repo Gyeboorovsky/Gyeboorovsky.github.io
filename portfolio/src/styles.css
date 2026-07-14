@@ -92,9 +92,32 @@ body {
 }
 
 .pill--on {
+  color: var(--ink);
+}
+
+.pill[data-cat='default'].pill--on {
   background: var(--accent);
-  color: var(--accent-ink);
   border-color: var(--accent);
+}
+
+.pill[data-cat='app'].pill--on {
+  background: var(--cat-app);
+  border-color: var(--cat-app);
+}
+
+.pill[data-cat='tool'].pill--on {
+  background: var(--cat-tool);
+  border-color: var(--cat-tool);
+}
+
+.pill[data-cat='game'].pill--on {
+  background: var(--cat-game);
+  border-color: var(--cat-game);
+}
+
+.pill[data-cat='mobile'].pill--on {
+  background: var(--cat-mobile);
+  border-color: var(--cat-mobile);
 }
 
 /* Card grid */
@@ -159,12 +182,30 @@ body {
   font: 600 10px/1 var(--font-mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--text);
-  background: rgba(0, 0, 0, 0.32);
-  backdrop-filter: blur(6px);
+  color: var(--ink);
   padding: 5px 9px;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--border-bright);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.card__tag--app {
+  background: var(--cat-app);
+}
+
+.card__tag--tool {
+  background: var(--cat-tool);
+}
+
+.card__tag--game {
+  background: var(--cat-game);
+}
+
+.card__tag--mobile {
+  background: var(--cat-mobile);
+}
+
+.card__tag--default {
+  background: var(--cat-default);
 }
 
 .card__status {
@@ -180,7 +221,7 @@ body {
 
 .card__status--wip {
   background: var(--accent);
-  color: var(--accent-ink);
+  color: var(--ink);
 }
 
 .card__status--archived {
@@ -235,11 +276,6 @@ body {
   letter-spacing: -0.02em;
 }
 
-.card__ext {
-  color: var(--accent);
-  font-size: 0.8em;
-}
-
 .card__year {
   font: 500 11px var(--font-mono);
   color: var(--text-dim);
@@ -276,6 +312,54 @@ body {
   grid-column: 1 / -1;
   color: var(--text-faint);
   font: 400 14px var(--font-body);
+}
+
+/* Other projects — external repos, listed not tiled */
+.other {
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+}
+
+.other__title {
+  margin: 0 0 12px;
+  font: 600 11px/1 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.other__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.other__item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font: 400 13.5px var(--font-body);
+}
+
+.other__item a {
+  color: var(--text-strong);
+  font-weight: 600;
+}
+
+.other__ext {
+  color: var(--accent);
+  font-size: 0.8em;
+}
+
+.other__meta {
+  font: 500 11.5px var(--font-mono);
+  color: var(--text-dim);
+  white-space: nowrap;
 }
 
 .footer {
@@ -384,5 +468,11 @@ body {
   .card--featured .card__role {
     display: block;
     font-size: 10.5px;
+  }
+
+  .other__item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
   }
 }

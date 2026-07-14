@@ -5,7 +5,11 @@ every change here affects every app on the site.
 
 - `tokens.css` — design tokens (the single design-system swap point)
 - `base.css` — reset + base element styles built on the tokens
-- `supabase.ts` — `createAppClient` helper (browser + PUBLIC anon key + RLS only)
+- `supabase.ts` — `createAppClient` helper (browser + PUBLIC anon key + RLS
+  only). Optional: only apps that `import '@portfolio/shared/supabase'` pull
+  in `supabase-js` at all. Apps using Firebase or another BaaS instead don't
+  touch this file — their SDK is their own dependency, not shared's. See root
+  `CLAUDE.md` → "Backend & database".
 
 Rules:
 - No app-specific logic here.

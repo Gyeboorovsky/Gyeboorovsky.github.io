@@ -7,6 +7,20 @@ function esc(s: string): string {
   );
 }
 
+const CATEGORY_KEYS: Record<string, string> = {
+  app: 'app',
+  apps: 'app',
+  tool: 'tool',
+  tools: 'tool',
+  game: 'game',
+  games: 'game',
+  mobile: 'mobile',
+};
+
+function categoryKey(tag: string): string {
+  return CATEGORY_KEYS[tag.toLowerCase()] ?? 'default';
+}
+
 function coverStyle(app: ManifestApp): string {
   if (app.screenshot) {
     return (
@@ -14,13 +28,13 @@ function coverStyle(app: ManifestApp): string {
       'background-size:cover;background-position:center;'
     );
   }
-  return `background:linear-gradient(150deg, oklch(0.35 0.055 ${app.accentHue}), oklch(0.22 0.03 ${app.accentHue}));`;
+  return `background:linear-gradient(150deg, oklch(0.62 0.17 ${app.accentHue}), oklch(0.32 0.13 ${app.accentHue}));`;
 }
 
 function cardHtml(app: ManifestApp, index: number, featured: boolean): string {
   const num = String(index + 1).padStart(2, '0');
-  const tag = app.tags[0] ?? (app.kind === 'external' ? 'external' : 'app');
-  const external = app.kind === 'external';
+  const tag = app.tags[0] ?? 'app';
+  const catClass = `card__tag--${categoryKey(tag)}`;
   const statusBadge =
     app.status === 'wip'
       ? '<span class="card__status card__status--wip">WIP</span>'
@@ -35,15 +49,15 @@ function cardHtml(app: ManifestApp, index: number, featured: boolean): string {
     .filter(Boolean)
     .join(' ');
   return `
-    <a class="${classes}" href="${esc(app.url)}"${external ? ' target="_blank" rel="noopener"' : ''}>
+    <a class="${classes}" href="${esc(app.url)}">
       <div class="card__cover" style="${coverStyle(app)}">
-        <span class="card__tag">${esc(tag)}${featured ? ' · Featured' : ''}</span>
+        <span class="card__tag ${catClass}">${esc(tag)}${featured ? ' · Featured' : ''}</span>
         ${statusBadge}
         <span class="card__num">${num}</span>
       </div>
       <div class="card__body">
         <div class="card__row">
-          <h3 class="card__title">${esc(app.title)}${external ? ' <span class="card__ext">↗</span>' : ''}</h3>
+          <h3 class="card__title">${esc(app.title)}</h3>
           <span class="card__year">${app.year}</span>
         </div>
         <p class="card__desc">${esc(app.description)}</p>
@@ -52,19 +66,42 @@ function cardHtml(app: ManifestApp, index: number, featured: boolean): string {
     </a>`;
 }
 
+function otherProjectsHtml(externalApps: ManifestApp[]): string {
+  if (externalApps.length === 0) return '';
+  return `
+    <section class="other">
+      <h2 class="other__title">Other projects</h2>
+      <ul class="other__list">
+        ${externalApps
+          .map(
+            (a) => `
+          <li class="other__item">
+            <a href="${esc(a.url)}" target="_blank" rel="noopener">
+              ${esc(a.title)} <span class="other__ext">↗</span>
+            </a>
+            <span class="other__meta">${a.role ? esc(a.role) + ' · ' : ''}${a.year}</span>
+          </li>`,
+          )
+          .join('')}
+      </ul>
+    </section>`;
+}
+
 export function renderPage(
   root: HTMLElement,
   manifest: Manifest,
   activeFilter: string,
   onFilter: (filter: string) => void,
 ): void {
-  const apps = manifest.apps;
-  const tags = ['All', ...new Set(apps.flatMap((a) => a.tags))];
+  const internalApps = manifest.apps.filter((a) => a.kind === 'internal');
+  const externalApps = manifest.apps.filter((a) => a.kind === 'external');
+
+  const tags = ['All', ...new Set(internalApps.flatMap((a) => a.tags))];
   const filtered =
-    activeFilter === 'All' ? apps : apps.filter((a) => a.tags.includes(activeFilter));
+    activeFilter === 'All' ? internalApps : internalApps.filter((a) => a.tags.includes(activeFilter));
   const [first, ...rest] = filtered;
 
-  const years = apps.map((a) => a.year);
+  const years = manifest.apps.map((a) => a.year);
   const minYear = Math.min(...years);
   const maxYear = Math.max(...years);
   const yearRange =
@@ -85,16 +122,17 @@ export function renderPage(
       </header>
       <nav class="pills">
         ${tags
-          .map(
-            (t) =>
-              `<button class="pill${t === activeFilter ? ' pill--on' : ''}" data-filter="${esc(t)}">${esc(t)}</button>`,
-          )
+          .map((t) => {
+            const cat = t === 'All' ? 'default' : categoryKey(t);
+            return `<button class="pill${t === activeFilter ? ' pill--on' : ''}" data-filter="${esc(t)}" data-cat="${cat}">${esc(t)}</button>`;
+          })
           .join('')}
       </nav>
       <section class="grid">
         ${first ? cardHtml(first, 0, true) : '<p class="empty">Nothing here yet.</p>'}
         ${rest.map((a, i) => cardHtml(a, i + 1, false)).join('')}
       </section>
+      ${otherProjectsHtml(externalApps)}
       <footer class="footer">
         <a href="https://github.com/Gyeboorovsky/Gyeboorovsky.github.io" target="_blank" rel="noopener">source ↗</a>
       </footer>
