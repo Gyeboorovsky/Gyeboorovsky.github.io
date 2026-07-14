@@ -1,0 +1,53 @@
+/* Design tokens — the single source of truth for every visual value on the site.
+   Swapping the design system means replacing the values in this file only.
+   Source: design/Portfolio Grid.dc.html (option 1b, semi-dark, teal accent). */
+:root {
+  /* Surfaces */
+  --bg: #0d0e11;
+  --surface-1: #191c22;
+  --surface-2: #212530;
+  --surface-3: #15171d;
+
+  /* Text */
+  --text: #eef0f4;
+  --text-strong: #f3f5f8;
+  --text-body: #b6bcc7;
+  --text-muted: #aab0bd;
+  --text-soft: #aeb4bf;
+  --text-faint: #8b93a3;
+  --text-dim: #7f8696;
+  --text-dimmer: #6f7686;
+
+  /* Accent */
+  --accent: #5eead4;
+  --accent-hover: #8ff4e3;
+  --accent-ink: #0e1512;
+  --accent-glow: rgba(94, 234, 212, 0.55);
+  --accent-border: rgba(94, 234, 212, 0.65);
+  --accent-border-strong: rgba(94, 234, 212, 0.7);
+
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.12);
+  --border-bright: rgba(255, 255, 255, 0.14);
+
+  /* Typography */
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'Instrument Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Radii */
+  --radius-card: 16px;
+  --radius-card-lg: 18px;
+  --radius-panel: 24px;
+  --radius-pill: 999px;
+
+  /* Shadows */
+  --shadow-card: 0 20px 44px rgba(0, 0, 0, 0.5);
+  --shadow-card-hover: 0 24px 54px rgba(0, 0, 0, 0.55);
+  --shadow-panel: 0 40px 90px rgba(0, 0, 0, 0.45);
+
+  /* Motion */
+  --ease-card: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
