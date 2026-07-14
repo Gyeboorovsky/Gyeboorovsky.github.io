@@ -1,11 +1,13 @@
-import { useState } from 'react';
-import type { AppData, Card, Deck, Settings, StatsLog, SwipeDir } from './types';
+import { useEffect, useState } from 'react';
+import type { AppData, Card, Deck, SessionsLog, Settings, StatsLog, SwipeDir } from './types';
 import { applySwipe, dueCards, todayISO } from './leitner';
 import {
   DATA_KEY,
+  SESSIONS_KEY,
   SETTINGS_KEY,
   STATS_KEY,
   loadData,
+  loadSessions,
   loadSettings,
   loadStats,
   parseDeckJSON,
@@ -14,6 +16,14 @@ import {
 } from './storage';
 import { useAutosaved } from './usePersistence';
 import { seedData } from './seed';
+import {
+  type FolderStatus,
+  isFolderSupported,
+  loadStoredHandle,
+  pickDataFolder,
+  verifyPermission,
+  writeBackup,
+} from './localFolder';
 import { I18nProvider, useI18n } from './i18n';
 import DeckList, { deckAccent } from './components/DeckList';
 import DeckDetail from './components/DeckDetail';
@@ -21,6 +31,10 @@ import StudyView from './components/StudyView';
 import SummaryView from './components/SummaryView';
 import Dashboard from './components/Dashboard';
 import OptionsDrawer from './components/OptionsDrawer';
+import LanguageMenu from './components/LanguageMenu';
+import OverviewPanel from './components/OverviewPanel';
+
+const MAX_STORED_SESSIONS = 50;
 
 const DEFAULT_SETTINGS: Settings = {
   version: 1,
@@ -52,7 +66,7 @@ type View =
   | { name: 'decks' }
   | { name: 'dashboard' }
   | { name: 'deck'; deckId: string }
-  | { name: 'study'; deckId: string; queue: string[]; mode: 'due' | 'all' }
+  | { name: 'study'; deckId: string; queue: string[]; mode: 'due' | 'all'; sessionId: string }
   | { name: 'summary'; deckId: string; known: number; unknown: number; mode: 'due' | 'all' };
 
 function shuffle<T>(items: T[]): T[] {
@@ -86,8 +100,57 @@ function Shell({
   const t = useI18n();
   const [data, updateData, saveStatus] = useAutosaved<AppData>(DATA_KEY, () => loadData() ?? seedData());
   const [stats, updateStats] = useAutosaved<StatsLog>(STATS_KEY, () => loadStats() ?? { version: 1, days: {} });
+  const [sessions, updateSessions] = useAutosaved<SessionsLog>(
+    SESSIONS_KEY,
+    () => loadSessions() ?? { version: 1, sessions: [] },
+  );
   const [view, setView] = useState<View>({ name: 'decks' });
   const [optionsOpen, setOptionsOpen] = useState(false);
+  const [folder, setFolder] = useState<FolderStatus>(() =>
+    isFolderSupported() ? { state: 'none' } : { state: 'unsupported' },
+  );
+
+  // Restore a previously chosen data folder (permission may need a click).
+  useEffect(() => {
+    if (!isFolderSupported()) return;
+    let cancelled = false;
+    loadStoredHandle().then(async (handle) => {
+      if (!handle || cancelled) return;
+      const granted = await verifyPermission(handle, false);
+      if (cancelled) return;
+      setFolder({ state: granted ? 'active' : 'need-permission', handle, name: handle.name });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Live JSON copy of everything into the chosen folder, debounced.
+  useEffect(() => {
+    if (folder.state !== 'active') return;
+    const timer = window.setTimeout(() => {
+      writeBackup(folder.handle, {
+        exportedAt: new Date().toISOString(),
+        data,
+        settings,
+        stats,
+        sessions,
+      });
+    }, 800);
+    return () => window.clearTimeout(timer);
+  }, [folder, data, settings, stats, sessions]);
+
+  const chooseFolder = async () => {
+    const handle = await pickDataFolder();
+    if (handle) setFolder({ state: 'active', handle, name: handle.name });
+  };
+
+  const resumeFolder = async () => {
+    if (folder.state !== 'need-permission') return;
+    if (await verifyPermission(folder.handle, true)) {
+      setFolder({ state: 'active', handle: folder.handle, name: folder.name });
+    }
+  };
 
   const findDeck = (deckId: string): Deck | undefined => data.decks.find((d) => d.id === deckId);
   const deckIndex = (deckId: string): number => data.decks.findIndex((d) => d.id === deckId);
@@ -117,7 +180,8 @@ function Shell({
       lastReviewed: null,
       createdAt: new Date().toISOString(),
     };
-    updateDeck(deckId, (deck) => ({ ...deck, cards: [...deck.cards, card] }));
+    // Newest cards go to the top of the deck view.
+    updateDeck(deckId, (deck) => ({ ...deck, cards: [card, ...deck.cards] }));
   };
 
   const importDeck = async (): Promise<string | null> => {
@@ -146,7 +210,7 @@ function Shell({
         lastReviewed: null,
         createdAt: now,
       }));
-      updateDeck(deckId, (deck) => ({ ...deck, cards: [...deck.cards, ...cards] }));
+      updateDeck(deckId, (deck) => ({ ...deck, cards: [...cards, ...deck.cards] }));
     }
     return pairs.length;
   };
@@ -158,13 +222,30 @@ function Shell({
     const limit = settings.cardsPerSession;
     const queue = (limit > 0 ? pool.slice(0, limit) : pool).map((c) => c.id);
     if (queue.length === 0) return;
-    setView({ name: 'study', deckId, queue, mode });
+    const sessionId = crypto.randomUUID();
+    updateSessions((sl) => ({
+      ...sl,
+      sessions: [
+        {
+          id: sessionId,
+          deckId,
+          deckName: deck.name,
+          startedAt: new Date().toISOString(),
+          total: queue.length,
+          known: 0,
+          unknown: 0,
+        },
+        ...sl.sessions,
+      ].slice(0, MAX_STORED_SESSIONS),
+    }));
+    setView({ name: 'study', deckId, queue, mode, sessionId });
   };
 
-  const handleSwipe = (deckId: string, cardId: string, dir: SwipeDir) => {
+  const handleSwipe = (deckId: string, cardId: string, dir: SwipeDir, sessionId: string) => {
     const card = findDeck(deckId)?.cards.find((c) => c.id === cardId);
     if (!card) return;
     const today = todayISO();
+    const know = dir === 'know';
     const updated = applySwipe(card, dir, today);
     updateDeck(deckId, (deck) => ({
       ...deck,
@@ -173,7 +254,6 @@ function Shell({
     updateStats((s) => {
       const day = s.days[today] ?? { reviews: 0, known: 0, unknown: 0, levelsGained: 0, levelsLost: 0, byDeck: {} };
       const deckDay = day.byDeck[deckId] ?? { reviews: 0, known: 0, unknown: 0 };
-      const know = dir === 'know';
       return {
         ...s,
         days: {
@@ -196,6 +276,15 @@ function Shell({
         },
       };
     });
+    // Per-swipe session progress — an interrupted session keeps what was done.
+    updateSessions((sl) => ({
+      ...sl,
+      sessions: sl.sessions.map((s) =>
+        s.id === sessionId
+          ? { ...s, known: s.known + (know ? 1 : 0), unknown: s.unknown + (know ? 0 : 1) }
+          : s,
+      ),
+    }));
   };
 
   // Guard views whose deck may have been deleted.
@@ -207,7 +296,7 @@ function Shell({
       : view;
 
   return (
-    <div className="app">
+    <div className={`app${effectiveView.name === 'decks' ? ' app-wide' : ''}`}>
       <div className="bg-blob bg-blob-pink" aria-hidden />
       <div className="bg-blob bg-blob-yellow" aria-hidden />
 
@@ -228,6 +317,7 @@ function Shell({
           >
             📈 {t.app.navDashboard}
           </button>
+          <LanguageMenu language={settings.language} onChange={(language) => onChangeSettings({ language })} />
           <button className="nav-pill" onClick={() => setOptionsOpen(true)} title={t.app.optionsButton}>
             ⚙️
           </button>
@@ -242,12 +332,15 @@ function Shell({
 
       <main className="app-main">
         {effectiveView.name === 'decks' && (
-          <DeckList
-            decks={data.decks}
-            onOpenDeck={(deckId) => setView({ name: 'deck', deckId })}
-            onCreateDeck={createDeck}
-            onImportDeck={importDeck}
-          />
+          <div className="decks-layout">
+            <OverviewPanel sessions={sessions.sessions} />
+            <DeckList
+              decks={data.decks}
+              onOpenDeck={(deckId) => setView({ name: 'deck', deckId })}
+              onCreateDeck={createDeck}
+              onImportDeck={importDeck}
+            />
+          </div>
         )}
 
         {effectiveView.name === 'dashboard' && (
@@ -258,6 +351,8 @@ function Shell({
           <DeckDetail
             deck={activeDeck}
             accent={deckAccent(deckIndex(activeDeck.id))}
+            settings={settings}
+            onChangeSettings={onChangeSettings}
             onBack={() => setView({ name: 'decks' })}
             onRename={(name) => updateDeck(activeDeck.id, (deck) => ({ ...deck, name }))}
             onDelete={() => deleteDeck(activeDeck.id)}
@@ -283,7 +378,9 @@ function Shell({
           <StudyView
             deck={activeDeck}
             queue={effectiveView.queue}
-            onSwipe={(cardId, dir) => handleSwipe(activeDeck.id, cardId, dir)}
+            settings={settings}
+            onChangeSettings={onChangeSettings}
+            onSwipe={(cardId, dir) => handleSwipe(activeDeck.id, cardId, dir, effectiveView.sessionId)}
             onFinish={(known, unknown) =>
               setView({ name: 'summary', deckId: activeDeck.id, known, unknown, mode: effectiveView.mode })
             }
@@ -307,7 +404,10 @@ function Shell({
       <OptionsDrawer
         open={optionsOpen}
         settings={settings}
-        onChange={onChangeSettings}
+        onChangeLanguage={(language) => onChangeSettings({ language })}
+        folder={folder}
+        onChooseFolder={chooseFolder}
+        onResumeFolder={resumeFolder}
         onClose={() => setOptionsOpen(false)}
       />
     </div>

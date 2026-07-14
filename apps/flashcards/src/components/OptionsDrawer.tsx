@@ -1,31 +1,35 @@
-import type { Language, Settings, WidgetId } from '../types';
-import { LANGUAGE_NAMES, useI18n } from '../i18n';
+import type { Language, Settings } from '../types';
+import { LANGUAGE_NAMES, fmt, useI18n } from '../i18n';
+import type { FolderStatus } from '../localFolder';
 import Drawer from './Drawer';
-
-export const WIDGET_IDS: WidgetId[] = [
-  'levelsGained',
-  'reviews',
-  'accuracy',
-  'levelDistribution',
-  'perDeck',
-  'activity',
-];
-
-const SESSION_SIZES = [10, 20, 50, 0]; // 0 = all
+import { Flag } from './LanguageMenu';
 
 interface OptionsDrawerProps {
   open: boolean;
   settings: Settings;
-  onChange: (patch: Partial<Settings>) => void;
+  onChangeLanguage: (language: Language) => void;
+  folder: FolderStatus;
+  onChooseFolder: () => void;
+  onResumeFolder: () => void;
   onClose: () => void;
 }
 
-export default function OptionsDrawer({ open, settings, onChange, onClose }: OptionsDrawerProps) {
+/** Whole-app options (header ⚙️): language + the local data folder.
+    View-specific options live in each view's own right panel. */
+export default function OptionsDrawer({
+  open,
+  settings,
+  onChangeLanguage,
+  folder,
+  onChooseFolder,
+  onResumeFolder,
+  onClose,
+}: OptionsDrawerProps) {
   const t = useI18n();
   const languages = Object.keys(LANGUAGE_NAMES) as Language[];
 
   return (
-    <Drawer side="right" open={open} title={t.options.title} onClose={onClose}>
+    <Drawer side="right" open={open} title={t.options.appTitle} onClose={onClose}>
       <div className="options-section">
         <h3 className="options-heading">{t.options.language}</h3>
         <div className="pill-row">
@@ -33,62 +37,42 @@ export default function OptionsDrawer({ open, settings, onChange, onClose }: Opt
             <button
               key={lang}
               className={`pill${settings.language === lang ? ' pill-active' : ''}`}
-              onClick={() => onChange({ language: lang })}
+              onClick={() => onChangeLanguage(lang)}
             >
-              {LANGUAGE_NAMES[lang]}
+              <Flag lang={lang} /> {LANGUAGE_NAMES[lang]}
             </button>
           ))}
         </div>
       </div>
 
       <div className="options-section">
-        <h3 className="options-heading">{t.options.cardsPerSession}</h3>
-        <div className="pill-row">
-          {SESSION_SIZES.map((size) => (
-            <button
-              key={size}
-              className={`pill${settings.cardsPerSession === size ? ' pill-active' : ''}`}
-              onClick={() => onChange({ cardsPerSession: size })}
-            >
-              {size === 0 ? t.options.all : size}
+        <h3 className="options-heading">{t.options.dataFolder}</h3>
+        <p className="options-hint">{t.options.dataFolderHint}</p>
+        {folder.state === 'unsupported' && <p className="options-hint">{t.options.dataFolderUnsupported}</p>}
+        {folder.state === 'none' && (
+          <>
+            <p className="folder-status">{t.options.dataFolderNone}</p>
+            <button className="btn btn-primary" onClick={onChooseFolder}>
+              📁 {t.options.dataFolderChoose}
             </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="options-section">
-        <h3 className="options-heading">{t.options.dashboardSection}</h3>
-        <p className="options-sub">{t.options.defaultView}</p>
-        <div className="pill-row">
-          {(['basic', 'detail'] as const).map((mode) => (
-            <button
-              key={mode}
-              className={`pill${settings.dashboardMode === mode ? ' pill-active' : ''}`}
-              onClick={() => onChange({ dashboardMode: mode })}
-            >
-              {mode === 'basic' ? t.dashboard.basic : t.dashboard.detail}
+          </>
+        )}
+        {folder.state === 'need-permission' && (
+          <>
+            <p className="folder-status">{fmt(t.options.dataFolderActive, { name: folder.name })}</p>
+            <button className="btn btn-primary" onClick={onResumeFolder}>
+              🔓 {t.options.dataFolderResume}
             </button>
-          ))}
-        </div>
-        <p className="options-sub">{t.options.widgets}</p>
-        <ul className="widget-toggles">
-          {WIDGET_IDS.map((id) => (
-            <li key={id}>
-              <label className="widget-toggle">
-                <input
-                  type="checkbox"
-                  checked={settings.dashboardWidgets[id]}
-                  onChange={(e) =>
-                    onChange({
-                      dashboardWidgets: { ...settings.dashboardWidgets, [id]: e.target.checked },
-                    })
-                  }
-                />
-                <span>{t.options.widgetNames[id]}</span>
-              </label>
-            </li>
-          ))}
-        </ul>
+          </>
+        )}
+        {folder.state === 'active' && (
+          <>
+            <p className="folder-status folder-active">📁 {fmt(t.options.dataFolderActive, { name: folder.name })}</p>
+            <button className="btn btn-ghost" onClick={onChooseFolder}>
+              {t.options.dataFolderChoose}
+            </button>
+          </>
+        )}
       </div>
     </Drawer>
   );

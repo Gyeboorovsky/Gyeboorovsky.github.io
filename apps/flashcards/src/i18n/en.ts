@@ -86,6 +86,7 @@ export const en = {
     dontKnow: "Don't know",
     cardsPanel: 'Cards in this deck',
     endSession: 'End session',
+    keyboardHint: "← don't know · space = flip · know →",
   },
   summary: {
     title: 'Deck complete! 🎉',
@@ -119,14 +120,29 @@ export const en = {
     activity: 'Last 30 days',
     weekdays: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
   },
+  overview: {
+    title: 'Recent sessions',
+    empty: 'No sessions yet — pick a deck and start swiping!',
+    progress: '{done}/{total} cards',
+  },
   options: {
     title: 'Options',
+    appTitle: 'App options',
+    viewTitle: 'View options',
     language: 'Language',
     cardsPerSession: 'Cards per session',
     all: 'All',
     dashboardSection: 'Dashboard',
     defaultView: 'Default view',
     widgets: 'Detail widgets',
+    dataFolder: 'Local data folder',
+    dataFolderHint:
+      'Data lives in your browser storage. Pick a folder on your computer to also keep a live JSON copy of everything there.',
+    dataFolderNone: 'No folder chosen yet.',
+    dataFolderActive: 'Saving a copy to "{name}"',
+    dataFolderChoose: 'Choose folder…',
+    dataFolderResume: 'Restore folder access',
+    dataFolderUnsupported: 'This browser cannot write to local folders — use Chrome or Edge.',
     widgetNames: {
       levelsGained: 'Levels gained',
       reviews: 'Reviews & accuracy',

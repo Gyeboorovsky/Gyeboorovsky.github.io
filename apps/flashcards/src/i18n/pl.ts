@@ -84,6 +84,7 @@ export const pl: Translation = {
     dontKnow: 'Nie umiem',
     cardsPanel: 'Fiszki w tej talii',
     endSession: 'Zakończ sesję',
+    keyboardHint: '← nie umiem · spacja = obrót · umiem →',
   },
   summary: {
     title: 'Talia ukończona! 🎉',
@@ -117,14 +118,29 @@ export const pl: Translation = {
     activity: 'Ostatnie 30 dni',
     weekdays: ['P', 'W', 'Ś', 'C', 'P', 'S', 'N'],
   },
+  overview: {
+    title: 'Ostatnie sesje',
+    empty: 'Brak sesji — wybierz talię i zacznij naukę!',
+    progress: '{done}/{total} fiszek',
+  },
   options: {
     title: 'Opcje',
+    appTitle: 'Opcje aplikacji',
+    viewTitle: 'Opcje widoku',
     language: 'Język',
     cardsPerSession: 'Fiszki na sesję',
     all: 'Wszystkie',
     dashboardSection: 'Statystyki',
     defaultView: 'Widok domyślny',
     widgets: 'Widżety szczegółów',
+    dataFolder: 'Lokalny folder danych',
+    dataFolderHint:
+      'Dane są zapisywane w pamięci przeglądarki. Wybierz folder na komputerze, aby dodatkowo trzymać tam aktualną kopię JSON.',
+    dataFolderNone: 'Nie wybrano jeszcze folderu.',
+    dataFolderActive: 'Kopia zapisywana w „{name}"',
+    dataFolderChoose: 'Wybierz folder…',
+    dataFolderResume: 'Przywróć dostęp do folderu',
+    dataFolderUnsupported: 'Ta przeglądarka nie zapisuje do folderów lokalnych — użyj Chrome lub Edge.',
     widgetNames: {
       levelsGained: 'Zdobyte poziomy',
       reviews: 'Powtórki i skuteczność',

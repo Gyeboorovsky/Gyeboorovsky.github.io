@@ -64,3 +64,22 @@ export interface StatsLog {
   /** Keyed by local date 'YYYY-MM-DD'. */
   days: Record<string, DayStats>;
 }
+
+/** One study session; counters update (and persist) on every swipe, so an
+    interrupted session keeps whatever progress was made. */
+export interface SessionRecord {
+  id: string;
+  deckId: string;
+  /** Snapshot of the deck name — survives deck rename/delete. */
+  deckName: string;
+  startedAt: string;
+  total: number;
+  known: number;
+  unknown: number;
+}
+
+export interface SessionsLog {
+  version: 1;
+  /** Newest first, capped. */
+  sessions: SessionRecord[];
+}

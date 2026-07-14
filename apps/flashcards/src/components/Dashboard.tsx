@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import type { AppData, DayStats, Settings, StatsLog } from '../types';
 import { MAX_LEVEL, todayISO } from '../leitner';
 import { fmt, useI18n } from '../i18n';
+import ViewOptionsPanel from './ViewOptionsPanel';
 
 interface DashboardProps {
   data: AppData;
@@ -65,6 +67,7 @@ function streakDays(stats: StatsLog, today: string): number {
 
 export default function Dashboard({ data, stats, settings, onChangeSettings }: DashboardProps) {
   const t = useI18n();
+  const [viewOptionsOpen, setViewOptionsOpen] = useState(false);
   const today = todayISO();
   const mode = settings.dashboardMode;
   const widgets = settings.dashboardWidgets;
@@ -118,6 +121,14 @@ export default function Dashboard({ data, stats, settings, onChangeSettings }: D
               {m === 'basic' ? t.dashboard.basic : t.dashboard.detail}
             </button>
           ))}
+          <button
+            className="icon-btn"
+            onClick={() => setViewOptionsOpen((o) => !o)}
+            title={t.options.viewTitle}
+            aria-label={t.options.viewTitle}
+          >
+            ⚙
+          </button>
         </div>
       </div>
 
@@ -267,6 +278,14 @@ export default function Dashboard({ data, stats, settings, onChangeSettings }: D
           )}
         </div>
       )}
+
+      <ViewOptionsPanel
+        kind="dashboard"
+        open={viewOptionsOpen}
+        settings={settings}
+        onChange={onChangeSettings}
+        onClose={() => setViewOptionsOpen(false)}
+      />
     </section>
   );
 }

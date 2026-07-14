@@ -1,8 +1,9 @@
-import type { AppData, Card, Deck, Settings, StatsLog } from './types';
+import type { AppData, Card, Deck, SessionsLog, Settings, StatsLog } from './types';
 
 export const DATA_KEY = 'flashcards:v1';
 export const SETTINGS_KEY = 'flashcards:settings:v1';
 export const STATS_KEY = 'flashcards:stats:v1';
+export const SESSIONS_KEY = 'flashcards:sessions:v1';
 
 export type SaveResult = { ok: true } | { ok: false; reason: 'quota' | 'unavailable' };
 
@@ -66,6 +67,14 @@ export function loadSettings(): Settings | null {
   const o = parsed as Record<string, unknown>;
   if (o.version !== 1 || typeof o.language !== 'string') return null;
   return parsed as Settings;
+}
+
+export function loadSessions(): SessionsLog | null {
+  const parsed = loadRaw(SESSIONS_KEY);
+  if (typeof parsed !== 'object' || parsed === null) return null;
+  const o = parsed as Record<string, unknown>;
+  if (o.version !== 1 || !Array.isArray(o.sessions)) return null;
+  return parsed as SessionsLog;
 }
 
 export function loadStats(): StatsLog | null {

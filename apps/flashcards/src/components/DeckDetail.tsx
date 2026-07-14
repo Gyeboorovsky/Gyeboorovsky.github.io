@@ -1,11 +1,12 @@
 import { useState, type CSSProperties } from 'react';
-import type { Card, Deck } from '../types';
+import type { Card, Deck, Settings } from '../types';
 import { dueCards, isDue, nextDueDate } from '../leitner';
 import { exportDeckJSON, exportWordsCSV } from '../storage';
 import { fmt, useI18n } from '../i18n';
 import CardModal from './CardModal';
 import ConfirmDialog from './ConfirmDialog';
 import ExportWordsModal from './ExportWordsModal';
+import ViewOptionsPanel from './ViewOptionsPanel';
 
 type ModalState = null | { type: 'add' } | { type: 'edit'; card: Card } | { type: 'exportWords' };
 type ConfirmState = null | { type: 'deck' } | { type: 'card'; cardId: string };
@@ -13,6 +14,8 @@ type ConfirmState = null | { type: 'deck' } | { type: 'card'; cardId: string };
 interface DeckDetailProps {
   deck: Deck;
   accent: string;
+  settings: Settings;
+  onChangeSettings: (patch: Partial<Settings>) => void;
   onBack: () => void;
   onRename: (name: string) => void;
   onDelete: () => void;
@@ -31,6 +34,7 @@ export default function DeckDetail(props: DeckDetailProps) {
   const [renaming, setRenaming] = useState(false);
   const [nameDraft, setNameDraft] = useState(deck.name);
   const [importMsg, setImportMsg] = useState<string | null>(null);
+  const [viewOptionsOpen, setViewOptionsOpen] = useState(false);
 
   const due = dueCards(deck).length;
   const nextDue = nextDueDate(deck);
@@ -125,12 +129,20 @@ export default function DeckDetail(props: DeckDetailProps) {
         <button className="btn btn-danger-ghost" onClick={() => setConfirm({ type: 'deck' })}>
           🗑 {t.deck.deleteDeck}
         </button>
+        <button className="btn btn-ghost" onClick={() => setViewOptionsOpen((o) => !o)}>
+          ⚙️ {t.options.viewTitle}
+        </button>
       </div>
       {importMsg && <p className="import-msg">{importMsg}</p>}
 
       <ul className="card-rows">
         {deck.cards.map((card) => (
-          <li key={card.id} className="card-row">
+          <li
+            key={card.id}
+            className="card-row card-row-clickable"
+            title={t.deck.edit}
+            onClick={() => setModal({ type: 'edit', card })}
+          >
             <span className={`level-chip lv-${card.level}`}>{fmt(t.deck.level, { n: card.level })}</span>
             <span className="card-row-text">
               <span className="card-row-front">{card.front}</span>
@@ -140,15 +152,11 @@ export default function DeckDetail(props: DeckDetailProps) {
             <span className="card-row-actions">
               <button
                 className="icon-btn"
-                title={t.deck.edit}
-                onClick={() => setModal({ type: 'edit', card })}
-              >
-                ✏️
-              </button>
-              <button
-                className="icon-btn"
                 title={t.deck.delete}
-                onClick={() => setConfirm({ type: 'card', cardId: card.id })}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setConfirm({ type: 'card', cardId: card.id });
+                }}
               >
                 🗑
               </button>
@@ -187,6 +195,14 @@ export default function DeckDetail(props: DeckDetailProps) {
           onCancel={() => setConfirm(null)}
         />
       )}
+      <ViewOptionsPanel
+        kind="session"
+        open={viewOptionsOpen}
+        settings={props.settings}
+        onChange={props.onChangeSettings}
+        onClose={() => setViewOptionsOpen(false)}
+      />
+
       {confirm?.type === 'card' && (
         <ConfirmDialog
           message={t.deck.deleteCardConfirm}

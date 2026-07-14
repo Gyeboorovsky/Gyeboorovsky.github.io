@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState, type PointerEvent } from 'react';
-import type { Deck, SwipeDir } from '../types';
+import type { Deck, Settings, SwipeDir } from '../types';
 import { fitFont } from '../fitFont';
 import { fmt, useI18n } from '../i18n';
 import DeckCardsDrawer from './DeckCardsDrawer';
+import ViewOptionsPanel from './ViewOptionsPanel';
 
 const SWIPE_THRESHOLD = 90;
 const TAP_TOLERANCE = 6;
@@ -15,12 +16,22 @@ const CARD_COLORS = ['var(--fc-pink)', 'var(--fc-yellow)', 'var(--fc-cyan)'];
 interface StudyViewProps {
   deck: Deck;
   queue: string[];
+  settings: Settings;
+  onChangeSettings: (patch: Partial<Settings>) => void;
   onSwipe: (cardId: string, dir: SwipeDir) => void;
   onFinish: (known: number, unknown: number) => void;
   onExit: () => void;
 }
 
-export default function StudyView({ deck, queue, onSwipe, onFinish, onExit }: StudyViewProps) {
+export default function StudyView({
+  deck,
+  queue,
+  settings,
+  onChangeSettings,
+  onSwipe,
+  onFinish,
+  onExit,
+}: StudyViewProps) {
   const t = useI18n();
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
@@ -29,6 +40,7 @@ export default function StudyView({ deck, queue, onSwipe, onFinish, onExit }: St
   const [known, setKnown] = useState(0);
   const [unknown, setUnknown] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [viewOptionsOpen, setViewOptionsOpen] = useState(false);
   const [colorOffset] = useState(() => Math.floor(Math.random() * CARD_COLORS.length));
 
   const colorAt = (i: number) => CARD_COLORS[(colorOffset + i) % CARD_COLORS.length];
@@ -44,6 +56,27 @@ export default function StudyView({ deck, queue, onSwipe, onFinish, onExit }: St
     },
     [],
   );
+
+  // Keyboard controls: ← don't know, → know, space = flip.
+  // No dependency array on purpose — re-subscribes each render so the handlers
+  // always see the current card/queue index.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.repeat) return;
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        commit('know');
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        commit('dontKnow');
+      } else if (e.key === ' ') {
+        e.preventDefault();
+        setFlipped((f) => !f);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
 
   const card = deck.cards.find((c) => c.id === queue[index]);
 
@@ -122,13 +155,21 @@ export default function StudyView({ deck, queue, onSwipe, onFinish, onExit }: St
   return (
     <section className="study">
       <div className="study-head">
-        <button className="icon-btn" onClick={() => setDrawerOpen(true)} aria-label={t.study.cardsPanel}>
+        <button className="icon-btn" onClick={() => setDrawerOpen((o) => !o)} aria-label={t.study.cardsPanel}>
           ☰
         </button>
         <span className="study-deck-name">{deck.name}</span>
         <span className="study-counter">
           {fmt(t.study.counter, { n: Math.min(index + 1, queue.length), total: queue.length })}
         </span>
+        <button
+          className="icon-btn"
+          onClick={() => setViewOptionsOpen((o) => !o)}
+          title={t.options.viewTitle}
+          aria-label={t.options.viewTitle}
+        >
+          ⚙
+        </button>
         <button className="icon-btn" onClick={onExit} title={t.study.endSession} aria-label={t.study.endSession}>
           ✕
         </button>
@@ -184,12 +225,20 @@ export default function StudyView({ deck, queue, onSwipe, onFinish, onExit }: St
           ✓
         </button>
       </div>
+      <span className="key-hint keyboard-hint">{t.study.keyboardHint}</span>
 
       <DeckCardsDrawer
         deck={deck}
         currentCardId={card.id}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
+      />
+      <ViewOptionsPanel
+        kind="session"
+        open={viewOptionsOpen}
+        settings={settings}
+        onChange={onChangeSettings}
+        onClose={() => setViewOptionsOpen(false)}
       />
     </section>
   );

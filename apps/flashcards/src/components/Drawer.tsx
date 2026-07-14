@@ -6,37 +6,45 @@ interface DrawerProps {
   title: string;
   onClose: () => void;
   children: ReactNode;
+  /** modal (default): backdrop + Esc/backdrop-click closes.
+      non-modal: persistent panel — the page stays interactive and only the ✕ closes it. */
+  modal?: boolean;
 }
 
-/** Slide-in side panel with backdrop; closes on backdrop click or Escape. */
-export default function Drawer({ side, open, title, onClose, children }: DrawerProps) {
+export default function Drawer({ side, open, title, onClose, children, modal = true }: DrawerProps) {
   useEffect(() => {
-    if (!open) return;
+    if (!open || !modal) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [open, onClose]);
+  }, [open, modal, onClose]);
 
   if (!open) return null;
 
+  const panel = (
+    <aside
+      className={`drawer drawer-${side}${modal ? '' : ' drawer-persistent'}`}
+      role={modal ? 'dialog' : 'complementary'}
+      aria-label={title}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="drawer-head">
+        <h2 className="drawer-title">{title}</h2>
+        <button className="icon-btn" onClick={onClose} aria-label="✕">
+          ✕
+        </button>
+      </div>
+      <div className="drawer-body">{children}</div>
+    </aside>
+  );
+
+  if (!modal) return panel;
+
   return (
     <div className="drawer-backdrop" onClick={onClose}>
-      <aside
-        className={`drawer drawer-${side}`}
-        role="dialog"
-        aria-label={title}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="drawer-head">
-          <h2 className="drawer-title">{title}</h2>
-          <button className="icon-btn" onClick={onClose} aria-label="✕">
-            ✕
-          </button>
-        </div>
-        <div className="drawer-body">{children}</div>
-      </aside>
+      {panel}
     </div>
   );
 }
