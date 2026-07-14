@@ -1,5 +1,5 @@
 {
-  "note": "Cards for apps hosted in OTHER repositories. Field docs in CLAUDE.md. Screenshots go in portfolio/public/external/ and are referenced as 'external/<file>'.",
+  "note": "Cards for apps hosted in OTHER repositories. Screenshots go in portfolio/public/external/ and are referenced as 'external/<file>'.",
   "apps": [
     {
       "slug": "cs2-utility-app",

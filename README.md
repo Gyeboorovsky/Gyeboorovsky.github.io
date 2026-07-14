@@ -31,6 +31,3 @@ Apps hosted in other repos: add an entry to `external-apps.json`.
 npm run build && npm run preview       # verify the assembled site locally
 git push                               # Actions builds + deploys (~2 min)
 ```
-
-See [CLAUDE.md](CLAUDE.md) for conventions, constraints, and the full command
-reference.

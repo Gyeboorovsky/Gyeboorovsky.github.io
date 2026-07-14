@@ -99,7 +99,7 @@ if (supabase) {
   console.log(
     `  4. Fill in apps/${slug}/src/supabase-config.ts with your project URL + anon key`,
   );
-  console.log('     (see CLAUDE.md → Backend & database for setup + free-tier notes)');
+  console.log('     (create the table in the Supabase dashboard first, with RLS enabled)');
   console.log('  5. npm run build && npm run preview (verify it appears on the grid)');
 } else {
   console.log('  4. npm run build && npm run preview (verify it appears on the grid)');

@@ -3,3 +3,9 @@ dist/
 portfolio/src/generated/
 *.local
 .DS_Store
+
+# Local agent working notes — kept on disk for development, never published
+CLAUDE.md
+**/CLAUDE.md
+**/CLAUDE.md.tpl
+.claude/
