@@ -3,6 +3,6 @@
   "apps": [
     { "name": "flashcards", "size": "2x2", "accentHue": 330, "accentHue2": 275, "glow": 3 },
     { "name": "typeblitz", "size": "1x1", "accentHue": 45, "accentHue2": 190, "glow": 1 },
-    { "name": "typingRPG", "size": "1x1", "accentHue": 45, "accentHue2": 275, "glow": 2 }
+    { "name": "typingrpg", "size": "1x1", "accentHue": 45, "accentHue2": 275, "glow": 2 }
   ]
 }
