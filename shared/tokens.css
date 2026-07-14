@@ -1,36 +1,46 @@
 /* Design tokens — the single source of truth for every visual value on the site.
    Swapping the design system means replacing the values in this file only.
-   Source: design/Portfolio Grid.dc.html (option 1b, semi-dark, teal accent). */
+   Vibrant-dark palette: dark base, distinct vivid hue per app category
+   (app/tool/game/mobile), used for tag chips, filter pills, and card covers. */
 :root {
-  /* Surfaces */
-  --bg: #0d0e11;
-  --surface-1: #191c22;
-  --surface-2: #212530;
-  --surface-3: #15171d;
+  /* Surfaces — dark with a touch of indigo depth, not flat black */
+  --bg: #0a0a14;
+  --surface-1: #16141f;
+  --surface-2: #201d2e;
+  --surface-3: #110f1a;
 
   /* Text */
-  --text: #eef0f4;
-  --text-strong: #f3f5f8;
-  --text-body: #b6bcc7;
-  --text-muted: #aab0bd;
-  --text-soft: #aeb4bf;
-  --text-faint: #8b93a3;
-  --text-dim: #7f8696;
-  --text-dimmer: #6f7686;
+  --text: #f0eef7;
+  --text-strong: #ffffff;
+  --text-body: #cdc8de;
+  --text-muted: #b6b0c7;
+  --text-soft: #a89fc0;
+  --text-faint: #948da8;
+  --text-dim: #837c96;
+  --text-dimmer: #6f6884;
 
-  /* Accent */
-  --accent: #5eead4;
-  --accent-hover: #8ff4e3;
-  --accent-ink: #0e1512;
-  --accent-glow: rgba(94, 234, 212, 0.55);
-  --accent-border: rgba(94, 234, 212, 0.65);
-  --accent-border-strong: rgba(94, 234, 212, 0.7);
+  /* Primary accent — vivid cyan, used for interactive UI (pulse, links, focus, hover) */
+  --accent: #22d3ee;
+  --accent-hover: #67e8f9;
+  --accent-glow: rgba(34, 211, 238, 0.55);
+  --accent-border: rgba(34, 211, 238, 0.65);
+  --accent-border-strong: rgba(34, 211, 238, 0.75);
+
+  /* Category accents — one distinct vivid hue per app tag/category */
+  --cat-app: #fb7185; /* rose */
+  --cat-tool: #a78bfa; /* violet */
+  --cat-game: #fbbf24; /* amber */
+  --cat-mobile: #34d399; /* emerald */
+  --cat-default: #22d3ee; /* falls back to the primary accent */
+
+  /* Dark ink for text placed on top of any vivid accent/category color */
+  --ink: #12101c;
 
   /* Borders */
   --border-subtle: rgba(255, 255, 255, 0.06);
-  --border: rgba(255, 255, 255, 0.07);
-  --border-strong: rgba(255, 255, 255, 0.12);
-  --border-bright: rgba(255, 255, 255, 0.14);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.13);
+  --border-bright: rgba(255, 255, 255, 0.16);
 
   /* Typography */
   --font-display: 'Space Grotesk', system-ui, sans-serif;

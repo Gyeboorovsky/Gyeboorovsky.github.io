@@ -12,9 +12,12 @@ Small static app served at /apps/demo/ on GitHub Pages.
 - The base path is derived from the folder name in `vite.config.ts` — don't
   hardcode absolute asset paths; import assets or reference them relatively.
 - All colors/typography come from `@portfolio/shared/tokens.css` variables.
-- Supabase (if needed): `createAppClient` from `@portfolio/shared/supabase` +
-  a committed `src/supabase-config.ts` with the PUBLIC anon key; RLS on every
-  table.
+- Responsive for web AND mobile: the layout must work from ~360px phones up to
+  desktop. Use fluid units / media queries and verify at both sizes — the
+  viewport meta tag is already set in `index.html`.
+- Backend is this app's own choice — Supabase, Firebase, another BaaS, or
+  none. See the root `CLAUDE.md` → "Backend & database" for the full picture
+  (free-tier tradeoffs, RLS example, how other apps do it).
 
 ## Card on the portfolio grid
 
