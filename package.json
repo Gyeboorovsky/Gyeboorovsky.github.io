@@ -1,0 +1,19 @@
+{
+  "name": "gyeboorovsky.github.io",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "portfolio",
+    "shared",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w portfolio",
+    "build": "node scripts/build-all.mjs",
+    "manifest": "node scripts/build-manifest.mjs",
+    "new-app": "node scripts/new-app.mjs",
+    "preview": "node scripts/serve-dist.mjs"
+  }
+}

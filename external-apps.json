@@ -1,0 +1,20 @@
+{
+  "note": "Cards for apps hosted in OTHER repositories. Field docs in CLAUDE.md. Screenshots go in portfolio/public/external/ and are referenced as 'external/<file>'.",
+  "apps": [
+    {
+      "slug": "cs2-utility-app",
+      "title": "CS2 Utility",
+      "description": "Companion utility app for Counter-Strike 2 — built with Expo, React Native and Supabase.",
+      "repoUrl": "https://github.com/Gyeboorovsky/cs2-utility-app",
+      "demoUrl": null,
+      "tags": ["mobile"],
+      "status": "wip",
+      "added": "2026-07-14",
+      "year": 2026,
+      "role": "Full-stack",
+      "screenshot": null,
+      "accentHue": 150,
+      "featured": false
+    }
+  ]
+}

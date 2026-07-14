@@ -1,0 +1,14 @@
+{
+  "title": "Demo",
+  "description": "A tiny hash-routed page that proves the build pipeline, shared tokens, and per-app base path all work end to end.",
+  "tags": ["tool"],
+  "status": "live",
+  "added": "2026-07-14",
+  "year": 2026,
+  "role": "Scaffold example",
+  "screenshot": "screenshot.svg",
+  "accentHue": 18,
+  "featured": true,
+  "repoUrl": null,
+  "hidden": false
+}

@@ -1,0 +1,5 @@
+node_modules/
+dist/
+portfolio/src/generated/
+*.local
+.DS_Store
