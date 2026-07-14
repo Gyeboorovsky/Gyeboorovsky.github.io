@@ -8,6 +8,10 @@ const SWIPE_THRESHOLD = 90;
 const TAP_TOLERANCE = 6;
 const FLING_MS = 260;
 
+/* Card front colors cycle through these; the stack layers show the actual
+   colors of the next cards, so what peeks out below matches what comes next. */
+const CARD_COLORS = ['var(--fc-pink)', 'var(--fc-yellow)', 'var(--fc-cyan)'];
+
 interface StudyViewProps {
   deck: Deck;
   queue: string[];
@@ -25,6 +29,9 @@ export default function StudyView({ deck, queue, onSwipe, onFinish, onExit }: St
   const [known, setKnown] = useState(0);
   const [unknown, setUnknown] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [colorOffset] = useState(() => Math.floor(Math.random() * CARD_COLORS.length));
+
+  const colorAt = (i: number) => CARD_COLORS[(colorOffset + i) % CARD_COLORS.length];
 
   const pointerId = useRef<number | null>(null);
   const start = useRef({ x: 0, y: 0 });
@@ -128,8 +135,12 @@ export default function StudyView({ deck, queue, onSwipe, onFinish, onExit }: St
       </div>
 
       <div className="card-stage">
-        <div className="stack-layer stack-layer-1" />
-        <div className="stack-layer stack-layer-2" />
+        {index + 2 < queue.length && (
+          <div className="stack-layer stack-layer-1" style={{ background: colorAt(index + 2) }} />
+        )}
+        {index + 1 < queue.length && (
+          <div className="stack-layer stack-layer-2" style={{ background: colorAt(index + 1) }} />
+        )}
         <div
           key={card.id}
           className="swipe-card"
@@ -143,7 +154,7 @@ export default function StudyView({ deck, queue, onSwipe, onFinish, onExit }: St
           onPointerCancel={onPointerCancel}
         >
           <div className="flip-inner" style={{ transform: flipped ? 'rotateY(180deg)' : 'rotateY(0.01deg)' }}>
-            <div className="flip-face flip-front">
+            <div className="flip-face flip-front" style={{ background: colorAt(index) }}>
               <span className="card-text" style={{ fontSize: fitFont(card.front) }}>
                 {card.front}
               </span>

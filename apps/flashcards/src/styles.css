@@ -658,15 +658,14 @@ body {
   position: absolute;
   border-radius: 26px;
 }
+/* Stack layer backgrounds are set inline: each shows the next card's color. */
 .stack-layer-1 {
   inset: 14px 22px;
-  background: var(--fc-cyan);
   transform: rotate(-6deg) scale(0.94);
   opacity: 0.5;
 }
 .stack-layer-2 {
   inset: 8px 14px;
-  background: var(--fc-yellow);
   transform: rotate(4deg) scale(0.97);
   opacity: 0.7;
 }
@@ -707,9 +706,7 @@ body {
   box-shadow: var(--fc-shadow-pop-lg);
   padding: 26px;
 }
-.flip-front {
-  background: var(--fc-pink);
-}
+/* Front background is set inline per card (see CARD_COLORS in StudyView). */
 .flip-back {
   transform: rotateY(180deg);
   background: var(--fc-white);
