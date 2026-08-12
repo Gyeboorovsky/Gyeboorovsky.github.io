@@ -38,6 +38,14 @@ run('npm', ['run', 'build', '-w', 'portfolio']);
 
 // Assemble: the shell (with its public/external/*.png thumbnails) IS the site.
 cpSync(join(ROOT, 'portfolio', 'dist'), DIST, { recursive: true });
+
+// Standalone static site, not part of the portfolio catalog: served only at
+// /site/fizjo, not linked from the hub. Pre-built (see static-sites/fizjo/README.md).
+const FIZJO_SRC = join(ROOT, 'static-sites', 'fizjo');
+if (existsSync(FIZJO_SRC)) {
+  cpSync(FIZJO_SRC, join(DIST, 'site', 'fizjo'), { recursive: true });
+}
+
 writeFileSync(join(DIST, '.nojekyll'), '');
 
 if (!existsSync(join(DIST, 'index.html'))) {
