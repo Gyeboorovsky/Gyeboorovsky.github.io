@@ -1,0 +1,55 @@
+{
+  "_comment": "Polish overrides for the portfolio shell. English (app.json content + hardcoded UI strings) is the base language; anything missing here just falls back to English. Proper names and project names (TypeBlitz, Typing RPG, Crazy Flashcards, wiseperk, Gyeboorovsky, Siteon...) are never translated — only descriptions, categories and generic UI chrome.",
+  "ui": {
+    "pageTitle": "Gyeboorovsky — gry, aplikacje i strony zrobione dla frajdy",
+    "pageDescription": "Katalog małych gier, aplikacji i stron. Za darmo, w przeglądarce, nic do instalowania.",
+    "tagline": "Za darmo · działa w przeglądarce",
+    "themeButton": "Perłowy / Nocny",
+    "themeAria": "Przełącz między lakierem perłowym a nocnym",
+    "langButton": "PL / EN",
+    "langAria": "Przełącz język strony",
+    "tabs": {
+      "app": "Aplikacje",
+      "apps": "Aplikacje",
+      "tool": "Narzędzia",
+      "tools": "Narzędzia",
+      "game": "Gry",
+      "games": "Gry",
+      "mobile": "Mobilne",
+      "website": "Strony",
+      "websites": "Strony",
+      "offer": "Oferty",
+      "offers": "Oferty"
+    },
+    "empty": "Nic w tej kategorii.",
+    "footer": "Wszystko tutaj jest darmowe",
+    "wip": "W budowie",
+    "retired": "Wycofane",
+    "sealed": "Zapieczętowane",
+    "passwordAria": "Hasło do {title}",
+    "gateError": "Brak podglądu pod tym hasłem."
+  },
+  "apps": {
+    "typeblitz": {
+      "description": "Gamifikowany trener szybkiego pisania: pięć trybów — od spokojnej praktyki po arcade'owy deszcz słów — punkty XP, serie i osiągnięcia oraz panel statystyk. Działa w pełni offline, w przeglądarce.",
+      "stat": "5 trybów · działa w pełni offline"
+    },
+    "typingrpg": {
+      "description": "Izometryczne action RPG, w którym klawiatura jest twoją bronią — wpisuj słowa, by siec grupy przeciwników, utrzymuj serię, by poszerzyć obszar ataku, i nie pomyl się w starciu z bossem.",
+      "stat": "Klawiatura jest bronią"
+    },
+    "flashcards": {
+      "description": "Fiszki w systemie Leitnera: nauka przez przesuwanie, statystyki dzienne i import/eksport JSON/CSV. Działają w pełni offline, w przeglądarce.",
+      "stat": "System Leitnera · działa w pełni offline"
+    },
+    "wiseperk": {
+      "description": "Pulpit fiszek z powtórkami rozłożonymi w czasie: przeciągane widżety, własne talie, pierścień powtórki dnia i 14-dniowa seria aktywności. Ucz się anatomii, języków albo własnych materiałów.",
+      "stat": "Powtórki rozłożone w czasie · pulpit widżetów"
+    },
+    "fizjo": {
+      "title": "Masaż i Fizjoterapia",
+      "description": "Strona gabinetu masażu i fizjoterapii w Krakowie: usługi, cennik, przebieg wizyty, opinie i kontakt. Next.js, wdrożone jako statyczny eksport i serwowane z tej strony.",
+      "stat": "Kraków · wizyty domowe · wieczorami"
+    }
+  }
+}

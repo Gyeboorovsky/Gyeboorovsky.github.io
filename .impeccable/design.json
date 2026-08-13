@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-13T00:00:00.000Z",
+  "title": "Design System: Gyeboorovsky Portfolio Catalog",
+  "extensions": {
+    "printings": {
+      "note": "Two printings of the same livery. Every token below is defined twice in shared/tokens.css — under prefers-color-scheme:dark guarded by :root:not([data-theme='light']), and again under :root[data-theme='dark'] so the manual toggle wins in both directions. Both blocks must always carry an identical token set.",
+      "pearl": "the frontmatter values (default :root)",
+      "midnight": "the per-token `midnight` field in colorMeta below"
+    },
+    "colorMeta": {
+      "body": { "role": "neutral", "displayName": "Pearl Body", "canonical": "#ece8e0", "midnight": "#0d1017", "tonalRamp": ["#1a1814", "#332f28", "#4d473c", "#665f50", "#807765", "#998f79", "#b3a78d", "#ece8e0"] },
+      "body-2": { "role": "neutral", "displayName": "Shaded Body", "canonical": "#dcd7cc", "midnight": "#151a23", "tonalRamp": ["#1a1815", "#332f29", "#4d473e", "#665f52", "#807767", "#998f7b", "#b3a790", "#dcd7cc"] },
+      "seam": { "role": "neutral", "displayName": "Structure", "canonical": "#12151a", "midnight": "#000104", "tonalRamp": ["#08090c", "#12151a", "#1d2229", "#2a3038", "#3a424d", "#4d5764", "#6c7789", "#9aa3b2"] },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#12151a", "midnight": "#f2f1ed", "tonalRamp": ["#08090c", "#12151a", "#232830", "#3a424d", "#5a6472", "#828b98", "#b0b6bf", "#e4e6ea"] },
+      "ink-2": { "role": "neutral", "displayName": "Ink Soft", "canonical": "#5a5f68", "midnight": "#949aa6", "tonalRamp": ["#16181b", "#2a2d33", "#3f434b", "#5a5f68", "#767c86", "#949aa3", "#b6bac1", "#dcdee1"] },
+      "on-seam": { "role": "neutral", "displayName": "On Structure", "canonical": "#ece8e0", "midnight": "#f2f1ed", "tonalRamp": ["#1a1814", "#332f28", "#4d473c", "#665f50", "#807765", "#998f79", "#c3bcac", "#ece8e0"] },
+      "lacquer": { "role": "neutral", "displayName": "Lacquer", "canonical": "rgba(255, 255, 255, 0.42)", "midnight": "rgba(255, 255, 255, 0.1)" },
+      "gloss": { "role": "neutral", "displayName": "Gloss", "canonical": "rgba(255, 255, 255, 0.9)", "midnight": "rgba(255, 255, 255, 0.38)" },
+      "paint-red": { "role": "primary", "displayName": "Vinyl Red", "canonical": "#d81b3f", "midnight": "#ff3d5a", "tonalRamp": ["#2b0209", "#4d0512", "#70091c", "#960e27", "#bb1434", "#d81b3f", "#ef5f78", "#fbb8c4"] },
+      "paint-teal": { "role": "secondary", "displayName": "Vinyl Teal", "canonical": "#00897a", "midnight": "#17d4bb", "tonalRamp": ["#00201d", "#003b34", "#00554c", "#006f63", "#00897a", "#00a391", "#3fc9b7", "#a8e9df"] },
+      "paint-amber": { "role": "tertiary", "displayName": "Vinyl Amber", "canonical": "#d99000", "midnight": "#ffc61a", "tonalRamp": ["#2b1c00", "#4d3300", "#704a00", "#966200", "#bb7b00", "#d99000", "#f0b23c", "#fbdda3"] },
+      "on-red": { "role": "primary", "displayName": "On Red", "canonical": "#ffffff", "midnight": "#1a0308" },
+      "on-teal": { "role": "secondary", "displayName": "On Teal", "canonical": "#ffffff", "midnight": "#04211d" },
+      "on-amber": { "role": "tertiary", "displayName": "On Amber", "canonical": "#241a00", "midnight": "#241a00" },
+      "red-text": { "role": "primary", "displayName": "Red as Small Type", "canonical": "#b8102f", "midnight": "#ff3d5a" },
+      "teal-text": { "role": "secondary", "displayName": "Teal as Small Type", "canonical": "#006b5f", "midnight": "#17d4bb" },
+      "amber-text": { "role": "tertiary", "displayName": "Amber as Small Type", "canonical": "#8a5c00", "midnight": "#ffc61a" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Wordmark", "purpose": "The hood wordmark only, in vinyl red, cut by real panel seams. One per page." },
+      "headline": { "displayName": "Lead Title", "purpose": "The title on a panel covering four grid cells or more." },
+      "title": { "displayName": "Panel Title", "purpose": "Every other app panel title, in the caption strip." },
+      "body": { "displayName": "Description", "purpose": "The app description in ink-soft, line-clamped to 2 lines (3 and max 54ch on a lead panel)." },
+      "label": { "displayName": "Decal", "purpose": "Category decal, status tab, sealed stamp, gate button, sponsor strips." },
+      "sponsor": { "displayName": "Sponsor Line", "purpose": "The project's one true fact, printed in that panel's --*-text paint." }
+    },
+    "shadows": [],
+    "shadowPolicy": "No shadows exist in this system, at rest or on any state. Depth comes from the panel's 168deg body gradient, a fixed 163deg lacquer highlight, and the seam showing structure beneath the shell. z-index layering on one plane: artwork 1, hood graphics 2, decals/cuts 3, travelling gloss 4, theme toggle 5.",
+    "motion": [
+      { "name": "ease", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "The only easing in the system. Damped, with mass, never bouncing." },
+      { "name": "gloss-travel", "value": "left 0.62s var(--ease)", "purpose": "The gloss band crossing a panel from left:-40% to left:130% on hover or focus. Removed under prefers-reduced-motion." },
+      { "name": "strip-state", "value": "filter 0.2s var(--ease), opacity 0.2s var(--ease), transform 0.2s var(--ease)", "purpose": "A sponsor strip lighting up when its filter is selected." }
+    ],
+    "geometry": [
+      { "name": "lean", "value": "-9deg", "purpose": "The livery shear. Every printed graphic on the car is skewX(var(--lean)); panels stay square." },
+      { "name": "gap", "value": "5px", "purpose": "The seam. The only spacing value that shows between elements." },
+      { "name": "gutter", "value": "clamp(12px, 2vw, 22px)", "purpose": "Horizontal padding inside the colophon strip." },
+      { "name": "stamp-rotation", "value": "-6deg", "purpose": "The sealed-preview stamp — the one element not parallel to the print, because a stamp is applied by hand." }
+    ],
+    "breakpoints": [
+      { "name": "two-column", "value": "1023px", "purpose": "Deck drops to 2 columns, w3 panels span 2, one hood cut recentres to 50% and the second is removed." },
+      { "name": "phone", "value": "719px", "purpose": "Hood stacks vertically, both cuts removed, sill wraps to a 2-column grid, rows relax to minmax(150px,1fr), h3 collapses to 2 rows." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "The single primitive: one piece of painted bodywork with a clear coat and a gloss band that travels on hover.",
+      "html": "<div class=\"ds-panel\"><span class=\"ds-panel-inner\">Body panel</span></div>",
+      "css": ".ds-panel { position: relative; overflow: hidden; border-radius: 0; min-height: 120px; padding: 18px 22px; color: var(--ink, #12151a); font-family: var(--font-body, Saira, system-ui, sans-serif); background: linear-gradient(168deg, var(--body-2, #dcd7cc), var(--body, #ece8e0) 42%, var(--body-2, #dcd7cc)); } .ds-panel::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(163deg, var(--lacquer, rgba(255,255,255,0.42)) 0 18%, transparent 46%); } .ds-panel::after { content: ''; position: absolute; top: -20%; bottom: -20%; left: -40%; width: 26%; z-index: 4; pointer-events: none; background: linear-gradient(100deg, transparent, var(--gloss, rgba(255,255,255,0.9)), transparent); transform: skewX(-12deg); transition: left 0.62s cubic-bezier(0.16, 1, 0.3, 1); } .ds-panel:hover::after, .ds-panel:focus-visible::after { left: 130%; } .ds-panel-inner { position: relative; z-index: 2; transform: skewX(-9deg); display: block; } @media (prefers-reduced-motion: reduce) { .ds-panel::after { transition: none; } }"
+    },
+    {
+      "name": "Car Panel",
+      "kind": "card",
+      "refersTo": "panel-caption",
+      "description": "An app tile: artwork carrying the decal, status tab and race number, with the caption as its own strip of bodywork stacked below.",
+      "html": "<a class=\"ds-car\" href=\"#\" data-paint=\"teal\"><span class=\"ds-car-art\"><span class=\"ds-car-tag\"><span>game</span></span><span class=\"ds-car-status\">WIP</span><span class=\"ds-car-no\">2</span></span><span class=\"ds-car-name\"><span class=\"ds-car-t\">Typing RPG</span><span class=\"ds-car-stat\">Level up by typing</span><span class=\"ds-car-d\">A browser role-playing game where every attack is a word you type correctly.</span></span></a>",
+      "css": ".ds-car { --car-paint: var(--paint-red, #d81b3f); --car-on: var(--on-red, #fff); --car-text: var(--red-text, #b8102f); position: relative; overflow: hidden; display: flex; flex-direction: column; width: 300px; min-height: 260px; border-radius: 0; cursor: pointer; text-decoration: none; color: var(--ink, #12151a); font-family: var(--font-body, Saira, system-ui, sans-serif); background: linear-gradient(168deg, var(--body-2, #dcd7cc), var(--body, #ece8e0) 42%, var(--body-2, #dcd7cc)); } .ds-car[data-paint='teal'] { --car-paint: var(--paint-teal, #00897a); --car-on: var(--on-teal, #fff); --car-text: var(--teal-text, #006b5f); } .ds-car[data-paint='amber'] { --car-paint: var(--paint-amber, #d99000); --car-on: var(--on-amber, #241a00); --car-text: var(--amber-text, #8a5c00); } .ds-car::before { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 2; background: linear-gradient(163deg, var(--lacquer, rgba(255,255,255,0.42)) 0 18%, transparent 46%); } .ds-car::after { content: ''; position: absolute; top: -20%; bottom: -20%; left: -40%; width: 26%; z-index: 4; pointer-events: none; background: linear-gradient(100deg, transparent, var(--gloss, rgba(255,255,255,0.9)), transparent); transform: skewX(-12deg); transition: left 0.62s cubic-bezier(0.16, 1, 0.3, 1); } .ds-car:hover::after, .ds-car:focus-visible::after { left: 130%; } .ds-car-art { position: relative; flex: 1; min-height: 104px; z-index: 1; background: linear-gradient(135deg, var(--paint-teal, #00897a), var(--paint-amber, #d99000)); } .ds-car-tag { position: absolute; top: 0; left: 0; z-index: 3; padding: 5px 13px 3px; background: var(--car-paint); color: var(--car-on); font-family: var(--font-display, 'Big Shoulders Display', 'Arial Narrow', sans-serif); font-weight: 800; font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; } .ds-car-tag span { display: block; transform: skewX(-9deg); } .ds-car-status { position: absolute; top: 0; right: 0; z-index: 3; padding: 5px 13px 3px; background: var(--seam, #12151a); color: var(--on-seam, #ece8e0); font-family: var(--font-display, 'Big Shoulders Display', 'Arial Narrow', sans-serif); font-weight: 800; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; } .ds-car-no { position: absolute; top: 34px; right: 12px; z-index: 3; font-family: var(--font-display, 'Big Shoulders Display', 'Arial Narrow', sans-serif); font-weight: 900; font-size: 62px; line-height: 1; color: var(--body, #ece8e0); opacity: 0.9; transform: skewX(-9deg); -webkit-text-stroke: 3px var(--seam, #12151a); } .ds-car-name { position: relative; z-index: 3; flex: none; padding: 10px 15px 12px; background: var(--body-2, #dcd7cc); } .ds-car-t { display: block; font-family: var(--font-display, 'Big Shoulders Display', 'Arial Narrow', sans-serif); font-weight: 800; font-size: 26px; line-height: 0.92; letter-spacing: 0.01em; text-transform: uppercase; transform: skewX(-9deg); } .ds-car-stat { display: block; margin-top: 5px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--car-text); transform: skewX(-9deg); } .ds-car-d { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; margin-top: 4px; font-size: 12px; font-weight: 600; color: var(--ink-2, #5a5f68); transform: skewX(-9deg); }"
+    },
+    {
+      "name": "Sponsor Strip",
+      "kind": "nav",
+      "refersTo": "sponsor-strip",
+      "description": "The filter row: unlit decals that fill with their tag's paint and rise 2px when selected.",
+      "html": "<nav class=\"ds-sill\"><button class=\"ds-strip\" data-on data-paint=\"red\"><span>Everything</span></button><button class=\"ds-strip\" data-paint=\"teal\"><span>Games</span></button><button class=\"ds-strip\" data-paint=\"amber\"><span>Websites</span></button></nav>",
+      "css": ".ds-sill { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 5px; background: var(--seam, #12151a); padding: 5px; } .ds-strip { --strip-paint: var(--ink, #12151a); --strip-on: var(--body, #ece8e0); position: relative; overflow: hidden; border: 0; border-radius: 0; cursor: pointer; padding: 12px 4px 9px; background: var(--body-2, #dcd7cc); color: var(--ink, #12151a); font-family: var(--font-display, 'Big Shoulders Display', 'Arial Narrow', sans-serif); font-weight: 800; font-size: 19px; letter-spacing: 0.1em; text-transform: uppercase; filter: saturate(0.25); opacity: 0.68; transition: filter 0.2s cubic-bezier(0.16,1,0.3,1), opacity 0.2s cubic-bezier(0.16,1,0.3,1), transform 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-strip::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(163deg, var(--lacquer, rgba(255,255,255,0.42)) 0 18%, transparent 46%); } .ds-strip span { display: block; position: relative; z-index: 2; transform: skewX(-9deg); } .ds-strip[data-paint='red'] { --strip-paint: var(--paint-red, #d81b3f); --strip-on: var(--on-red, #fff); } .ds-strip[data-paint='teal'] { --strip-paint: var(--paint-teal, #00897a); --strip-on: var(--on-teal, #fff); } .ds-strip[data-paint='amber'] { --strip-paint: var(--paint-amber, #d99000); --strip-on: var(--on-amber, #241a00); } .ds-strip[data-on] { filter: none; opacity: 1; transform: translateY(-2px); background: var(--strip-paint); color: var(--strip-on); } .ds-strip[data-on]::before { opacity: 0.3; } .ds-strip:focus-visible { outline: 3px solid var(--paint-red, #d81b3f); outline-offset: -3px; }"
+    },
+    {
+      "name": "Gate Field",
+      "kind": "input",
+      "refersTo": "gate-input",
+      "description": "The sealed-preview password entry: a ruled line, not a box, beside a paint-filled Open button.",
+      "html": "<form class=\"ds-gate\"><label class=\"ds-gate-row\"><span class=\"ds-gate-word\">Password</span><input class=\"ds-gate-input\" type=\"password\" name=\"pw\" autocomplete=\"off\" /></label><button class=\"ds-gate-open\" type=\"submit\">Open</button></form>",
+      "css": ".ds-gate { display: flex; align-items: flex-end; gap: 10px; padding: 12px 15px 14px; background: var(--body-2, #dcd7cc); color: var(--ink, #12151a); font-family: var(--font-body, Saira, system-ui, sans-serif); } .ds-gate-row { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; } .ds-gate-word { font-size: 9.5px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-2, #5a5f68); } .ds-gate-input { width: 100%; padding: 4px 0 5px; background: none; border: 0; border-radius: 0; border-bottom: 3px solid var(--ink, #12151a); color: inherit; font: 600 14px var(--font-body, Saira, system-ui, sans-serif); letter-spacing: 0.18em; } .ds-gate-input:focus { outline: none; border-bottom-color: var(--paint-red, #d81b3f); } .ds-gate-open { flex: none; padding: 7px 16px 5px; border: 0; border-radius: 0; cursor: pointer; background: var(--paint-red, #d81b3f); color: var(--on-red, #fff); font-family: var(--font-display, 'Big Shoulders Display', 'Arial Narrow', sans-serif); font-weight: 800; font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase; } .ds-gate-open:focus-visible { outline: 3px solid var(--paint-red, #d81b3f); outline-offset: -3px; } .ds-gate-open[disabled] { opacity: 0.55; cursor: progress; }"
+    },
+    {
+      "name": "Sealed Stamp",
+      "kind": "chip",
+      "refersTo": "decal",
+      "description": "The hand-applied stamp on a gated client preview — the one element rotated rather than sheared.",
+      "html": "<span class=\"ds-seal\">Sealed</span>",
+      "css": ".ds-seal { display: inline-block; padding: 6px 14px 4px; border: 3px solid var(--paint-red, #d81b3f); border-radius: 0; color: var(--paint-red, #d81b3f); background: var(--body, #ece8e0); font-family: var(--font-display, 'Big Shoulders Display', 'Arial Narrow', sans-serif); font-weight: 800; font-size: 15px; letter-spacing: 0.14em; text-transform: uppercase; transform: rotate(-6deg); }"
+    },
+    {
+      "name": "Number Roundel",
+      "kind": "custom",
+      "refersTo": "panel",
+      "description": "The only circle in the system: the project count on bare paint, ringed in structure colour.",
+      "html": "<div class=\"ds-roundel\"><span>7</span></div>",
+      "css": ".ds-roundel { display: grid; place-items: center; padding: 20px; background: linear-gradient(168deg, var(--body-2, #dcd7cc), var(--body, #ece8e0) 42%, var(--body-2, #dcd7cc)); } .ds-roundel span { width: 118px; height: 118px; border-radius: 50%; background: var(--body, #ece8e0); border: 5px solid var(--seam, #12151a); display: grid; place-items: center; font-family: var(--font-display, 'Big Shoulders Display', 'Arial Narrow', sans-serif); font-weight: 900; font-size: 78px; line-height: 1; color: var(--ink, #12151a); transform: skewX(-9deg); }"
+    },
+    {
+      "name": "Theme Toggle",
+      "kind": "button",
+      "refersTo": "theme-toggle",
+      "description": "Sits on bare structure, lettered in on-seam so it stays light in both printings.",
+      "html": "<button class=\"ds-theme\" type=\"button\" aria-label=\"Switch between the pearl and midnight printings\">Pearl / Midnight</button>",
+      "css": ".ds-theme { cursor: pointer; border: 0; border-radius: 0; padding: 8px 14px 6px; background: var(--seam, #12151a); color: var(--on-seam, #ece8e0); font-family: var(--font-display, 'Big Shoulders Display', 'Arial Narrow', sans-serif); font-weight: 700; font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase; } .ds-theme:hover { opacity: 0.88; } .ds-theme:focus-visible { outline: 3px solid var(--paint-red, #d81b3f); outline-offset: -3px; }"
+    },
+    {
+      "name": "Wordmark on the Hood",
+      "kind": "custom",
+      "refersTo": "panel",
+      "description": "The first viewport's signature: the wordmark printed in vinyl red and cut by real seams on the deck's own column rhythm.",
+      "html": "<header class=\"ds-hood\"><div class=\"ds-hoodpanel\"><h1 class=\"ds-mark\">Gyeboorovsky</h1><p class=\"ds-strap\">Free browser toys &middot; nothing to install &middot; runs offline</p></div><span class=\"ds-cut ds-cut-a\"></span><span class=\"ds-cut ds-cut-b\"></span></header>",
+      "css": ".ds-hood { position: relative; display: flex; align-items: stretch; } .ds-hoodpanel { flex: 1; position: relative; overflow: hidden; padding: 18px 30px; background: linear-gradient(168deg, var(--body-2, #dcd7cc), var(--body, #ece8e0) 42%, var(--body-2, #dcd7cc)); } .ds-hoodpanel::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(163deg, var(--lacquer, rgba(255,255,255,0.42)) 0 18%, transparent 46%); } .ds-mark { position: relative; z-index: 2; margin: 0; font-family: var(--font-display, 'Big Shoulders Display', 'Arial Narrow', sans-serif); font-weight: 900; font-size: 72px; line-height: 0.84; letter-spacing: -0.005em; text-transform: uppercase; transform: skewX(-9deg); color: var(--paint-red, #d81b3f); } .ds-strap { position: relative; z-index: 2; margin: 10px 0 0; font-family: var(--font-body, Saira, system-ui, sans-serif); font-size: 12px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-2, #5a5f68); transform: skewX(-9deg); } .ds-cut { position: absolute; top: 0; bottom: 0; width: 5px; background: var(--seam, #12151a); z-index: 3; pointer-events: none; } .ds-cut-a { left: calc(33.333% - 1.6px); } .ds-cut-b { left: calc(66.667% - 3.3px); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Itasha Wrap",
+    "overview": "The catalog is not a page of cards on a background. It is one car, and the screen is its bodywork: rigid painted panels butted against each other, split only by a 5px seam that shows the dark structure underneath. Nothing floats, nothing has a soft edge, nothing casts a shadow, because sheet metal does none of those things. Where a conventional grid would leave empty page between tiles, this one leaves a panel joint — the gap is a material, not an absence.\n\nOver that bodywork sits printed vinyl in exactly three colours: red, teal, amber. They are the only chromatic voices in the system. Every graphic printed on the car — wordmark, race number, panel title, decal, stat line, filter strip — is sheared by the same −9° lean, so the whole surface reads as one wrap applied by one printer in one pass. A clear coat lies over each panel as a fixed raking highlight, and on hover a narrow gloss band travels across it and off the far edge, damped and heavy, the way light moves over a lacquered body as you walk past it.\n\nThe car exists in two printings of the same livery. Pearl is a warm off-white body with dark ink; midnight is the same car painted dark, with the three vinyl colours pushed to their high-key versions so they still burn against black paint. Both printings are complete token sets — this is one design in two finishes, not a light theme with a dark patch over it. Confirmed rejection: the floating, rounded, drop-shadowed card grid that this category ships by default.",
+    "keyCharacteristics": [
+      "Zero border-radius and zero shadows anywhere; the sole curve is the number roundel, which is a real circle.",
+      "Separation is always a 5px seam of dark structure, never empty page and never elevation.",
+      "Three vinyl paints only, each carrying a field colour, an on-field text colour, and a small-type-on-bodywork colour.",
+      "One shear angle (−9°) applied to every graphic on the car.",
+      "Captions are their own strip of bodywork below the artwork, never overlaid on it.",
+      "Two full printings (pearl, midnight), each defined as a complete token set."
+    ],
+    "rules": [
+      { "name": "The Three Paints Rule", "body": "There are exactly three vinyl colours, and every one of them carries all three forms: --paint-* colours a field, --on-* letters on top of that field, --*-text sets that paint as small type against bare bodywork. A new accent is not a new colour — it is one of the three, in one of the three forms. Adding a fourth paint is a different car.", "section": "colors" },
+      { "name": "The Seam Rule", "body": "Separation is 5px of --seam showing through. Not a border, not a margin of page, not a shadow. If two things need to be apart, a seam runs between them.", "section": "colors" },
+      { "name": "The Two Printings Rule", "body": "Pearl and midnight are defined twice on purpose: once under prefers-color-scheme: dark guarded by :root:not([data-theme='light']), and again under :root[data-theme='dark'] so a manual toggle wins in both directions. Both blocks must always carry an identical token set — a token added to one and not the other ships a pearl value on a midnight car.", "section": "colors" },
+      { "name": "The Everything Leans Rule", "body": "Every graphic on the car is sheared by skewX(-9deg) — wordmark, strapline, roundel figure, race number, panel title, description, stat, decal text, strip text. This is the world's single most identifying rule. Panels themselves stay square; their contents lean. An unsheared graphic on bodywork reads as a sticker someone else applied.", "section": "typography" },
+      { "name": "The Sponsor Line Rule", "body": "Descriptions are line-clamped — two lines, three on a lead panel. A long description can never grow the caption strip enough to squeeze a panel's paint. If it does not fit in the clamp, the copy is wrong, not the panel.", "section": "typography" },
+      { "name": "The Gap Is The Only Rhythm Rule", "body": "5px is the only spacing value that shows between elements. Internal padding is per-component and specified there; there is no general spacing scale, and none should be invented.", "section": "layout" },
+      { "name": "The No-Shadow Rule", "body": "A box-shadow anywhere in this world is a defect. If an element needs to separate from what is behind it, give it a seam or a different paint value.", "section": "elevation" },
+      { "name": "The Travelling Gloss Rule", "body": "Hover is the only motion in the system: a 26%-wide gloss band, skewed −12°, moves from left:-40% to left:130% over 0.62s on cubic-bezier(0.16, 1, 0.3, 1) — damped, with mass, never bouncing. It is removed under prefers-reduced-motion: reduce. Nothing lifts, scales, or glows on hover; the light moves instead of the object.", "section": "elevation" },
+      { "name": "The Caption Is Bodywork Rule", "body": "The title never sits over the artwork. It sits below it on its own strip, so no title can collide with a cover at any length or aspect ratio.", "section": "components" }
+    ],
+    "dos": [
+      "Do put every visual value in shared/tokens.css and reference it as a custom property; that file is the only design-system swap point in the repo.",
+      "Do shear every printed graphic by var(--lean) (−9°), and leave the panel itself square.",
+      "Do separate anything from anything with var(--gap) (5px) of var(--seam).",
+      "Do add a token to both the prefers-color-scheme block and the [data-theme='dark'] block, always as an identical pair.",
+      "Do pick a paint's correct form: --paint-* for a field, --on-* for type on that field, --*-text for that paint as small type on bodywork.",
+      "Do stack captions below artwork as their own strip of bodywork, and clamp the description so a long one can never squeeze the paint.",
+      "Do letter anything filled with --seam in --on-seam, so it survives both printings."
+    ],
+    "donts": [
+      "Don't use box-shadow anywhere, for any state.",
+      "Don't use border-radius on anything but the roundel, which is a full circle.",
+      "Don't introduce a fourth colour. The three vinyl paints plus the body/ink/seam neutrals are the whole palette.",
+      "Don't lay lettering over a project's cover art.",
+      "Don't separate panels with empty page or a margin; the space between panels is always filled with the seam.",
+      "Don't add hover motion beyond the travelling gloss — no lift, no scale, no glow — and keep whatever motion exists behind prefers-reduced-motion.",
+      "Don't replace the display face with a system stack; the condensed grotesque is the livery's voice, and Arial Narrow is a fallback, not an option."
+    ]
+  }
+}

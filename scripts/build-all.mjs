@@ -46,6 +46,17 @@ if (existsSync(FIZJO_SRC)) {
   cpSync(FIZJO_SRC, join(DIST, 'site', 'fizjo'), { recursive: true });
 }
 
+// Password-gated client previews. Each folder name is sha256("<slug>:<password>"),
+// so the address is only reachable by someone who knows the password — nothing
+// here is linked from the site. See offers/README.md for the security limits.
+const OFFERS_SRC = join(ROOT, 'offers');
+if (existsSync(OFFERS_SRC)) {
+  cpSync(OFFERS_SRC, join(DIST, 'offers'), {
+    recursive: true,
+    filter: (src) => !src.endsWith('README.md'),
+  });
+}
+
 writeFileSync(join(DIST, '.nojekyll'), '');
 
 if (!existsSync(join(DIST, 'index.html'))) {

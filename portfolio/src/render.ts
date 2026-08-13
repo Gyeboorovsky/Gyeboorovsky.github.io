@@ -1,4 +1,5 @@
-import type { Manifest, ManifestApp } from './types';
+import type { Lang, Manifest, ManifestApp, UiI18n } from './types';
+import { unlockOffer } from './gate';
 
 function esc(s: string): string {
   return s.replace(
@@ -7,18 +8,53 @@ function esc(s: string): string {
   );
 }
 
-const CATEGORY_KEYS: Record<string, string> = {
-  app: 'app',
-  apps: 'app',
-  tool: 'tool',
-  tools: 'tool',
-  game: 'game',
-  games: 'game',
-  mobile: 'mobile',
+const TAB_LABELS: Record<string, string> = {
+  app: 'Apps',
+  apps: 'Apps',
+  tool: 'Tools',
+  tools: 'Tools',
+  game: 'Games',
+  games: 'Games',
+  mobile: 'Mobile',
+  website: 'Websites',
+  websites: 'Websites',
+  offer: 'Offers',
+  offers: 'Offers',
 };
 
-function categoryKey(tag: string): string {
-  return CATEGORY_KEYS[tag.toLowerCase()] ?? 'default';
+/** English is the base language, hardcoded here; a non-English printing only
+ * ever overrides — a key it doesn't set falls straight back to English. */
+const EN_UI: Required<UiI18n> = {
+  pageTitle: 'Gyeboorovsky — games, apps and sites made for fun',
+  pageDescription: 'A catalog of small games, apps and websites. Free, in your browser, nothing to install.',
+  tagline: 'Free &middot; runs in your browser',
+  themeButton: 'Pearl / Midnight',
+  themeAria: 'Switch between the pearl and midnight printings',
+  langButton: 'EN / PL',
+  langAria: 'Switch the site language',
+  tabs: TAB_LABELS,
+  empty: 'Nothing in this class.',
+  footer: 'Everything here is free',
+  wip: 'WIP',
+  retired: 'Retired',
+  sealed: 'Sealed',
+  passwordAria: 'Password for {title}',
+  gateError: 'No preview under that password.',
+};
+
+/** Resolve UI copy for a printing: every key falls back to English. */
+function uiFor(manifest: Manifest, lang: Lang): Required<UiI18n> {
+  if (lang === 'en') return EN_UI;
+  const override = manifest.i18n?.[lang]?.ui ?? {};
+  return { ...EN_UI, ...override, tabs: { ...EN_UI.tabs, ...override.tabs } };
+}
+
+/** Resolve an app's content for a printing: title/description/stat each fall
+ * back to English independently (a translator may only fill in some). */
+function appFor(app: ManifestApp, lang: Lang): ManifestApp {
+  if (lang === 'en') return app;
+  const override = app.i18n?.[lang] ?? {};
+  return { ...app, ...override };
 }
 
 /** Parse a "<cols>x<rows>" size into [w, h], clamped to 1-3, defaulting to 1x1. */
@@ -28,113 +64,200 @@ function tileSize(size: string): [number, number] {
   return [clamp(w), clamp(h)];
 }
 
-function coverStyle(app: ManifestApp): string {
+function artHtml(app: ManifestApp): string {
   if (app.screenshot) {
-    return (
-      `background-image:linear-gradient(155deg, rgba(0,0,0,0) 30%, rgba(9,10,13,0.6)), url('${esc(app.screenshot)}');` +
-      'background-size:cover;background-position:center;'
-    );
+    return `<span class="car__art" style="background-image:url('${esc(app.screenshot)}')">`;
   }
-  const h2 = app.accentHue2 ?? app.accentHue;
-  return `background:linear-gradient(150deg, oklch(0.62 0.17 ${app.accentHue}), oklch(0.32 0.13 ${h2}));`;
+  return '<span class="car__art car__art--flat">';
 }
 
-function cardHtml(app: ManifestApp, index: number): string {
-  const [w, h] = tileSize(app.size);
-  // Tiles with area >= 4 (e.g. 2x2) get the larger "featured" typography.
-  const prominent = w * h >= 4;
-  const num = String(index + 1).padStart(2, '0');
-  const tag = app.tags[0] ?? 'app';
-  const catClass = `card__tag--${categoryKey(tag)}`;
-  const statusBadge =
+/** Everything painted on the panel: decal, race number, seal, and the artwork. */
+function carBody(app: ManifestApp, index: number, ui: Required<UiI18n>): string {
+  const statusMark =
     app.status === 'wip'
-      ? '<span class="card__status card__status--wip">WIP</span>'
+      ? `<span class="car__status">${esc(ui.wip)}</span>`
       : app.status === 'archived'
-        ? '<span class="card__status card__status--archived">Archived</span>'
+        ? `<span class="car__status">${esc(ui.retired)}</span>`
         : '';
-  const glow = Math.min(3, Math.max(0, Math.round(app.glow ?? 0)));
+  return `
+    ${artHtml(app)}
+      <span class="car__tag"><span>${esc(app.tags[0] ?? 'app')}</span></span>
+      ${statusMark}
+      <span class="car__no">${index + 1}</span>
+    </span>
+    <span class="car__name">
+      <span class="car__t">${esc(app.title)}</span>
+      ${app.stat ? `<span class="car__stat">${esc(app.stat)}</span>` : ''}
+      <span class="car__d">${esc(app.description)}</span>
+    </span>`;
+}
+
+function carHtml(app: ManifestApp, index: number, ui: Required<UiI18n>): string {
+  const [w, h] = tileSize(app.size);
+  // Panels covering four cells or more carry the larger lettering.
+  const lead = w * h >= 4;
   const classes = [
-    'card',
-    prominent ? 'card--featured' : '',
-    w === 2 ? 'card--w2' : w === 3 ? 'card--w3' : '',
-    h === 2 ? 'card--h2' : h === 3 ? 'card--h3' : '',
-    glow > 0 ? `card--glow${glow}` : '',
-    app.status === 'archived' ? 'card--archived' : '',
+    'panel',
+    'car',
+    lead ? 'car--lead' : '',
+    w === 2 ? 'car--w2' : w === 3 ? 'car--w3' : '',
+    h === 2 ? 'car--h2' : h === 3 ? 'car--h3' : '',
+    app.status === 'archived' ? 'car--retired' : '',
   ]
     .filter(Boolean)
     .join(' ');
-  // --card-hue tints the highlight glow to the app's accent colour.
-  // Every app lives in its own repo, so tiles always open in a new tab.
+
+  if (app.gated) {
+    // The password is not checked here — it derives the preview's address.
+    // The seal covers the whole panel; a click swaps its word for the entry
+    // field in the same spot, and leaving the panel without submitting
+    // swaps it back (see wireGate).
+    return `
+      <form class="${classes}" data-paint="${app.paint}" data-slug="${esc(app.slug)}" novalidate>
+        ${carBody(app, index, ui)}
+        <span class="car__gate" data-state="sealed">
+          <span class="car__gateword">${esc(ui.sealed)}</span>
+          <input class="car__gateinput" type="password" name="pw" autocomplete="off"
+                 aria-label="${esc(ui.passwordAria.replace('{title}', app.title))}" />
+          <span class="car__err" role="alert" hidden>${esc(ui.gateError)}</span>
+        </span>
+      </form>`;
+  }
+
+  // Every app lives in its own repo, but opens in this same tab.
   return `
-    <a class="${classes}" style="--card-hue:${app.accentHue}" href="${esc(app.url)}" target="_blank" rel="noopener">
-      <div class="card__cover" style="${coverStyle(app)}">
-        <span class="card__tag ${catClass}">${esc(tag)}</span>
-        ${statusBadge}
-        <span class="card__num">${num}</span>
-      </div>
-      <div class="card__body">
-        <div class="card__row">
-          <h3 class="card__title">${esc(app.title)}</h3>
-          <span class="card__year">${app.year}</span>
-        </div>
-        <p class="card__desc">${esc(app.description)}</p>
-        ${app.role ? `<span class="card__role">${esc(app.role)}</span>` : ''}
-      </div>
+    <a class="${classes}" data-paint="${app.paint}" href="${esc(app.url ?? '#')}">
+      ${carBody(app, index, ui)}
     </a>`;
 }
 
 export function renderPage(
   root: HTMLElement,
   manifest: Manifest,
-  activeFilter: string,
-  onFilter: (filter: string) => void,
+  lang: Lang,
+  activeFilter: string | null,
+  onFilter: (filter: string | null) => void,
 ): void {
-  const apps = manifest.apps;
+  const ui = uiFor(manifest, lang);
+  const apps = manifest.apps.map((a) => appFor(a, lang));
 
-  const tags = ['All', ...new Set(apps.flatMap((a) => a.tags))];
+  // No "All" strip: nothing selected already means everything. One filter at a
+  // time — clicking the lit strip turns it back off.
+  const tags = [...new Set(apps.flatMap((a) => a.tags))];
   const filtered =
-    activeFilter === 'All' ? apps : apps.filter((a) => a.tags.includes(activeFilter));
-
-  const years = apps.map((a) => a.year);
-  const minYear = Math.min(...years);
-  const maxYear = Math.max(...years);
-  const yearRange =
-    years.length === 0 ? '' : minYear === maxYear ? `${maxYear}` : `${minYear} — ${maxYear}`;
+    activeFilter === null ? apps : apps.filter((a) => a.tags.includes(activeFilter));
 
   root.innerHTML = `
-    <main class="panel">
-      <header class="header">
-        <div>
-          <div class="header__badge">
-            <span class="header__pulse"></span>
-            <span class="header__badgetext">Hobby projects</span>
-          </div>
-          <h1 class="header__name">Gyeboorovsky</h1>
-          <p class="header__sub">Apps, tools &amp; experiments — built for fun.</p>
+    <header class="hood">
+      <div class="panel">
+        <div class="roundel"><span>${apps.length}</span></div>
+        <div class="hoodplate">
+          <h1 class="mark">Gyeboorovsky</h1>
+          <p class="strap">${ui.tagline}</p>
         </div>
-        <span class="header__years">${yearRange}</span>
-      </header>
-      <nav class="pills">
-        ${tags
-          .map((t) => {
-            const cat = t === 'All' ? 'default' : categoryKey(t);
-            return `<button class="pill${t === activeFilter ? ' pill--on' : ''}" data-filter="${esc(t)}" data-cat="${cat}">${esc(t)}</button>`;
-          })
-          .join('')}
-      </nav>
-      <section class="grid">
-        ${
-          filtered.length === 0
-            ? '<p class="empty">Nothing to see.</p>'
-            : filtered.map((a, i) => cardHtml(a, i)).join('')
-        }
-      </section>
-      <footer class="footer">
-        <a href="https://github.com/Gyeboorovsky/Gyeboorovsky.github.io" target="_blank" rel="noopener">source ↗</a>
-      </footer>
-    </main>`;
+      </div>
+      <span class="cut cut--a"></span>
+      <span class="cut cut--b"></span>
+      <div class="hood__controls">
+        <button class="lang" type="button" aria-label="${esc(ui.langAria)}">${esc(ui.langButton)}</button>
+        <button class="theme" type="button" aria-label="${esc(ui.themeAria)}">
+          ${esc(ui.themeButton)}
+        </button>
+      </div>
+    </header>
 
-  root.querySelectorAll<HTMLButtonElement>('.pill').forEach((btn) => {
-    btn.addEventListener('click', () => onFilter(btn.dataset.filter!));
+    <nav class="sill" aria-label="Filter by kind">
+      ${tags
+        .map(
+          (t) =>
+            `<button class="panel strip"${
+              t === activeFilter ? ' data-on' : ''
+            } aria-pressed="${t === activeFilter}" data-filter="${esc(t)}" data-paint="${paintForTag(
+              apps,
+              t,
+            )}"><span>${esc(ui.tabs[t] ?? t)}</span></button>`,
+        )
+        .join('')}
+    </nav>
+
+    <section class="deck">
+      ${
+        filtered.length === 0
+          ? `<p class="empty">${esc(ui.empty)}</p>`
+          : // Numbered by position on the deck, not on screen: a panel keeps
+            // its race number when a filter hides its neighbours.
+            filtered.map((a) => carHtml(a, apps.indexOf(a), ui)).join('')
+      }
+    </section>
+
+    <a class="panel colophon" href="https://www.linkedin.com/in/tomasz-gieburowski-0b5685116/">
+      <span>${esc(ui.footer)}</span>
+      <span>LinkedIn</span>
+    </a>`;
+
+  root.querySelectorAll<HTMLButtonElement>('.strip').forEach((btn) => {
+    // Clicking the lit strip clears the filter; any other strip replaces it.
+    btn.addEventListener('click', () => {
+      const tag = btn.dataset.filter!;
+      onFilter(tag === activeFilter ? null : tag);
+    });
+  });
+
+  root.querySelectorAll<HTMLFormElement>('form.car').forEach(wireGate);
+}
+
+/** The paint a sponsor strip lights up in: the paint of the panels it selects. */
+function paintForTag(apps: ManifestApp[], tag: string): string {
+  return apps.find((a) => a.tags.includes(tag))?.paint ?? 'ink';
+}
+
+function wireGate(form: HTMLFormElement): void {
+  const gate = form.querySelector<HTMLElement>('.car__gate')!;
+  const input = form.querySelector<HTMLInputElement>('.car__gateinput')!;
+  const err = form.querySelector<HTMLElement>('.car__err')!;
+  let busy = false;
+
+  const edit = () => {
+    if (gate.dataset.state === 'editing') return;
+    gate.dataset.state = 'editing';
+    err.hidden = true;
+    input.focus();
+  };
+
+  // Leaving the panel without submitting reseals it — the word replaces the
+  // field again, exactly where it swapped out.
+  const reseal = () => {
+    if (busy) return;
+    gate.dataset.state = 'sealed';
+    input.value = '';
+    err.hidden = true;
+  };
+
+  gate.addEventListener('click', edit);
+  form.addEventListener('mouseleave', reseal);
+
+  input.addEventListener('input', () => {
+    err.hidden = true;
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const password = input.value.trim();
+    if (!password) return;
+
+    busy = true;
+    input.disabled = true;
+    const url = await unlockOffer(form.dataset.slug!, password);
+    input.disabled = false;
+    busy = false;
+
+    if (url) {
+      // Same tab on purpose: a popup opened after an await is blocked by
+      // default in most browsers, and the preview links back here.
+      location.href = url;
+    } else {
+      err.hidden = false;
+      input.select();
+    }
   });
 }

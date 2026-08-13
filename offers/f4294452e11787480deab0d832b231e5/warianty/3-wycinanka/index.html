@@ -1,0 +1,959 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MoKu Boho — kartki, zaproszenia, wianki i ścianki balonowe · Tczew</title>
+<meta name="description" content="MoKu Boho z Tczewa: ręcznie robione kartki okolicznościowe, zaproszenia, wianki z suszonych kwiatów, zdobione pudełka i ścianki ozdobne z balonami. Jedna rzecz na jedną okazję.">
+<meta name="theme-color" content="#141210">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Yeseva+One&family=Rubik:wght@400;500;700&display=swap&subset=latin-ext" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────────────────────────
+   MoKu Boho — wariant 3: WYCINANKA
+   Kroje: Yeseva One (display) + Rubik (tekst).
+   Yeseva One zweryfikowana pod polską diakrytykę: podzbiór latin-ext
+   z Google Fonts zawiera ą ć ę ł ń ó ś ź ż — dlatego NIE podmieniono
+   jej na Bevan / Alfa Slab One. Rubik pokrywa latin-ext w komplecie.
+   Papier jest płaski: bez gradientów, bez przezroczystych wypełnień,
+   bez rozmytych cieni. Jedyny cień to twardy cień odklejenia warstwy.
+   ───────────────────────────────────────────────────────────── */
+
+:root{
+  --fuksja:#d81b60;
+  --cynober:#e64a19;
+  --kobalt:#1e51a8;
+  --szmaragd:#00796b;
+  --slonecznik:#f9a825;
+  --czern:#141210;
+  --biel:#faf6ef;
+
+  --ciecie:2px 3px 0 rgba(0,0,0,.28);
+  --wypad: clamp(1.15rem, 5vw, 3rem);
+  --oddech: clamp(4rem, 11vw, 8.5rem);
+  --ease: cubic-bezier(.16,1,.3,1);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+
+html{
+  -webkit-text-size-adjust:100%;
+  scrollbar-color: var(--fuksja) var(--czern);
+  scrollbar-width: auto;
+}
+@media (prefers-reduced-motion: no-preference){ html{scroll-behavior:smooth} }
+
+::-webkit-scrollbar{width:15px;height:15px}
+::-webkit-scrollbar-track{background:var(--czern)}
+::-webkit-scrollbar-thumb{background:var(--fuksja);border:4px solid var(--czern)}
+::-webkit-scrollbar-thumb:hover{background:var(--slonecznik)}
+::-webkit-scrollbar-corner{background:var(--czern)}
+
+::selection{background:var(--slonecznik);color:var(--czern)}
+
+body{
+  margin:0;
+  background:var(--czern);
+  color:var(--biel);
+  font:400 clamp(1.02rem,.96rem + .42vw,1.19rem)/1.62 Rubik, system-ui, sans-serif;
+  overflow-x:hidden;
+}
+
+h1,h2,h3{font-family:'Yeseva One', Georgia, serif;font-weight:400;letter-spacing:-.012em;line-height:1.02;text-wrap:balance;margin:0}
+p{margin:0 0 1.05em;max-width:60ch}
+a{color:inherit}
+
+/* ── focus: gruby, twardy obrys wycięty w kontrze ─────────────── */
+:focus{outline:none}
+:focus-visible{
+  outline:5px solid var(--focus, var(--slonecznik));
+  outline-offset:4px;
+}
+
+.pomin{
+  position:absolute;left:-9999px;top:0;z-index:99;
+  background:var(--slonecznik);color:var(--czern);
+  font-weight:700;padding:.8rem 1.2rem;text-decoration:none;
+}
+.pomin:focus{left:0}
+
+.defs{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none}
+
+.wrap{width:100%;max-width:1180px;margin-inline:auto;padding-inline:var(--wypad)}
+
+/* ═══ SYGNATUROWA INTERAKCJA — rozsuwanie warstw papieru ════════
+   Najechanie podnosi arkusze: każda warstwa jedzie w innym kierunku
+   wzdłuż osi symetrii, cień odklejenia rośnie proporcjonalnie.
+   Powrót jest kaskadowy — spód wraca ostatni.                    */
+.wyc{display:block;width:100%;height:auto;overflow:visible}
+.wyc .w{
+  filter:drop-shadow(var(--ciecie));
+  transition:transform .82s var(--ease), filter .82s var(--ease);
+}
+.wyc .w1{transition-delay:.21s}
+.wyc .w2{transition-delay:.14s}
+.wyc .w3{transition-delay:.07s}
+.wyc .w4{transition-delay:0s}
+
+.trig:hover .wyc .w,.trig:focus-within .wyc .w,.trig.is-otw .wyc .w,.wyc:hover .w{transition-delay:0s}
+
+.trig:hover .wyc .w1,.trig:focus-within .wyc .w1,.trig.is-otw .wyc .w1,.wyc:hover .w1{
+  transform:translateY(14px);filter:drop-shadow(4px 7px 0 rgba(0,0,0,.34))}
+.trig:hover .wyc .w2,.trig:focus-within .wyc .w2,.trig.is-otw .wyc .w2,.wyc:hover .w2{
+  transform:translateY(-7px);filter:drop-shadow(3px 5px 0 rgba(0,0,0,.30))}
+.trig:hover .wyc .w3,.trig:focus-within .wyc .w3,.trig.is-otw .wyc .w3,.wyc:hover .w3{
+  transform:translateY(-17px);filter:drop-shadow(5px 8px 0 rgba(0,0,0,.32))}
+.trig:hover .wyc .w4,.trig:focus-within .wyc .w4,.trig.is-otw .wyc .w4,.wyc:hover .w4{
+  transform:translateY(-28px);filter:drop-shadow(7px 11px 0 rgba(0,0,0,.36))}
+
+@media (prefers-reduced-motion: reduce){
+  .wyc .w{transition:none !important}
+  .trig:hover .wyc .w,.trig:focus-within .wyc .w,.trig.is-otw .wyc .w,.wyc:hover .w{
+    transform:none !important;filter:drop-shadow(var(--ciecie)) !important}
+}
+
+/* ── sekcje: kolor JEST powierzchnią ──────────────────────────── */
+.s{position:relative;padding-block:var(--oddech)}
+.s--czern     {background:var(--czern);     color:var(--biel);  --focus:var(--slonecznik)}
+.s--fuksja    {background:var(--fuksja);    color:var(--biel);  --focus:var(--slonecznik)}
+.s--kobalt    {background:var(--kobalt);    color:var(--biel);  --focus:var(--slonecznik)}
+.s--slonecznik{background:var(--slonecznik);color:var(--czern); --focus:var(--czern)}
+.s--szmaragd  {background:var(--szmaragd);  color:var(--biel);  --focus:var(--slonecznik)}
+.s--cynober   {background:var(--cynober);   color:var(--czern); --focus:var(--czern)}
+.s--biel      {background:var(--biel);      color:var(--czern); --focus:var(--fuksja)}
+
+/* ═══ HERO ═════════════════════════════════════════════════════ */
+.hero{
+  position:relative;
+  min-height:100vh;min-height:100svh;
+  display:grid;place-items:center;
+  padding-block:clamp(3rem,9vh,6rem);
+  overflow:hidden;
+  background:var(--czern);
+  --focus:var(--biel);
+}
+.hero__art{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.hero__core{
+  position:relative;
+  width:100%;max-width:38rem;
+  padding-inline:var(--wypad);
+  display:flex;flex-direction:column;align-items:center;gap:clamp(1.4rem,3.6vw,2.2rem);
+  text-align:center;
+}
+.znak{width:100%;max-width:26rem;margin:0}
+.znak svg{display:block;width:100%;height:auto;filter:drop-shadow(3px 5px 0 rgba(0,0,0,.42))}
+.znak__t{font-family:'Yeseva One', Georgia, serif;font-size:88px;letter-spacing:.005em}
+
+.hero__lead{
+  margin:0;max-width:30rem;
+  background:var(--czern);color:var(--biel);
+  padding:.85rem 1.15rem;
+  font-size:clamp(1.02rem,.95rem + .5vw,1.22rem);
+  line-height:1.5;
+}
+.hero__ig{
+  font:700 .92rem/1 Rubik,sans-serif;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--biel);text-decoration:none;
+  border-bottom:3px solid var(--slonecznik);padding-bottom:.35rem;
+  background:var(--czern);padding-inline:.5rem;
+}
+.hero__ig:hover{color:var(--slonecznik)}
+
+/* ── CTA: pole wycięte w papierze ─────────────────────────────── */
+.cta{
+  display:inline-grid;place-items:center;
+  width:min(23rem,88%);
+  text-decoration:none;
+  transition:transform .5s var(--ease);
+}
+.cta>svg{grid-area:1/1;width:100%;height:auto;display:block;filter:drop-shadow(3px 4px 0 rgba(0,0,0,.4));transition:filter .5s var(--ease)}
+/* warstwy z filtrem tworzą kontekst stackingu i malują się nad treścią —
+   napisy leżące NA papierze muszą być pozycjonowane, żeby zostać na wierzchu */
+.cta>span{
+  grid-area:1/1;position:relative;z-index:1;
+  font:700 clamp(1rem,.9rem + .55vw,1.2rem)/1 Rubik,sans-serif;
+  color:var(--czern);letter-spacing:.005em;
+}
+.cta:hover{transform:translateY(-4px)}
+.cta:hover>svg{filter:drop-shadow(5px 8px 0 rgba(0,0,0,.45))}
+@media (prefers-reduced-motion: reduce){ .cta,.cta:hover{transform:none} }
+
+/* ═══ MANIFEST ═════════════════════════════════════════════════ */
+.manifest .wrap{display:grid;gap:clamp(2rem,5vw,3.5rem)}
+.manifest h2{font-size:clamp(2.15rem,1.4rem + 4.1vw,4.1rem)}
+.manifest__pod{
+  font-family:'Yeseva One',Georgia,serif;font-size:clamp(1.15rem,1rem + .7vw,1.5rem);
+  line-height:1.35;color:var(--slonecznik);margin:0;max-width:26ch;
+}
+.manifest__podpis{
+  font:500 .95rem/1.5 Rubik,sans-serif;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--slonecznik);margin:0;
+}
+@media (min-width:56rem){
+  .manifest .wrap{grid-template-columns:1.15fr .85fr;align-items:center}
+  .manifest__foto{grid-column:2;grid-row:1 / span 2}
+  .manifest__txt{grid-column:1}
+}
+
+/* ═══ KATEGORIE ════════════════════════════════════════════════ */
+.kat h2{font-size:clamp(2rem,1.35rem + 3.4vw,3.5rem);margin-bottom:.55em}
+.kat p{font-size:clamp(1rem,.95rem + .35vw,1.13rem)}
+.kat .wrap{display:grid;gap:clamp(2rem,5vw,3.4rem)}
+.kat__wyc{margin:0 auto;width:100%;max-width:24rem}
+
+.okazje{list-style:none;display:flex;flex-wrap:wrap;gap:.55rem;padding:0;margin:1.6rem 0 0}
+.okazje li{
+  font:700 .82rem/1 Rubik,sans-serif;letter-spacing:.09em;text-transform:uppercase;
+  padding:.62rem .85rem;
+  background:var(--czern);color:var(--biel);
+}
+.s--slonecznik .okazje li,.s--cynober .okazje li{background:var(--czern);color:var(--biel)}
+
+/* pojedynczy układ dla każdej kategorii — żadnych bliźniaczych kart */
+@media (min-width:56rem){
+  .kat--kartki .wrap{grid-template-columns:1.05fr .95fr;align-items:center}
+  .kat--kartki .kat__wyc{grid-column:1;grid-row:1 / span 2;max-width:30rem}
+  .kat--kartki .kat__txt{grid-column:2;grid-row:1}
+  .kat--kartki .okno{grid-column:2;grid-row:2;max-width:19rem;justify-self:start}
+
+  .kat--zapro .wrap{grid-template-columns:.8fr 1.2fr;align-items:center}
+  .kat--zapro .okno{grid-column:1;grid-row:1 / span 2}
+  .kat--zapro .kat__txt{grid-column:2;grid-row:1}
+  .kat--zapro .kat__wyc{grid-column:2;grid-row:2;max-width:24rem;justify-self:end;margin:0}
+
+  .kat--wianki .wrap{grid-template-columns:repeat(3,1fr);align-items:start}
+  .kat--wianki .kat__wyc{grid-column:2;grid-row:1;max-width:28rem}
+  .kat--wianki .kat__txt{grid-column:1;grid-row:1;align-self:center}
+  .kat--wianki .okno--a{grid-column:3;grid-row:1}
+  .kat--wianki .okno--b{grid-column:1 / span 2;grid-row:2;max-width:34rem}
+
+  .kat--pudelka .wrap{grid-template-columns:1.15fr .85fr;align-items:center}
+  .kat--pudelka .kat__txt{grid-column:1;grid-row:1}
+  .kat--pudelka .kat__wyc{grid-column:2;grid-row:1 / span 2;max-width:27rem}
+  .kat--pudelka .okno{grid-column:1;grid-row:2;max-width:30rem}
+}
+
+/* ═══ ŚCIANKA — jedyna sekcja panoramiczna ═════════════════════ */
+.scianka{padding-block:clamp(3rem,7vw,5.5rem);overflow:hidden}
+.scianka__luk{width:100%;max-width:none;margin-bottom:clamp(1.6rem,4vw,2.6rem)}
+.scianka__luk .wyc{width:calc(100% + 2 * var(--wypad));margin-inline:calc(-1 * var(--wypad))}
+.scianka h2{font-size:clamp(1.9rem,1.25rem + 3.3vw,3.3rem);margin-bottom:.5em}
+.scianka__row{display:grid;gap:clamp(1.6rem,4vw,2.8rem)}
+.scianka__znak{
+  display:inline-block;
+  font:700 clamp(.92rem,.86rem + .35vw,1.06rem)/1 Rubik,sans-serif;
+  letter-spacing:.1em;text-transform:uppercase;
+  background:var(--czern);color:var(--biel);
+  padding:.8rem 1.05rem;margin-top:.4rem;
+}
+@media (min-width:56rem){
+  .scianka__row{grid-template-columns:1fr 1fr;align-items:start}
+  .scianka .okno--pan{grid-column:1 / -1;margin-top:clamp(1.4rem,3vw,2.4rem)}
+}
+
+/* ═══ PROCES ═══════════════════════════════════════════════════ */
+.proces h2{font-size:clamp(2rem,1.35rem + 3.4vw,3.5rem);margin-bottom:1.2em}
+.kroki{list-style:none;padding:0;margin:0;display:grid;gap:clamp(2.2rem,5vw,3rem)}
+.krok{display:grid;grid-template-columns:auto 1fr;gap:clamp(1rem,3vw,1.6rem);align-items:center}
+.krok svg{display:block;width:clamp(74px,17vw,108px);height:auto}
+.krok p{margin:0;font-size:clamp(1.06rem,.98rem + .5vw,1.3rem);line-height:1.42;font-weight:500;max-width:22ch}
+.cyfra{font-family:'Yeseva One',Georgia,serif;font-size:62px}
+@media (min-width:56rem){
+  .kroki{grid-template-columns:repeat(3,1fr);gap:clamp(2rem,4vw,3.2rem);align-items:start}
+  .krok{grid-template-columns:1fr;text-align:left;gap:1.2rem}
+  .krok--2{margin-top:clamp(1.5rem,4vw,3rem)}
+  .krok--3{margin-top:clamp(3rem,8vw,6rem)}
+}
+
+/* ═══ KONTAKT — jedyny biały arkusz ════════════════════════════ */
+.kontakt{overflow:hidden}
+.zagiecia{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.kontakt .wrap{position:relative}
+.kontakt h2{font-size:clamp(2.1rem,1.4rem + 3.8vw,3.9rem);margin-bottom:.5em}
+.kontakt__lead{font-size:clamp(1.05rem,.98rem + .5vw,1.25rem);max-width:34ch}
+.kontakt__glowa{display:grid;gap:clamp(1.6rem,4vw,2.6rem);align-items:center}
+.kontakt__forma{width:min(15rem,52vw);margin:0 auto}
+@media (min-width:56rem){
+  .kontakt__glowa{grid-template-columns:1.3fr .7fr}
+  .kontakt__forma{width:100%;max-width:17rem;margin:0}
+}
+
+.pola{display:grid;gap:clamp(1.4rem,3.5vw,2.2rem);margin-top:clamp(2.6rem,6vw,4rem)}
+/* płyta jest tłem pola, nie elementem siatki — inaczej krótka płyta
+   nie przykrywa dłuższego napisu i biały tekst ląduje na białym arkuszu */
+.pole{
+  position:relative;display:flex;align-items:center;justify-content:center;
+  min-height:clamp(9rem,26vw,11rem);
+  text-decoration:none;color:var(--czern);
+  transition:transform .55s var(--ease);
+}
+.pole>svg{
+  position:absolute;inset:0;width:100%;height:100%;display:block;
+  filter:drop-shadow(3px 4px 0 rgba(0,0,0,.3));transition:filter .55s var(--ease);
+}
+.pole>.tresc{position:relative;z-index:1;text-align:center;padding:1.5rem 1.2rem;max-width:92%}
+.pole .co{
+  display:block;font:700 .8rem/1 Rubik,sans-serif;letter-spacing:.13em;text-transform:uppercase;
+  margin-bottom:.65rem;
+}
+.pole .val{
+  display:block;font-family:'Yeseva One',Georgia,serif;
+  font-size:clamp(1.25rem,1rem + 1.5vw,1.85rem);line-height:1.12;overflow-wrap:anywhere;
+}
+.pole .nota{display:block;margin-top:.6rem;font:500 .78rem/1.35 Rubik,sans-serif;letter-spacing:.03em}
+.pole--tel   .tresc{color:var(--biel)}
+.pole--mes   .tresc{color:var(--biel)}
+.pole--ig    .tresc{color:var(--biel)}
+a.pole:hover{transform:translateY(-5px)}
+a.pole:hover>svg{filter:drop-shadow(6px 9px 0 rgba(0,0,0,.34))}
+@media (prefers-reduced-motion: reduce){ a.pole,a.pole:hover{transform:none} }
+
+/* trzy różne wykroje, nie rząd jednakowych przycisków —
+   inna szerokość, inne wcięcie i inne przekrzywienie na każdym polu */
+.pole--tel{transform:rotate(-1deg);width:100%;justify-self:start}
+.pole--mes{transform:rotate(1.4deg);width:88%;justify-self:end;min-height:clamp(10rem,30vw,12rem)}
+.pole--ig{transform:rotate(-.8deg);width:72%;justify-self:start;min-height:clamp(11rem,34vw,13rem)}
+a.pole--mes:hover{transform:rotate(1.4deg) translateY(-5px)}
+a.pole--ig:hover{transform:rotate(-.8deg) translateY(-5px)}
+@media (min-width:44rem){
+  .pola{grid-template-columns:repeat(2,1fr);align-items:center}
+  .pole--tel{grid-column:1 / -1;width:100%;max-width:38rem;justify-self:start}
+  .pole--mes{width:100%;max-width:22rem;justify-self:end}
+  .pole--ig{width:100%;max-width:18rem;justify-self:center}
+}
+
+.kontakt__miejsce{
+  margin:clamp(2.4rem,5vw,3.4rem) 0 0;
+  font:700 .88rem/1.5 Rubik,sans-serif;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--czern);
+}
+
+/* ═══ OKNA NA ZDJĘCIA — wycięte w papierze ═════════════════════ */
+/* align-items:center jest konieczne — domyślny stretch rozciąga <svg>
+   i niszczy proporcję okna, przez co realne zdjęcie by nie pasowało */
+.okno{position:relative;margin:0;display:grid;align-items:center;width:100%}
+.okno>svg{grid-area:1/1;width:100%;height:auto;display:block;filter:drop-shadow(var(--ciecie))}
+.okno>figcaption{
+  grid-area:1/1;position:relative;z-index:1;align-self:center;justify-self:center;
+  width:78%;text-align:center;color:var(--czern);
+  font:700 clamp(.64rem,.58rem + .38vw,.8rem)/1.5 Rubik,sans-serif;
+  letter-spacing:.055em;text-transform:uppercase;
+}
+.okno>figcaption b{display:block;font-weight:700;padding-top:.6rem;margin-top:.6rem;border-top:3px solid var(--czern)}
+
+/* ═══ STOPKA ═══════════════════════════════════════════════════ */
+.stopka{background:var(--czern);color:var(--biel);padding-block:clamp(2.6rem,6vw,4rem);--focus:var(--slonecznik)}
+.stopka .wrap{display:flex;flex-wrap:wrap;gap:1rem 2rem;align-items:baseline;justify-content:space-between}
+.stopka .nazwa{font-family:'Yeseva One',Georgia,serif;font-size:clamp(1.3rem,1.1rem + .9vw,1.8rem)}
+.stopka a{
+  font:700 .9rem/1 Rubik,sans-serif;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--slonecznik);text-decoration:none;border-bottom:3px solid var(--slonecznik);padding-bottom:.3rem;
+}
+.stopka a:hover{color:var(--biel);border-color:var(--biel)}
+.stopka .adres{font:500 .9rem/1.5 Rubik,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--slonecznik);font-style:normal}
+</style>
+</head>
+<body>
+<!--
+THESIS: Wycinanka łowicka. Papier cięty nożycami, warstwa na warstwie, w kolorach które nie proszą o pozwolenie. Strona odmawia kremowego tła z eleganckim szeryfem — domyślnej sukienki każdego rękodzieła w sieci — i wraca do tego, czym polskie cięcie w papierze naprawdę jest: płasko, symetrycznie, głośno.
+OWN-WORLD: Płaskie warstwy nasyconego papieru bez gradientów i bez półcieni: fuksja, cynober, kobalt, szmaragd, słonecznik, na czerni i bieli. Formy: symetria osiowa, koguty i drzewa życia przełożone na kwiaty i wstążki, ząbkowane krawędzie cięcia, warstwy z widocznym cieniem odklejenia.
+STORY: Odwiedzająca widzi rzemiosło z konkretnego miejsca, nie generyczne „boho z Pinteresta"; wierzy że dostanie rzecz z charakterem, nie kopię; pisze podając okazję.
+FIRST VIEWPORT: Wielka symetryczna wycinanka wypełniająca ekran, złożona z warstw czystego koloru, z H1 wyciętym w środkowej osi jako kontra (litery to dziury w papierze, przez które widać warstwę pod spodem). Główne działanie wycięte w dolnej części osi.
+FORM: wycinanka łowicka, kandydat 2 z uporządkowanej listy, seed f9edb119.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+-->
+
+<a class="pomin" href="#kontakt">Przejdź do kontaktu</a>
+
+<!-- ══ WSPÓLNE FORMY CIĘTE ══════════════════════════════════════ -->
+<svg class="defs" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><defs>
+
+  <!-- kwiat: sześć płatków + rdzeń -->
+  <g id="kwiat">
+    <g fill="currentColor">
+      <circle cy="-11" r="7.5"/><circle cx="9.5" cy="-5.5" r="7.5"/><circle cx="9.5" cy="5.5" r="7.5"/>
+      <circle cy="11" r="7.5"/><circle cx="-9.5" cy="5.5" r="7.5"/><circle cx="-9.5" cy="-5.5" r="7.5"/>
+    </g>
+    <circle r="6.4" fill="var(--rdz,#faf6ef)"/>
+  </g>
+
+  <!-- liść gładki -->
+  <path id="lisc" fill="currentColor" d="M0,0 C11,-10 25,-10 36,0 C25,10 11,10 0,0 Z"/>
+
+  <!-- liść ząbkowany (krawędź cięcia nożycami) -->
+  <path id="liscZab" fill="currentColor" d="M0,0 L5,-5 L8,-1 L13,-8 L16,-3 L21,-9 L24,-4 L29,-7 L30,-2 L36,0 L30,2 L29,7 L24,4 L21,9 L16,3 L13,8 L8,1 L5,5 Z"/>
+
+  <!-- medal procesu: połówka gwiazdy 8-kolcowej -->
+  <path id="medalHalf" d="M0,-58 L8.6,-43.2 L22.2,-53.6 L24.4,-36.6 L41,-41 L36.6,-24.4 L53.6,-22.2 L43.2,-8.6 L58,-0 L43.2,8.6 L53.6,22.2 L36.6,24.4 L41,41 L24.4,36.6 L22.2,53.6 L8.6,43.2 L0,58 Z"/>
+
+  <!-- płyta ząbkowana pod H1 (400×210) -->
+  <path id="zigH1" d="M0,0 L13.3,5.9 L26.7,0 L40,5.9 L53.3,0 L66.7,5.9 L80,0 L93.3,5.9 L106.7,0 L120,5.9 L133.3,0 L146.7,5.9 L160,0 L173.3,5.9 L186.7,0 L200,5.9 L213.3,0 L226.7,5.9 L240,0 L253.3,5.9 L266.7,0 L280,5.9 L293.3,0 L306.7,5.9 L320,0 L333.3,5.9 L346.7,0 L360,5.9 L373.3,0 L386.7,5.9 L400,0 L394.1,13.1 L400,26.2 L394.1,39.4 L400,52.5 L394.1,65.6 L400,78.8 L394.1,91.9 L400,105 L394.1,118.1 L400,131.2 L394.1,144.4 L400,157.5 L394.1,170.6 L400,183.8 L394.1,196.9 L400,210 L386.7,204.1 L373.3,210 L360,204.1 L346.7,210 L333.3,204.1 L320,210 L306.7,204.1 L293.3,210 L280,204.1 L266.7,210 L253.3,204.1 L240,210 L226.7,204.1 L213.3,210 L200,204.1 L186.7,210 L173.3,204.1 L160,210 L146.7,204.1 L133.3,210 L120,204.1 L106.7,210 L93.3,204.1 L80,210 L66.7,204.1 L53.3,210 L40,204.1 L26.7,210 L13.3,204.1 L0,210 L5.9,196.9 L0,183.8 L5.9,170.6 L0,157.5 L5.9,144.4 L0,131.2 L5.9,118.1 L0,105 L5.9,91.9 L0,78.8 L5.9,65.6 L0,52.5 L5.9,39.4 L0,26.2 L5.9,13.1 Z"/>
+
+  <!-- płyta ząbkowana pod CTA (360×96) -->
+  <path id="zigCta" d="M0,0 L12,5 L24,0 L36,5 L48,0 L60,5 L72,0 L84,5 L96,0 L108,5 L120,0 L132,5 L144,0 L156,5 L168,0 L180,5 L192,0 L204,5 L216,0 L228,5 L240,0 L252,5 L264,0 L276,5 L288,0 L300,5 L312,0 L324,5 L336,0 L348,5 L360,0 L355,12 L360,24 L355,36 L360,48 L355,60 L360,72 L355,84 L360,96 L348,91 L336,96 L324,91 L312,96 L300,91 L288,96 L276,91 L264,96 L252,91 L240,96 L228,91 L216,96 L204,91 L192,96 L180,91 L168,96 L156,91 L144,96 L132,91 L120,96 L108,91 L96,96 L84,91 L72,96 L60,91 L48,96 L36,91 L24,96 L12,91 L0,96 L5,84 L0,72 L5,60 L0,48 L5,36 L0,24 L5,12 Z"/>
+
+  <!-- okno na zdjęcie: pion 4:5 (400×500) -->
+  <path id="zig45" d="M0,0 L18.2,7.6 L36.4,0 L54.5,7.6 L72.7,0 L90.9,7.6 L109.1,0 L127.3,7.6 L145.5,0 L163.6,7.6 L181.8,0 L200,7.6 L218.2,0 L236.4,7.6 L254.5,0 L272.7,7.6 L290.9,0 L309.1,7.6 L327.3,0 L345.5,7.6 L363.6,0 L381.8,7.6 L400,0 L392.4,17.9 L400,35.7 L392.4,53.6 L400,71.4 L392.4,89.3 L400,107.1 L392.4,125 L400,142.9 L392.4,160.7 L400,178.6 L392.4,196.4 L400,214.3 L392.4,232.1 L400,250 L392.4,267.9 L400,285.7 L392.4,303.6 L400,321.4 L392.4,339.3 L400,357.1 L392.4,375 L400,392.9 L392.4,410.7 L400,428.6 L392.4,446.4 L400,464.3 L392.4,482.1 L400,500 L381.8,492.4 L363.6,500 L345.5,492.4 L327.3,500 L309.1,492.4 L290.9,500 L272.7,492.4 L254.5,500 L236.4,492.4 L218.2,500 L200,492.4 L181.8,500 L163.6,492.4 L145.5,500 L127.3,492.4 L109.1,500 L90.9,492.4 L72.7,500 L54.5,492.4 L36.4,500 L18.2,492.4 L0,500 L7.6,482.1 L0,464.3 L7.6,446.4 L0,428.6 L7.6,410.7 L0,392.9 L7.6,375 L0,357.1 L7.6,339.3 L0,321.4 L7.6,303.6 L0,285.7 L7.6,267.9 L0,250 L7.6,232.1 L0,214.3 L7.6,196.4 L0,178.6 L7.6,160.7 L0,142.9 L7.6,125 L0,107.1 L7.6,89.3 L0,71.4 L7.6,53.6 L0,35.7 L7.6,17.9 Z"/>
+
+  <!-- okno na zdjęcie: poziom 3:2 (600×400) -->
+  <path id="zig32" d="M0,0 L17.6,7.6 L35.3,0 L52.9,7.6 L70.6,0 L88.2,7.6 L105.9,0 L123.5,7.6 L141.2,0 L158.8,7.6 L176.5,0 L194.1,7.6 L211.8,0 L229.4,7.6 L247.1,0 L264.7,7.6 L282.4,0 L300,7.6 L317.6,0 L335.3,7.6 L352.9,0 L370.6,7.6 L388.2,0 L405.9,7.6 L423.5,0 L441.2,7.6 L458.8,0 L476.5,7.6 L494.1,0 L511.8,7.6 L529.4,0 L547.1,7.6 L564.7,0 L582.4,7.6 L600,0 L592.4,18.2 L600,36.4 L592.4,54.5 L600,72.7 L592.4,90.9 L600,109.1 L592.4,127.3 L600,145.5 L592.4,163.6 L600,181.8 L592.4,200 L600,218.2 L592.4,236.4 L600,254.5 L592.4,272.7 L600,290.9 L592.4,309.1 L600,327.3 L592.4,345.5 L600,363.6 L592.4,381.8 L600,400 L582.4,392.4 L564.7,400 L547.1,392.4 L529.4,400 L511.8,392.4 L494.1,400 L476.5,392.4 L458.8,400 L441.2,392.4 L423.5,400 L405.9,392.4 L388.2,400 L370.6,392.4 L352.9,400 L335.3,392.4 L317.6,400 L300,392.4 L282.4,400 L264.7,392.4 L247.1,400 L229.4,392.4 L211.8,400 L194.1,392.4 L176.5,400 L158.8,392.4 L141.2,400 L123.5,392.4 L105.9,400 L88.2,392.4 L70.6,400 L52.9,392.4 L35.3,400 L17.6,392.4 L0,400 L7.6,381.8 L0,363.6 L7.6,345.5 L0,327.3 L7.6,309.1 L0,290.9 L7.6,272.7 L0,254.5 L7.6,236.4 L0,218.2 L7.6,200 L0,181.8 L7.6,163.6 L0,145.5 L7.6,127.3 L0,109.1 L7.6,90.9 L0,72.7 L7.6,54.5 L0,36.4 L7.6,18.2 Z"/>
+
+  <!-- okno na zdjęcie: panorama 3:1 (900×300) -->
+  <path id="zigPan" d="M0,0 L18,7.6 L36,0 L54,7.6 L72,0 L90,7.6 L108,0 L126,7.6 L144,0 L162,7.6 L180,0 L198,7.6 L216,0 L234,7.6 L252,0 L270,7.6 L288,0 L306,7.6 L324,0 L342,7.6 L360,0 L378,7.6 L396,0 L414,7.6 L432,0 L450,7.6 L468,0 L486,7.6 L504,0 L522,7.6 L540,0 L558,7.6 L576,0 L594,7.6 L612,0 L630,7.6 L648,0 L666,7.6 L684,0 L702,7.6 L720,0 L738,7.6 L756,0 L774,7.6 L792,0 L810,7.6 L828,0 L846,7.6 L864,0 L882,7.6 L900,0 L892.4,16.7 L900,33.3 L892.4,50 L900,66.7 L892.4,83.3 L900,100 L892.4,116.7 L900,133.3 L892.4,150 L900,166.7 L892.4,183.3 L900,200 L892.4,216.7 L900,233.3 L892.4,250 L900,266.7 L892.4,283.3 L900,300 L882,292.4 L864,300 L846,292.4 L828,300 L810,292.4 L792,300 L774,292.4 L756,300 L738,292.4 L720,300 L702,292.4 L684,300 L666,292.4 L648,300 L630,292.4 L612,300 L594,292.4 L576,300 L558,292.4 L540,300 L522,292.4 L504,300 L486,292.4 L468,300 L450,292.4 L432,300 L414,292.4 L396,300 L378,292.4 L360,300 L342,292.4 L324,300 L306,292.4 L288,300 L270,292.4 L252,300 L234,292.4 L216,300 L198,292.4 L180,300 L162,292.4 L144,300 L126,292.4 L108,300 L90,292.4 L72,300 L54,292.4 L36,300 L18,292.4 L0,300 L7.6,283.3 L0,266.7 L7.6,250 L0,233.3 L7.6,216.7 L0,200 L7.6,183.3 L0,166.7 L7.6,150 L0,133.3 L7.6,116.7 L0,100 L7.6,83.3 L0,66.7 L7.6,50 L0,33.3 L7.6,16.7 Z"/>
+
+  <!-- pola kontaktu: trzy różne wykroje -->
+  <path id="zigKa" d="M0,0 L13.7,5.9 L27.4,0 L41.1,5.9 L54.7,0 L68.4,5.9 L82.1,0 L95.8,5.9 L109.5,0 L123.2,5.9 L136.8,0 L150.5,5.9 L164.2,0 L177.9,5.9 L191.6,0 L205.3,5.9 L218.9,0 L232.6,5.9 L246.3,0 L260,5.9 L273.7,0 L287.4,5.9 L301.1,0 L314.7,5.9 L328.4,0 L342.1,5.9 L355.8,0 L369.5,5.9 L383.2,0 L396.8,5.9 L410.5,0 L424.2,5.9 L437.9,0 L451.6,5.9 L465.3,0 L478.9,5.9 L492.6,0 L506.3,5.9 L520,0 L514.1,13.3 L520,26.7 L514.1,40 L520,53.3 L514.1,66.7 L520,80 L514.1,93.3 L520,106.7 L514.1,120 L520,133.3 L514.1,146.7 L520,160 L506.3,154.1 L492.6,160 L478.9,154.1 L465.3,160 L451.6,154.1 L437.9,160 L424.2,154.1 L410.5,160 L396.8,154.1 L383.2,160 L369.5,154.1 L355.8,160 L342.1,154.1 L328.4,160 L314.7,154.1 L301.1,160 L287.4,154.1 L273.7,160 L260,154.1 L246.3,160 L232.6,154.1 L218.9,160 L205.3,154.1 L191.6,160 L177.9,154.1 L164.2,160 L150.5,154.1 L136.8,160 L123.2,154.1 L109.5,160 L95.8,154.1 L82.1,160 L68.4,154.1 L54.7,160 L41.1,154.1 L27.4,160 L13.7,154.1 L0,160 L5.9,146.7 L0,133.3 L5.9,120 L0,106.7 L5.9,93.3 L0,80 L5.9,66.7 L0,53.3 L5.9,40 L0,26.7 L5.9,13.3 Z"/>
+  <path id="zigKb" d="M0,0 L13.3,5.9 L26.7,0 L40,5.9 L53.3,0 L66.7,5.9 L80,0 L93.3,5.9 L106.7,0 L120,5.9 L133.3,0 L146.7,5.9 L160,0 L173.3,5.9 L186.7,0 L200,5.9 L213.3,0 L226.7,5.9 L240,0 L253.3,5.9 L266.7,0 L280,5.9 L293.3,0 L306.7,5.9 L320,0 L314.1,13.8 L320,27.5 L314.1,41.2 L320,55 L314.1,68.8 L320,82.5 L314.1,96.2 L320,110 L314.1,123.8 L320,137.5 L314.1,151.2 L320,165 L314.1,178.8 L320,192.5 L314.1,206.2 L320,220 L306.7,214.1 L293.3,220 L280,214.1 L266.7,220 L253.3,214.1 L240,220 L226.7,214.1 L213.3,220 L200,214.1 L186.7,220 L173.3,214.1 L160,220 L146.7,214.1 L133.3,220 L120,214.1 L106.7,220 L93.3,214.1 L80,220 L66.7,214.1 L53.3,220 L40,214.1 L26.7,220 L13.3,214.1 L0,220 L5.9,206.2 L0,192.5 L5.9,178.8 L0,165 L5.9,151.2 L0,137.5 L5.9,123.8 L0,110 L5.9,96.2 L0,82.5 L5.9,68.8 L0,55 L5.9,41.2 L0,27.5 L5.9,13.8 Z"/>
+  <path id="zigKc" d="M0,0 L13,5.9 L26,0 L39,5.9 L52,0 L65,5.9 L78,0 L91,5.9 L104,0 L117,5.9 L130,0 L143,5.9 L156,0 L169,5.9 L182,0 L195,5.9 L208,0 L221,5.9 L234,0 L247,5.9 L260,0 L254.1,13 L260,26 L254.1,39 L260,52 L254.1,65 L260,78 L254.1,91 L260,104 L254.1,117 L260,130 L254.1,143 L260,156 L254.1,169 L260,182 L254.1,195 L260,208 L254.1,221 L260,234 L254.1,247 L260,260 L247,254.1 L234,260 L221,254.1 L208,260 L195,254.1 L182,260 L169,254.1 L156,260 L143,254.1 L130,260 L117,254.1 L104,260 L91,254.1 L78,260 L65,254.1 L52,260 L39,254.1 L26,260 L13,254.1 L0,260 L5.9,247 L0,234 L5.9,221 L0,208 L5.9,195 L0,182 L5.9,169 L0,156 L5.9,143 L0,130 L5.9,117 L0,104 L5.9,91 L0,78 L5.9,65 L0,52 L5.9,39 L0,26 L5.9,13 Z"/>
+
+  <!-- kwadrat ząbkowany 240×240 (pod rozetę) -->
+  <path id="zigSq" d="M0,0 L15,6.7 L30,0 L45,6.7 L60,0 L75,6.7 L90,0 L105,6.7 L120,0 L135,6.7 L150,0 L165,6.7 L180,0 L195,6.7 L210,0 L225,6.7 L240,0 L233.3,15 L240,30 L233.3,45 L240,60 L233.3,75 L240,90 L233.3,105 L240,120 L233.3,135 L240,150 L233.3,165 L240,180 L233.3,195 L240,210 L233.3,225 L240,240 L225,233.3 L210,240 L195,233.3 L180,240 L165,233.3 L150,240 L135,233.3 L120,240 L105,233.3 L90,240 L75,233.3 L60,240 L45,233.3 L30,240 L15,233.3 L0,240 L6.7,225 L0,210 L6.7,195 L0,180 L6.7,165 L0,150 L6.7,135 L0,120 L6.7,105 L0,90 L6.7,75 L0,60 L6.7,45 L0,30 L6.7,15 Z"/>
+
+  <!-- listwa ząbkowana 560×26 (podłoga pod ścianką) -->
+  <path id="zigStrip" d="M0,0 L14,5.9 L28,0 L42,5.9 L56,0 L70,5.9 L84,0 L98,5.9 L112,0 L126,5.9 L140,0 L154,5.9 L168,0 L182,5.9 L196,0 L210,5.9 L224,0 L238,5.9 L252,0 L266,5.9 L280,0 L294,5.9 L308,0 L322,5.9 L336,0 L350,5.9 L364,0 L378,5.9 L392,0 L406,5.9 L420,0 L434,5.9 L448,0 L462,5.9 L476,0 L490,5.9 L504,0 L518,5.9 L532,0 L546,5.9 L560,0 L554.1,13 L560,26 L546,20.1 L532,26 L518,20.1 L504,26 L490,20.1 L476,26 L462,20.1 L448,26 L434,20.1 L420,26 L406,20.1 L392,26 L378,20.1 L364,26 L350,20.1 L336,26 L322,20.1 L308,26 L294,20.1 L280,26 L266,20.1 L252,26 L238,20.1 L224,26 L210,20.1 L196,26 L182,20.1 L168,26 L154,20.1 L140,26 L126,20.1 L112,26 L98,20.1 L84,26 L70,20.1 L56,26 L42,20.1 L28,26 L14,20.1 L0,26 L5.9,13 Z"/>
+
+</defs></svg>
+
+<!-- ══ HERO ═════════════════════════════════════════════════════ -->
+<header class="hero trig">
+
+  <svg class="wyc hero__art" aria-hidden="true" focusable="false" viewBox="-200 -200 400 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <!-- warstwa 1: spodni krąg kobaltowy -->
+    <g class="w w1" style="color:#1e51a8">
+      <g id="hA"><path fill="currentColor" d="M0,-188 L12.6,-159.5 L29.4,-185.7 L37.4,-155.6 L58.1,-178.8 L61.2,-147.8 L85.4,-167.5 L83.6,-136.4 L110.5,-152.1 L103.9,-121.7 L132.9,-132.9 L121.7,-103.9 L152.1,-110.5 L136.4,-83.6 L167.5,-85.4 L147.8,-61.2 L178.8,-58.1 L155.6,-37.4 L185.7,-29.4 L159.5,-12.6 L188,-0 L159.5,12.6 L185.7,29.4 L155.6,37.4 L178.8,58.1 L147.8,61.2 L167.5,85.4 L136.4,83.6 L152.1,110.5 L121.7,103.9 L132.9,132.9 L103.9,121.7 L110.5,152.1 L83.6,136.4 L85.4,167.5 L61.2,147.8 L58.1,178.8 L37.4,155.6 L29.4,185.7 L12.6,159.5 L0,188 Z"/></g>
+      <use href="#hA" transform="scale(-1,1)"/>
+    </g>
+    <!-- warstwa 2: promienie z liści słonecznikowych -->
+    <g class="w w2" style="color:#f9a825">
+      <g id="hB">
+        <use href="#liscZab" transform="translate(0,-176) rotate(-90) scale(1.5)"/>
+        <use href="#liscZab" transform="translate(63,-152) rotate(-70) scale(1.5)"/>
+        <use href="#liscZab" transform="translate(117,-117) rotate(-45) scale(1.5)"/>
+        <use href="#liscZab" transform="translate(152,-63) rotate(-20) scale(1.5)"/>
+        <use href="#liscZab" transform="translate(164,0) rotate(0) scale(1.5)"/>
+        <use href="#liscZab" transform="translate(152,63) rotate(20) scale(1.5)"/>
+        <use href="#liscZab" transform="translate(117,117) rotate(45) scale(1.5)"/>
+        <use href="#liscZab" transform="translate(63,152) rotate(70) scale(1.5)"/>
+      </g>
+      <use href="#hB" transform="scale(-1,1)"/>
+    </g>
+    <!-- warstwa 3: krąg szmaragdowy -->
+    <g class="w w3" style="color:#00796b">
+      <g id="hC"><path fill="currentColor" d="M0,-146 L14.8,-131.2 L32.5,-142.3 L43.6,-124.6 L63.3,-131.5 L70.2,-111.8 L91,-114.1 L93.3,-93.3 L114.1,-91 L111.8,-70.2 L131.5,-63.3 L124.6,-43.6 L142.3,-32.5 L131.2,-14.8 L146,-0 L131.2,14.8 L142.3,32.5 L124.6,43.6 L131.5,63.3 L111.8,70.2 L114.1,91 L93.3,93.3 L91,114.1 L70.2,111.8 L63.3,131.5 L43.6,124.6 L32.5,142.3 L14.8,131.2 L0,146 Z"/></g>
+      <use href="#hC" transform="scale(-1,1)"/>
+    </g>
+    <!-- warstwa 4: krąg fuksjowy + wieniec kwiatów -->
+    <g class="w w4">
+      <g id="hD">
+        <path fill="#d81b60" d="M0,-96 L13.1,-83 L29.7,-91.3 L38.1,-74.8 L56.4,-77.7 L59.4,-59.4 L77.7,-56.4 L74.8,-38.1 L91.3,-29.7 L83,-13.1 L96,-0 L83,13.1 L91.3,29.7 L74.8,38.1 L77.7,56.4 L59.4,59.4 L56.4,77.7 L38.1,74.8 L29.7,91.3 L13.1,83 L0,96 Z"/>
+        <use href="#kwiat" transform="translate(46,-110) scale(1.15)" style="color:#e64a19;--rdz:#faf6ef"/>
+        <use href="#kwiat" transform="translate(104,-63) scale(.95)" style="color:#faf6ef;--rdz:#d81b60"/>
+        <use href="#kwiat" transform="translate(119,4) scale(1.15)" style="color:#e64a19;--rdz:#faf6ef"/>
+        <use href="#kwiat" transform="translate(96,72) scale(.95)" style="color:#faf6ef;--rdz:#1e51a8"/>
+        <use href="#kwiat" transform="translate(44,118) scale(1.15)" style="color:#e64a19;--rdz:#faf6ef"/>
+      </g>
+      <use href="#hD" transform="scale(-1,1)"/>
+      <use href="#kwiat" transform="translate(0,-124) scale(1.3)" style="color:#faf6ef;--rdz:#d81b60"/>
+      <use href="#kwiat" transform="translate(0,132) scale(1.3)" style="color:#faf6ef;--rdz:#00796b"/>
+    </g>
+  </svg>
+
+  <div class="hero__core">
+    <h1 class="znak">
+      <!-- litery to dziury w bieli — przez nie widać warstwę słonecznika -->
+      <svg viewBox="0 0 400 210" role="img" aria-label="MoKu Boho" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <mask id="mZnak" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="210">
+            <rect x="0" y="0" width="400" height="210" fill="#fff"/>
+            <text class="znak__t" x="200" y="96" text-anchor="middle" fill="#000">MoKu</text>
+            <text class="znak__t" x="200" y="188" text-anchor="middle" fill="#000">Boho</text>
+          </mask>
+        </defs>
+        <rect x="6" y="6" width="388" height="198" fill="#f9a825"/>
+        <use href="#zigH1" fill="#faf6ef" mask="url(#mZnak)"/>
+      </svg>
+    </h1>
+
+    <p class="hero__lead">Kartki, zaproszenia, wianki z suszonych kwiatów, zdobione pudełka i ścianki balonowe. Wycinam, sklejam i suszę ręcznie — jedna rzecz na jedną okazję.</p>
+
+    <a class="cta" href="#kontakt">
+      <svg viewBox="0 0 360 96" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><use href="#zigCta" fill="#f9a825"/></svg>
+      <span>Napisz z jaką okazją</span>
+    </a>
+
+    <a class="hero__ig" href="https://www.instagram.com/moku_boho/" target="_blank" rel="noopener">@moku_boho na Instagramie</a>
+  </div>
+</header>
+
+<main>
+
+<!-- ══ MANIFEST ═════════════════════════════════════════════════ -->
+<section class="s s--czern manifest" aria-labelledby="manifest-h">
+  <div class="wrap">
+    <div class="manifest__txt">
+      <h2 id="manifest-h">Nie ma katalogu.<br>Jest rozmowa.</h2>
+      <p>Każda rzecz powstaje osobno, dla jednej okazji i jednej osoby: to imię, ta data, te suszone kwiaty, ta wstążka. Piszesz, po co Ci to i na kiedy — a ja z tego składam jeden przedmiot.</p>
+      <p class="manifest__pod">Wycinane nożyczkami, warstwa po warstwie. Nic tu nie jest odbite z matrycy.</p>
+      <p class="manifest__podpis">Monika — MoKu Boho, Tczew</p>
+    </div>
+    <figure class="okno manifest__foto" style="--dno:#d81b60">
+      <svg viewBox="0 0 600 400" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+        <use href="#zig32" fill="var(--dno)"/>
+        <use href="#zig32" fill="#faf6ef" transform="translate(300 200) scale(.9) translate(-300 -200)"/>
+      </svg>
+      <figcaption>Zdjęcie<b>serce z suszonych kwiatów „W Dniu Ślubu” — poziom 3:2</b></figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ══ KARTKI ═══════════════════════════════════════════════════ -->
+<section class="s s--fuksja kat kat--kartki trig" id="kartki" aria-labelledby="kartki-h">
+  <div class="wrap">
+    <div class="kat__wyc">
+      <!-- drzewo życia z rozłożystymi kwiatami; w środku pole na napis -->
+      <svg class="wyc" viewBox="-120 -132 240 264" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+        <g class="w w1" style="color:#f9a825">
+          <g id="kA"><path fill="currentColor" d="M0,-104 L10.1,-89.4 L23.1,-101.4 L29.7,-84.9 L45.1,-93.7 L47.9,-76.2 L64.8,-81.3 L63.6,-63.6 L81.3,-64.8 L76.2,-47.9 L93.7,-45.1 L84.9,-29.7 L101.4,-23.1 L89.4,-10.1 L104,-0 L89.4,10.1 L101.4,23.1 L84.9,29.7 L93.7,45.1 L76.2,47.9 L81.3,64.8 L63.6,63.6 L64.8,81.3 L47.9,76.2 L45.1,93.7 L29.7,84.9 L23.1,101.4 L10.1,89.4 L0,104 Z"/></g>
+          <use href="#kA" transform="scale(-1,1)"/>
+        </g>
+        <g class="w w2" style="color:#faf6ef">
+          <g id="kB"><path fill="currentColor" d="M0,-84 L11.9,-75.1 L26,-79.9 L34.5,-67.7 L49.4,-68 L53.7,-53.7 L68,-49.4 L67.7,-34.5 L79.9,-26 L75.1,-11.9 L84,-0 L75.1,11.9 L79.9,26 L67.7,34.5 L68,49.4 L53.7,53.7 L49.4,68 L34.5,67.7 L26,79.9 L11.9,75.1 L0,84 Z"/></g>
+          <use href="#kB" transform="scale(-1,1)"/>
+        </g>
+        <g class="w w3" style="color:#1e51a8">
+          <g id="kC">
+            <path fill="currentColor" d="M0,92 L11,92 L12,26 C12,4 8,-12 5,-36 L0,-36 Z"/>
+            <g fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round">
+              <path d="M6,-6 C28,-12 44,-26 56,-46"/>
+              <path d="M8,-22 C22,-36 28,-52 30,-70"/>
+              <path d="M9,16 C34,10 54,0 70,-14"/>
+            </g>
+            <use href="#lisc" transform="translate(24,-14) rotate(-34) scale(.5)"/>
+            <use href="#lisc" transform="translate(40,-30) rotate(-46) scale(.42)"/>
+            <use href="#lisc" transform="translate(18,-32) rotate(-64) scale(.42)"/>
+            <use href="#lisc" transform="translate(30,8) rotate(-22) scale(.52)"/>
+            <use href="#lisc" transform="translate(52,-2) rotate(-32) scale(.44)"/>
+          </g>
+          <use href="#kC" transform="scale(-1,1)"/>
+        </g>
+        <g class="w w4">
+          <g id="kD">
+            <use href="#kwiat" transform="translate(56,-48) scale(1.1)" style="color:#e64a19;--rdz:#faf6ef"/>
+            <use href="#kwiat" transform="translate(30,-72) scale(.82)" style="color:#faf6ef;--rdz:#e64a19"/>
+            <use href="#kwiat" transform="translate(72,-16) scale(.95)" style="color:#e64a19;--rdz:#faf6ef"/>
+          </g>
+          <use href="#kD" transform="scale(-1,1)"/>
+          <use href="#kwiat" transform="translate(0,-88) scale(1.15)" style="color:#faf6ef;--rdz:#e64a19"/>
+          <!-- pole na napis, w środkowej osi -->
+          <path fill="#faf6ef" d="M-48,8 L48,8 L48,50 L-48,50 Z"/>
+          <g stroke="#141210" stroke-width="4" stroke-linecap="round">
+            <path d="M-36,24 L36,24"/><path d="M-26,38 L26,38"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+
+    <div class="kat__txt">
+      <h2 id="kartki-h">Kartki okolicznościowe</h2>
+      <p>Ślub, komunia, chrzest, urodziny, rocznica. Imię i data są częścią wycinanki, nie nadrukiem — składam je z papieru, warstwa na warstwie, pod tę jedną kopertę.</p>
+      <ul class="okazje">
+        <li>Ślub</li><li>Komunia</li><li>Chrzest</li><li>Urodziny</li><li>Rocznica</li>
+      </ul>
+    </div>
+
+    <figure class="okno" style="--dno:#141210">
+      <svg viewBox="0 0 400 500" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+        <use href="#zig45" fill="var(--dno)"/>
+        <use href="#zig45" fill="#faf6ef" transform="translate(200 250) scale(.9) translate(-200 -250)"/>
+      </svg>
+      <figcaption>Zdjęcie<b>kartka „Sto Lat” z koronkowymi skrzydłami — pion 4:5</b></figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ══ ZAPROSZENIA ══════════════════════════════════════════════ -->
+<section class="s s--kobalt kat kat--zapro trig" id="zaproszenia" aria-labelledby="zapro-h">
+  <div class="wrap">
+    <figure class="okno" style="--dno:#f9a825">
+      <svg viewBox="0 0 400 500" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+        <use href="#zig45" fill="var(--dno)"/>
+        <use href="#zig45" fill="#faf6ef" transform="translate(200 250) scale(.9) translate(-200 -250)"/>
+      </svg>
+      <figcaption>Zdjęcie<b>zaproszenie boho z aparatem i suszkami — pion 4:5</b></figcaption>
+    </figure>
+
+    <div class="kat__txt">
+      <h2 id="zapro-h">Zaproszenia</h2>
+      <p>Komplety na uroczystość — wszystkie w jednym charakterze, każde z osobna złożone ręcznie. Piszesz, na jaką okazję i ile sztuk, a resztę ustalamy po drodze.</p>
+    </div>
+
+    <div class="kat__wyc">
+      <!-- para lelui po obu stronach osi, między nimi koperta -->
+      <svg class="wyc" viewBox="-142 -132 284 264" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+        <g class="w w1" style="color:#faf6ef">
+          <g transform="scale(1.32,1.16)">
+            <g id="zA"><path fill="currentColor" d="M0,-100 L11.5,-87.2 L25.9,-96.6 L33.7,-81.3 L50,-86.6 L53.6,-69.8 L70.7,-70.7 L69.8,-53.6 L86.6,-50 L81.3,-33.7 L96.6,-25.9 L87.2,-11.5 L100,-0 L87.2,11.5 L96.6,25.9 L81.3,33.7 L86.6,50 L69.8,53.6 L70.7,70.7 L53.6,69.8 L50,86.6 L33.7,81.3 L25.9,96.6 L11.5,87.2 L0,100 Z"/></g>
+            <use href="#zA" transform="scale(-1,1)"/>
+          </g>
+        </g>
+        <g class="w w2" style="color:#d81b60">
+          <g id="zB"><g transform="translate(16,-6) scale(.78)">
+            <path fill="currentColor" d="M104,4 C104,-20 88,-36 64,-36 C46,-36 32,-26 27,-12 C22,-11 15,-15 10,-20 C12,-8 19,0 26,4 C29,26 46,40 68,40 C92,40 104,26 104,4 Z"/>
+            <path fill="currentColor" d="M98,-14 L138,-36 L130,-8 L142,16 L100,26 Z"/>
+          </g></g>
+          <use href="#zB" transform="scale(-1,1)"/>
+        </g>
+        <g class="w w3">
+          <g id="zC"><g transform="translate(16,-6) scale(.78)">
+            <path fill="#00796b" d="M52,-2 C68,-14 90,-10 100,2 C88,16 66,18 52,8 Z"/>
+            <circle cx="36" cy="-16" r="6" fill="#faf6ef"/>
+            <circle cx="35" cy="-16" r="2.8" fill="#141210"/>
+            <use href="#liscZab" transform="translate(112,-24) rotate(-24) scale(.8)" style="color:#f9a825"/>
+          </g></g>
+          <use href="#zC" transform="scale(-1,1)"/>
+          <!-- koperta na osi — czarny papier, żeby odcinała się od bieli spodu -->
+          <path fill="#141210" d="M-46,26 L46,26 L46,80 L-46,80 Z"/>
+        </g>
+        <g class="w w4">
+          <g id="zD"><path fill="#f9a825" d="M0,26 L46,26 L0,62 Z"/></g>
+          <use href="#zD" transform="scale(-1,1)"/>
+          <use href="#kwiat" transform="translate(0,62) scale(.9)" style="color:#e64a19;--rdz:#faf6ef"/>
+          <use href="#kwiat" transform="translate(0,-104) scale(1.05)" style="color:#f9a825;--rdz:#d81b60"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ══ WIANKI ═══════════════════════════════════════════════════ -->
+<section class="s s--slonecznik kat kat--wianki trig" id="wianki" aria-labelledby="wianki-h">
+  <div class="wrap">
+    <div class="kat__wyc">
+      <!-- pełny wieniec z ząbkowanych liści i kwiatów, warstwowy -->
+      <svg class="wyc" viewBox="-134 -134 268 268" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+        <g class="w w1" style="color:#141210">
+          <g id="wA"><path fill="currentColor" d="M0,-104 L8.6,-87.6 L20.3,-102 L25.5,-84.2 L39.8,-96.1 L41.5,-77.6 L57.8,-86.5 L55.8,-68 L73.5,-73.5 L68,-55.8 L86.5,-57.8 L77.6,-41.5 L96.1,-39.8 L84.2,-25.5 L102,-20.3 L87.6,-8.6 L104,-0 L87.6,8.6 L102,20.3 L84.2,25.5 L96.1,39.8 L77.6,41.5 L86.5,57.8 L68,55.8 L73.5,73.5 L55.8,68 L57.8,86.5 L41.5,77.6 L39.8,96.1 L25.5,84.2 L20.3,102 L8.6,87.6 L0,104 L0,58 L7.6,57.5 L15,56 L22.2,53.6 L29,50.2 L35.3,46 L41,41 L46,35.3 L50.2,29 L53.6,22.2 L56,15 L57.5,7.6 L58,-0 L57.5,-7.6 L56,-15 L53.6,-22.2 L50.2,-29 L46,-35.3 L41,-41 L35.3,-46 L29,-50.2 L22.2,-53.6 L15,-56 L7.6,-57.5 L0,-58 Z"/></g>
+          <use href="#wA" transform="scale(-1,1)"/>
+        </g>
+        <g class="w w2" style="color:#00796b">
+          <g id="wB"><path fill="currentColor" d="M0,-86 L5.6,-77.8 L12.2,-85.1 L16.6,-76.2 L24.2,-82.5 L27.3,-73.1 L35.7,-78.2 L37.4,-68.5 L46.5,-72.3 L46.7,-62.4 L56.3,-65 L55.2,-55.2 L65,-56.3 L62.4,-46.7 L72.3,-46.5 L68.5,-37.4 L78.2,-35.7 L73.1,-27.3 L82.5,-24.2 L76.2,-16.6 L85.1,-12.2 L77.8,-5.6 L86,-0 L77.8,5.6 L85.1,12.2 L76.2,16.6 L82.5,24.2 L73.1,27.3 L78.2,35.7 L68.5,37.4 L72.3,46.5 L62.4,46.7 L65,56.3 L55.2,55.2 L56.3,65 L46.7,62.4 L46.5,72.3 L37.4,68.5 L35.7,78.2 L27.3,73.1 L24.2,82.5 L16.6,76.2 L12.2,85.1 L5.6,77.8 L0,86 L0,64 L8.4,63.5 L16.6,61.8 L24.5,59.1 L32,55.4 L39,50.8 L45.3,45.3 L50.8,39 L55.4,32 L59.1,24.5 L61.8,16.6 L63.5,8.4 L64,-0 L63.5,-8.4 L61.8,-16.6 L59.1,-24.5 L55.4,-32 L50.8,-39 L45.3,-45.3 L39,-50.8 L32,-55.4 L24.5,-59.1 L16.6,-61.8 L8.4,-63.5 L0,-64 Z"/></g>
+          <use href="#wB" transform="scale(-1,1)"/>
+        </g>
+        <g class="w w3">
+          <g id="wC">
+            <use href="#liscZab" transform="translate(29.7,-91.3) rotate(-72) scale(.95)" style="color:#faf6ef"/>
+            <use href="#liscZab" transform="translate(73.5,-61.7) rotate(-40) scale(.95)" style="color:#1e51a8"/>
+            <use href="#liscZab" transform="translate(95.1,-13.4) rotate(-8) scale(.95)" style="color:#faf6ef"/>
+            <use href="#liscZab" transform="translate(95.1,13.4) rotate(8) scale(.95)" style="color:#1e51a8"/>
+            <use href="#liscZab" transform="translate(73.5,61.7) rotate(40) scale(.95)" style="color:#faf6ef"/>
+            <use href="#liscZab" transform="translate(29.7,91.3) rotate(72) scale(.95)" style="color:#1e51a8"/>
+          </g>
+          <use href="#wC" transform="scale(-1,1)"/>
+        </g>
+        <g class="w w4">
+          <g id="wD">
+            <use href="#kwiat" transform="translate(53.7,-79.6) scale(.9)" style="color:#d81b60;--rdz:#faf6ef"/>
+            <use href="#kwiat" transform="translate(87.7,-39) scale(.72)" style="color:#faf6ef;--rdz:#d81b60"/>
+            <use href="#kwiat" transform="translate(87.7,39) scale(.9)" style="color:#d81b60;--rdz:#faf6ef"/>
+            <use href="#kwiat" transform="translate(53.7,79.6) scale(.72)" style="color:#faf6ef;--rdz:#141210"/>
+          </g>
+          <use href="#wD" transform="scale(-1,1)"/>
+          <use href="#kwiat" transform="translate(0,-96) scale(1.25)" style="color:#d81b60;--rdz:#faf6ef"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="kat__txt">
+      <h2 id="wianki-h">Wianki dekoracyjne</h2>
+      <p>Z suszonych kwiatów — świąteczne, jesienne i takie, które wiszą przez cały rok. Kwiaty i kolory dobieramy pod to, gdzie wianek ma zawisnąć: drzwi, ściana, stół.</p>
+      <ul class="okazje">
+        <li>Świąteczne</li><li>Jesienne</li><li>Całoroczne</li>
+      </ul>
+    </div>
+
+    <figure class="okno okno--a" style="--dno:#1e51a8">
+      <svg viewBox="0 0 400 500" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+        <use href="#zig45" fill="var(--dno)"/>
+        <use href="#zig45" fill="#faf6ef" transform="translate(200 250) scale(.9) translate(-200 -250)"/>
+      </svg>
+      <figcaption>Zdjęcie<b>wianek jesienny „hello” na drewnianych drzwiach — pion 4:5</b></figcaption>
+    </figure>
+
+    <figure class="okno okno--b" style="--dno:#00796b">
+      <svg viewBox="0 0 600 400" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+        <use href="#zig32" fill="var(--dno)"/>
+        <use href="#zig32" fill="#faf6ef" transform="translate(300 200) scale(.9) translate(-300 -200)"/>
+      </svg>
+      <figcaption>Zdjęcie<b>wianek świąteczny z cynamonem i pomarańczą — poziom 3:2</b></figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ══ PUDEŁKA ══════════════════════════════════════════════════ -->
+<section class="s s--szmaragd kat kat--pudelka trig" id="pudelka" aria-labelledby="pudelka-h">
+  <div class="wrap">
+    <div class="kat__txt">
+      <h2 id="pudelka-h">Pudełka i opakowania</h2>
+      <p>Ręcznie zdobione pudełka prezentowe — żeby to, co w środku, było oddane w czymś, co też zrobiono na tę jedną okazję. Kokarda, kwiaty i imię ustalane tak samo jak przy kartce.</p>
+    </div>
+
+    <div class="kat__wyc">
+      <!-- kwadratowa rozeta z rozwiniętą wstążką -->
+      <svg class="wyc" viewBox="-136 -138 272 296" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+        <g class="w w1">
+          <use href="#zigSq" transform="translate(-120,-120)" fill="#faf6ef"/>
+          <g id="pA"><path fill="#d81b60" d="M8,60 C36,84 30,116 54,140 L28,133 L24,150 C-4,122 6,88 0,64 Z"/></g>
+          <use href="#pA" transform="scale(-1,1)"/>
+        </g>
+        <g class="w w2" style="color:#e64a19">
+          <g id="pB"><path fill="currentColor" d="M0,-100 L14.2,-43.7 L58.8,-80.9 L37.2,-27 L95.1,-30.9 L46,-0 L95.1,30.9 L37.2,27 L58.8,80.9 L14.2,43.7 L0,100 Z"/></g>
+          <use href="#pB" transform="scale(-1,1)"/>
+        </g>
+        <g class="w w3" style="color:#f9a825">
+          <g id="pC"><path fill="currentColor" d="M0,-70 L9.3,-28.5 L41.1,-56.6 L24.3,-17.6 L66.6,-21.6 L30,-0 L66.6,21.6 L24.3,17.6 L41.1,56.6 L9.3,28.5 L0,70 Z"/></g>
+          <use href="#pC" transform="scale(-1,1)"/>
+        </g>
+        <g class="w w4" style="color:#1e51a8">
+          <g id="pD"><path fill="currentColor" d="M0,-38 L4.2,-23.6 L13,-35.7 L12,-20.8 L24.4,-29.1 L18.4,-15.4 L32.9,-19 L22.6,-8.2 L37.4,-6.6 L24,-0 L37.4,6.6 L22.6,8.2 L32.9,19 L18.4,15.4 L24.4,29.1 L12,20.8 L13,35.7 L4.2,23.6 L0,38 Z"/></g>
+          <use href="#pD" transform="scale(-1,1)"/>
+          <use href="#kwiat" transform="translate(0,0) scale(1.1)" style="color:#faf6ef;--rdz:#d81b60"/>
+        </g>
+      </svg>
+    </div>
+
+    <figure class="okno" style="--dno:#f9a825">
+      <svg viewBox="0 0 600 400" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+        <use href="#zig32" fill="var(--dno)"/>
+        <use href="#zig32" fill="#faf6ef" transform="translate(300 200) scale(.9) translate(-300 -200)"/>
+      </svg>
+      <figcaption>Zdjęcie<b>pudełko komunijne z brązową kokardą — poziom 3:2</b></figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ══ ŚCIANKA BALONOWA — jedyna sekcja panoramiczna ═════════════ -->
+<section class="s s--cynober scianka trig" id="scianka" aria-labelledby="scianka-h">
+  <div class="wrap">
+    <div class="scianka__luk">
+      <!-- łuk balonów jako gałąź z okrągłymi owocami -->
+      <svg class="wyc" viewBox="-300 -172 600 322" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+        <g class="w w1" style="color:#141210">
+          <g id="sA">
+            <path fill="none" stroke="currentColor" stroke-width="22" stroke-linecap="round" d="M0,-110 L23.2,-109 L46.3,-105.9 L68.9,-100.7 L91.1,-93.5 L112.4,-84.4 L132.9,-73.4 L152.4,-60.7 L170.6,-46.2 L187.4,-30.2 L202.8,-12.7 L216.5,6 L228.5,25.9 L238.7,46.8 L246.9,68.6 L253.2,91 L257.5,113.8"/>
+          </g>
+          <use href="#sA" transform="scale(-1,1)"/>
+        </g>
+        <g class="w w2" style="color:#faf6ef">
+          <g id="sB">
+            <path fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" d="M0,-56 L20,-55 L39.8,-52.1 L59.2,-47.3 L78.1,-40.6 L96.3,-32.1 L113.5,-21.9 L129.6,-10.1 L144.6,3.3 L158.1,18 L170.2,34 L180.7,51 L189.4,69 L196.4,87.8 L201.5,107.2"/>
+            <use href="#liscZab" transform="translate(47.7,-95.4) rotate(-79) scale(.9)"/>
+            <use href="#liscZab" transform="translate(143.4,-54.8) rotate(-55) scale(.9)"/>
+            <use href="#liscZab" transform="translate(212,17.5) rotate(-32) scale(.9)"/>
+            <use href="#liscZab" transform="translate(244.5,98) rotate(-12) scale(.9)"/>
+          </g>
+          <use href="#sB" transform="scale(-1,1)"/>
+        </g>
+        <g class="w w3">
+          <g id="sC">
+            <circle cx="19.1" cy="-123.3" r="30" fill="#1e51a8"/>
+            <circle cx="70.9" cy="-114.7" r="24" fill="#f9a825"/>
+            <circle cx="120.1" cy="-96.3" r="30" fill="#faf6ef"/>
+            <circle cx="164.9" cy="-68.8" r="23" fill="#00796b"/>
+            <circle cx="203.6" cy="-33.3" r="29" fill="#1e51a8"/>
+            <circle cx="234.9" cy="8.9" r="22" fill="#f9a825"/>
+            <circle cx="257.5" cy="56.3" r="27" fill="#faf6ef"/>
+            <circle cx="269" cy="97.7" r="19" fill="#00796b"/>
+          </g>
+          <use href="#sC" transform="scale(-1,1)"/>
+          <circle cy="-140" r="26" fill="#f9a825"/>
+        </g>
+        <g class="w w4">
+          <g id="sD">
+            <circle cx="34.7" cy="-69.3" r="17" fill="#faf6ef"/>
+            <circle cx="79.6" cy="-57.3" r="14" fill="#1e51a8"/>
+            <circle cx="120.9" cy="-36.2" r="17" fill="#00796b"/>
+            <circle cx="157" cy="-7" r="13" fill="#faf6ef"/>
+            <circle cx="186.2" cy="29.1" r="16" fill="#1e51a8"/>
+            <circle cx="207.3" cy="70.4" r="13" fill="#f9a825"/>
+            <circle cx="218.6" cy="111.5" r="16" fill="#faf6ef"/>
+            <use href="#kwiat" transform="translate(97.7,-80.1) scale(.8)" style="color:#d81b60;--rdz:#faf6ef"/>
+            <use href="#kwiat" transform="translate(182.8,-20.5) scale(.8)" style="color:#d81b60;--rdz:#faf6ef"/>
+            <use href="#kwiat" transform="translate(233.4,60.4) scale(.8)" style="color:#d81b60;--rdz:#faf6ef"/>
+          </g>
+          <use href="#sD" transform="scale(-1,1)"/>
+          <use href="#kwiat" transform="translate(0,-96) scale(1)" style="color:#d81b60;--rdz:#faf6ef"/>
+          <use href="#zigStrip" transform="translate(-280,122)" fill="#141210"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="scianka__row">
+      <div>
+        <h2 id="scianka-h">Ścianki ozdobne z balonami</h2>
+        <p class="scianka__znak">robimy u Ciebie, na miejscu</p>
+      </div>
+      <div>
+        <p>To jedyna rzecz, której nie pakuję i nie wysyłam. Ścianka powstaje na Twojej uroczystości — jako dekoracja sali i tło, przed którym potem stają wszyscy do zdjęć.</p>
+        <p>Kolory balonów, suszki i napis dobieramy pod okazję, tak samo jak przy kartce. Napisz, gdzie i kiedy się odbywa — ustalimy resztę.</p>
+      </div>
+
+      <figure class="okno okno--pan" style="--dno:#141210">
+        <svg viewBox="0 0 900 300" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+          <use href="#zigPan" fill="var(--dno)"/>
+          <use href="#zigPan" fill="#faf6ef" transform="translate(450 150) scale(.93) translate(-450 -150)"/>
+        </svg>
+        <figcaption>Zdjęcie<b>ścianka z balonami rozstawiona na sali — panorama 3:1 (do zebrania z profilu)</b></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ══ JAK TO IDZIE ═════════════════════════════════════════════ -->
+<section class="s s--czern proces" aria-labelledby="proces-h">
+  <div class="wrap">
+    <h2 id="proces-h">Jak to idzie</h2>
+    <ol class="kroki">
+      <li class="krok krok--1 trig">
+        <svg class="wyc" viewBox="-70 -70 140 140" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+          <defs><mask id="mKr1" maskUnits="userSpaceOnUse" x="-70" y="-70" width="140" height="140">
+            <rect x="-70" y="-70" width="140" height="140" fill="#fff"/>
+            <text class="cyfra" x="0" y="23" text-anchor="middle" fill="#000">1</text>
+          </mask></defs>
+          <g class="w w1"><use href="#medalHalf" transform="translate(5,6)" fill="#faf6ef"/><use href="#medalHalf" transform="translate(5,6) scale(-1,1)" fill="#faf6ef"/></g>
+          <g class="w w4" mask="url(#mKr1)"><use href="#medalHalf" fill="#d81b60"/><use href="#medalHalf" transform="scale(-1,1)" fill="#d81b60"/></g>
+        </svg>
+        <p>Piszesz z jaką okazją i na kiedy</p>
+      </li>
+      <li class="krok krok--2 trig">
+        <svg class="wyc" viewBox="-70 -70 140 140" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+          <defs><mask id="mKr2" maskUnits="userSpaceOnUse" x="-70" y="-70" width="140" height="140">
+            <rect x="-70" y="-70" width="140" height="140" fill="#fff"/>
+            <text class="cyfra" x="0" y="23" text-anchor="middle" fill="#000">2</text>
+          </mask></defs>
+          <g class="w w1"><use href="#medalHalf" transform="translate(5,6)" fill="#faf6ef"/><use href="#medalHalf" transform="translate(5,6) scale(-1,1)" fill="#faf6ef"/></g>
+          <g class="w w4" mask="url(#mKr2)"><use href="#medalHalf" fill="#00796b"/><use href="#medalHalf" transform="scale(-1,1)" fill="#00796b"/></g>
+        </svg>
+        <p>Ustalamy szczegóły: imię, datę, kolory, kwiaty</p>
+      </li>
+      <li class="krok krok--3 trig">
+        <svg class="wyc" viewBox="-70 -70 140 140" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+          <defs><mask id="mKr3" maskUnits="userSpaceOnUse" x="-70" y="-70" width="140" height="140">
+            <rect x="-70" y="-70" width="140" height="140" fill="#fff"/>
+            <text class="cyfra" x="0" y="23" text-anchor="middle" fill="#000">3</text>
+          </mask></defs>
+          <g class="w w1"><use href="#medalHalf" transform="translate(5,6)" fill="#faf6ef"/><use href="#medalHalf" transform="translate(5,6) scale(-1,1)" fill="#faf6ef"/></g>
+          <g class="w w4" mask="url(#mKr3)"><use href="#medalHalf" fill="#f9a825"/><use href="#medalHalf" transform="scale(-1,1)" fill="#f9a825"/></g>
+        </svg>
+        <p>Robię ręcznie, sztuka po sztuce</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ══ KONTAKT — niezapisany arkusz przed cięciem ════════════════ -->
+<section class="s s--biel kontakt" id="kontakt" aria-labelledby="kontakt-h">
+  <svg class="zagiecia" aria-hidden="true" focusable="false" viewBox="0 0 1200 900" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <g stroke="#141210" stroke-opacity=".2" stroke-width="2" stroke-dasharray="16 13" fill="none" vector-effect="non-scaling-stroke">
+      <path d="M0,300 H1200"/><path d="M0,600 H1200"/><path d="M400,0 V900"/><path d="M800,0 V900"/>
+    </g>
+  </svg>
+
+  <div class="wrap">
+    <div class="kontakt__glowa">
+      <div>
+        <h2 id="kontakt-h">Napisz, co i na kiedy</h2>
+        <p class="kontakt__lead">Tyle wystarczy na start: jaka okazja i na jaki dzień. Kolory, kwiaty i imiona wymyślimy razem. Chętnie stworzę coś dla Ciebie.</p>
+      </div>
+
+      <div class="kontakt__forma trig">
+        <!-- jedna forma wycięta w pustym arkuszu -->
+        <svg class="wyc" viewBox="-70 -70 140 140" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+          <g class="w w1" style="color:#d81b60">
+            <g id="fA"><path fill="currentColor" d="M0,-58 L8.6,-43.2 L22.2,-53.6 L24.4,-36.6 L41,-41 L36.6,-24.4 L53.6,-22.2 L43.2,-8.6 L58,-0 L43.2,8.6 L53.6,22.2 L36.6,24.4 L41,41 L24.4,36.6 L22.2,53.6 L8.6,43.2 L0,58 Z"/></g>
+            <use href="#fA" transform="scale(-1,1)"/>
+          </g>
+          <g class="w w3" style="color:#00796b">
+            <g id="fB">
+              <use href="#liscZab" transform="translate(14,-30) rotate(-60) scale(.7)"/>
+              <use href="#liscZab" transform="translate(30,4) rotate(-6) scale(.7)"/>
+            </g>
+            <use href="#fB" transform="scale(-1,1)"/>
+          </g>
+          <g class="w w4">
+            <use href="#kwiat" transform="scale(1.35)" style="color:#f9a825;--rdz:#141210"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="pola">
+      <!-- telefon: numer nie został jeszcze podany, celowo nie jest linkiem tel: -->
+      <div class="pole pole--tel">
+        <svg viewBox="0 0 520 160" preserveAspectRatio="none" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><use href="#zigKa" fill="#d81b60"/></svg>
+        <span class="tresc">
+          <span class="co">Telefon</span>
+          <span class="val">[NUMER DO UZUPEŁNIENIA]</span>
+          <span class="nota">Miejsce na numer — wstawiamy przed publikacją</span>
+        </span>
+      </div>
+
+      <a class="pole pole--mes" href="https://www.instagram.com/moku_boho/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 320 220" preserveAspectRatio="none" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><use href="#zigKb" fill="#1e51a8"/></svg>
+        <span class="tresc">
+          <span class="co">Messenger / DM</span>
+          <span class="val">Napisz wiadomość</span>
+          <span class="nota">Otwiera profil MoKu Boho</span>
+        </span>
+      </a>
+
+      <a class="pole pole--ig" href="https://www.instagram.com/moku_boho/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 260 260" preserveAspectRatio="none" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"><use href="#zigKc" fill="#00796b"/></svg>
+        <span class="tresc">
+          <span class="co">Instagram</span>
+          <span class="val">@moku_boho</span>
+          <span class="nota">Skończone prace, na bieżąco</span>
+        </span>
+      </a>
+    </div>
+
+    <p class="kontakt__miejsce">MoKu Boho · Tczew</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="stopka">
+  <div class="wrap">
+    <span class="nazwa">MoKu Boho</span>
+    <address class="adres">Tczew</address>
+    <a href="https://www.instagram.com/moku_boho/" target="_blank" rel="noopener">@moku_boho</a>
+  </div>
+</footer>
+
+<!--
+  NOTA BUDOWY (nie do publikacji jako treść):
+  · Wszystkie miejsca na zdjęcia to okna wycięte w papierze, z etykietą tematu i proporcją.
+    Po dostarczeniu zdjęć podmienia się rysunek okna na obrazek o tej samej proporcji — układ nie drgnie.
+  · Numer telefonu celowo NIE jest linkiem tel: — nie wolno wymyślać numeru.
+  · Nie ma cen, terminów, opinii, liczb ani obszaru działania — zgodnie z TRESC.md.
+-->
+<script>
+// Rozsunięcie warstw jest zaczepione o :hover — na dotyku nigdy się nie
+// uruchamia. Na urządzeniach bez wskaźnika najeżdżającego (hover:none)
+// odpalamy ten sam stan przy wejściu sekcji w kadr, zamiast po najechaniu.
+(function(){
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!matchMedia('(hover: none)').matches) return;
+  var cele = document.querySelectorAll('.trig');
+  if (!('IntersectionObserver' in window) || !cele.length) return;
+  var obs = new IntersectionObserver(function(wpisy){
+    wpisy.forEach(function(w){
+      if (w.isIntersecting){ w.target.classList.add('is-otw'); obs.unobserve(w.target); }
+    });
+  }, { threshold: 0.45 });
+  cele.forEach(function(el){ obs.observe(el); });
+})();
+</script>
+</body>
+</html>

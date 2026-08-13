@@ -1,10 +1,28 @@
 node_modules/
 dist/
-portfolio/src/generated/
-# Build-copied grid thumbnails (source of truth is APPS/io_<name>/grid-thumbnail.png)
-portfolio/public/external/*.png
+# ACTIVE/ holds whole app repos (or bare bundles) dropped in to publish them —
+# each is its own checkout, not this repo's content. See README.md.
+ACTIVE/
 *.local
 .DS_Store
+
+# Local cheat sheet of offer passwords. This repo is public: publishing a
+# password publishes the address of the client draft it unlocks.
+offer-passwords.txt
+
+# portfolio/src/generated/manifest.json and portfolio/public/external/*.png
+# ARE committed on purpose: CI builds from ACTIVE/ contents only on this
+# machine (npm run build regenerates them), never from ACTIVE/ itself, since
+# ACTIVE/ is gitignored and doesn't exist on the CI runner.
+
+# Design working files — direction sketches, decision comps, review captures.
+# PRODUCT.md, DESIGN.md and the surface briefs under .impeccable/surfaces/ are
+# documentation and stay tracked.
+.impeccable/sketches/
+.impeccable/mocks/
+.impeccable/review/
+.impeccable/questions/
+.impeccable/tmp/
 
 # Local agent working notes — kept on disk for development, never published
 CLAUDE.md

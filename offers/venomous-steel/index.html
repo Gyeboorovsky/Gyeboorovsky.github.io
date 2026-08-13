@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Venomous Steel — szkice hero</title>
+<link rel="stylesheet" href="assets/base.css">
+<style>
+  html, body { height: 100%; }
+  body { display: flex; flex-direction: column; min-height: 100dvh; }
+
+  /* ================= wspólne tło strony ================= */
+
+  #tlo {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  /* SAFE — stal na drugim planie, ta sama co w wariancie A */
+  body[data-tlo="safe"] #tlo {
+    background-color: var(--tlo-baza);
+    background-image:
+      radial-gradient(118% 50% at var(--mx) var(--my),
+        rgba(214,224,236,.055) 0%, rgba(140,152,168,.022) 34%, rgba(0,0,0,0) 68%),
+      repeating-linear-gradient(90deg,
+        rgba(255,255,255,.007) 0 1px, transparent 1px 6px),
+      repeating-linear-gradient(90deg,
+        rgba(0,0,0,.030) 0 1px, transparent 1px 15px),
+      linear-gradient(180deg, #101114 0%, #0A0A0B 60%);
+  }
+  /* ARACHNO — fotografia pająka za mgłą, jak w wariancie B */
+  body[data-tlo="arachno"] #tlo {
+    background-color: var(--tlo-baza);
+    background-image: url('assets/spider-tlo.png');
+    background-size: cover;
+    background-position: center 30%;
+    background-repeat: no-repeat;
+    filter: brightness(1.9) contrast(1.05);
+  }
+
+  /* ================= pasek przełączników ================= */
+
+  .pasek {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    padding: 0 clamp(20px, 4vw, 56px) 16px;
+  }
+  .grupa { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .grupa > .etykieta {
+    font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--tekst-trzeci); margin-right: 6px;
+  }
+
+  /* przełącznik: sam kontur, zgodnie z zasadą marki — bez wypełnień */
+  .przel {
+    position: relative;
+    padding: 9px 15px;
+    font: 500 10.5px/1 var(--ui);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--tekst-drugi);
+    background: transparent;
+    border: 1px solid var(--linia-wlos);
+    cursor: pointer;
+    transition: color .3s, border-color .3s;
+  }
+  .przel:hover { color: var(--tekst-glowny); border-color: var(--linia-mocna); }
+  .przel[aria-pressed="true"] { color: var(--tekst-glowny); border-color: #4a4e55; }
+  .przel[aria-pressed="true"]::after {
+    content: '';
+    position: absolute;
+    left: -1px; right: -1px; bottom: -1px;
+    height: 1px;
+    background: var(--krew);
+  }
+  .przel .kod { color: var(--tekst-trzeci); margin-right: 7px; }
+  .przel[aria-pressed="true"] .kod { color: var(--krew); }
+
+  /* Arachno wabi: powolny odblask sunie po konturze przycisku, jak światło
+     po stali. Zwalnia do zera, gdy tryb jest już włączony — wabik przestaje
+     być potrzebny, kiedy myśliwy podszedł. */
+  .przel-arachno { overflow: hidden; }
+  .przel-arachno::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(100deg,
+      transparent 38%,
+      rgba(236,243,255,.16) 50%,
+      transparent 62%);
+    transform: translateX(-130%);
+    animation: wabik 4.2s cubic-bezier(.4,0,.2,1) infinite;
+  }
+  .przel-arachno[aria-pressed="true"]::before { animation: none; }
+  @keyframes wabik {
+    0%   { transform: translateX(-130%); }
+    38%  { transform: translateX(130%); }
+    100% { transform: translateX(130%); }
+  }
+
+  /* ================= scena wariantu ================= */
+
+  .scena-hosta {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .plansza { display: none; flex: 1; min-height: 0; }
+  .plansza.aktywna { display: flex; flex-direction: column; }
+
+  .hero {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ---------- wariant A: Mix (telefon: grzbiet / komputer: karta pomiarowa) ---------- */
+
+  .w-a .desktop-blok { display: contents; }
+  .w-a .mobile-blok { display: none; }
+  .w-a .gora {
+    position: relative; z-index: 2;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+    gap: clamp(24px, 5vw, 80px);
+    align-items: end;
+    padding: clamp(10px, 2vh, 26px) clamp(20px, 4vw, 56px) 0;
+  }
+  .w-a .gora .tekst-l { margin-bottom: 4px; }
+  .w-a .gora .akcje { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+  /* Nóż zjeżdża w dół o połowę luzu, jaki został mu do dołu karty —
+     odsłania łeb pająka, który dotąd chował się dokładnie za głownią. */
+  .w-a .karta {
+    position: relative; z-index: 2; flex: 1;
+    display: flex; flex-direction: column; justify-content: center; gap: 12px;
+    padding: clamp(16px, 3vh, 36px) clamp(20px, 4vw, 56px) 0;
+    transform: translateY(clamp(0px, 7vh, 70px));
+  }
+  .w-a .wymiar { position: relative; height: 22px; display: flex; align-items: center; justify-content: center; }
+  .w-a .wymiar::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 50%;
+    height: 1px; background: rgba(255,255,255,.11);
+  }
+  .w-a .wymiar::after {
+    content: ''; position: absolute; left: 0; right: 0; top: calc(50% - 4px);
+    height: 9px;
+    border-left: 1px solid rgba(255,255,255,.24);
+    border-right: 1px solid rgba(255,255,255,.24);
+  }
+  .w-a .wymiar span { position: relative; background: var(--tlo-baza); padding: 0 12px; }
+  .w-a .noz-box { position: relative; width: 100%; aspect-ratio: 1605 / 253; }
+  .w-a .noz-box picture { display: block; width: 100%; height: 100%; }
+  .w-a .noz-box img { width: 100%; height: 100%; object-fit: contain; }
+  .w-a .noz-box .polysk {
+    position: absolute; inset: 0;
+    -webkit-mask-image: url('assets/noz-trim.png'); mask-image: url('assets/noz-trim.png');
+    -webkit-mask-size: contain; mask-size: contain;
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    -webkit-mask-position: center; mask-position: center;
+    background: linear-gradient(96deg,
+      transparent calc(var(--lx) - 20%),
+      rgba(238,246,255,.44) var(--lx),
+      transparent calc(var(--lx) + 20%));
+    mix-blend-mode: screen;
+    pointer-events: none;
+  }
+  .w-a .odnosniki { position: relative; height: 74px; }
+  .w-a .wyn { position: absolute; top: 0; left: var(--p); transform: translateX(-50%); text-align: center; white-space: nowrap; }
+  .w-a .wyn::before {
+    content: ''; display: block; width: 1px; height: 26px; margin: 0 auto 9px;
+    background: linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,.05));
+  }
+  .w-a .wyn b {
+    display: block; font-weight: 400; font-size: 15px; color: var(--tekst-glowny);
+    font-variant-numeric: tabular-nums; letter-spacing: .01em;
+  }
+  .w-a .wyn i {
+    display: block; font-style: normal; font-size: 10.5px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--tekst-trzeci); margin-top: 3px;
+  }
+  .w-a .wyn.krew b { color: var(--krew); }
+  .w-a .stopka-desktop {
+    position: relative; z-index: 2;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+    padding: 18px clamp(20px, 4vw, 56px) 22px;
+    border-top: 1px solid rgba(255,255,255,.055);
+    margin-top: clamp(10px, 2vh, 26px);
+  }
+  .w-a .stopka-desktop nav { display: flex; gap: clamp(16px, 3vw, 40px); }
+  .w-a .stopka-desktop a { color: var(--tekst-drugi); text-decoration: none; font-size: 13px; transition: color .3s; }
+  .w-a .stopka-desktop a:hover { color: var(--tekst-glowny); }
+
+  /* ---------- wariant B: Widmo (przekątna) ---------- */
+
+  /* Obrócony o -31° nóż zajmuje w pionie ok. 0,65 swojej długości, więc to
+     wysokość kadru, a nie szerokość, decyduje o tym, ile może mieć. */
+  .w-b .rzut {
+    position: absolute; z-index: 2;
+    left: 40%; top: 50%;
+    width: min(132vh, 104vw);
+    transform: translate(-50%, -50%) rotate(-31deg);
+    pointer-events: none;
+  }
+  .w-b .rzut img { width: 100%; height: auto; display: block; }
+  .w-b .rzut .polysk {
+    position: absolute; inset: 0;
+    -webkit-mask-image: url('assets/noz-trim.png'); mask-image: url('assets/noz-trim.png');
+    -webkit-mask-size: contain; mask-size: contain;
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    -webkit-mask-position: center; mask-position: center;
+    background: linear-gradient(96deg,
+      transparent calc(var(--lx) - 16%),
+      rgba(238,246,255,.5) var(--lx),
+      transparent calc(var(--lx) + 16%));
+    mix-blend-mode: screen;
+    pointer-events: none;
+  }
+  .w-b .tresc {
+    position: relative; z-index: 3; flex: 1;
+    display: flex; flex-direction: column; justify-content: center;
+    align-items: flex-end; text-align: right;
+    padding: 0 clamp(20px, 4vw, 56px);
+  }
+  .w-b .tresc .tekst-l { margin-top: 22px; margin-left: auto; max-width: 40ch; }
+  .w-b .akcje { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; justify-content: flex-end; }
+  .w-b .listwa {
+    position: relative; z-index: 3;
+    display: flex; align-items: center; justify-content: flex-start;
+    gap: clamp(18px, 3vw, 44px);
+    padding: 16px clamp(20px, 4vw, 56px) 22px;
+    border-top: 1px solid rgba(255,255,255,.055);
+  }
+  .w-b .listwa a {
+    color: var(--tekst-drugi); text-decoration: none; font-size: 13px;
+    display: inline-flex; align-items: baseline; gap: 9px;
+    transition: color .3s;
+  }
+  .w-b .listwa a:hover { color: var(--tekst-glowny); }
+  .w-b .listwa a .stan {
+    color: var(--tekst-trzeci); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase;
+  }
+
+  /* ================= telefon ================= */
+
+  @media (max-width: 900px) {
+    /* Hero to jedna plansza na cały ekran — nic się nie przewija. Bez tego
+       padding hasła rozpycha kadr ponad 100dvh, wchodzi pasek przewijania,
+       a nóż zostaje przycięty granicą hero zamiast krawędzią ekranu. */
+    html, body { height: 100dvh; min-height: 0; overflow: hidden; }
+    .scena-hosta, .plansza, .hero, .w-b .tresc { min-height: 0; }
+
+    body[data-tlo="arachno"] #tlo { background-position: 35% 22%; }
+
+    /* A — telefon dziedziczy układ „grzbiet”, komputer kartę pomiarową */
+    .w-a .desktop-blok { display: none; }
+    .w-a .mobile-blok { display: block; }
+    .w-a .m-os {
+      position: absolute; left: 78%; top: 0; bottom: 0; width: 1px; opacity: .3;
+      background: linear-gradient(180deg,
+        var(--krew) 0%, rgba(193,17,25,0) 13%,
+        rgba(193,17,25,0) 87%, var(--krew) 100%);
+      z-index: 1;
+    }
+    .w-a .m-scena {
+      position: relative; z-index: 2; flex: 1;
+      display: grid; grid-template-columns: 1fr;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      align-items: stretch; gap: 12px;
+      padding: 0 clamp(20px, 4vw, 56px) 8px;
+    }
+    .w-a .mobile-blok { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+    /* nawigacja stoi na stałe u góry — hasło musi zaczynać się pod nią */
+    .w-a .m-lewa { text-align: left; padding-top: 80px; }
+    .w-a .m-lewa .tekst-l { margin-top: 16px; font-size: 15px; max-width: 38ch; }
+    .w-a .m-akcje { display: flex; gap: 12px; margin-top: 22px; }
+    .w-a .m-ostrze {
+      --noz-h: 42vh; /* pokrętło wielkości noża na telefonie */
+      position: relative; justify-self: center; align-self: stretch;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .w-a .m-ostrze::before {
+      content: ''; position: absolute; left: 50%; top: 50%;
+      width: 200px; height: 86%; transform: translate(-50%, -50%);
+      background: radial-gradient(46% 42% at 50% var(--ly),
+        rgba(198,214,236,.11) 0%, rgba(150,168,192,.04) 44%, transparent 74%);
+      filter: blur(14px); pointer-events: none;
+    }
+    .w-a .m-ostrze img { position: relative; height: 100%; max-height: var(--noz-h); width: auto; }
+    .w-a .m-ostrze .polysk {
+      position: absolute; left: 50%; top: 50%;
+      height: 100%; max-height: var(--noz-h);
+      aspect-ratio: 253 / 1605;
+      transform: translate(-50%, -50%);
+      -webkit-mask-image: url('assets/noz-pion.png'); mask-image: url('assets/noz-pion.png');
+      -webkit-mask-size: contain; mask-size: contain;
+      -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+      -webkit-mask-position: center; mask-position: center;
+      background: linear-gradient(179deg,
+        transparent calc(var(--ly) - 22%),
+        rgba(240,247,255,.5) var(--ly),
+        transparent calc(var(--ly) + 22%));
+      mix-blend-mode: screen; pointer-events: none;
+    }
+    .w-a .m-sciezki { list-style: none; margin: 0; padding: 0; }
+    .w-a .m-sciezki li { border-top: 1px solid rgba(255,255,255,.06); }
+    .w-a .m-sciezki li:last-child { border-bottom: 1px solid rgba(255,255,255,.06); }
+    .w-a .m-sciezki a {
+      display: flex; align-items: baseline; gap: 12px; padding: 15px 2px;
+      color: var(--tekst-glowny); text-decoration: none;
+      transition: transform .45s cubic-bezier(.16,1,.3,1), color .3s;
+    }
+    .w-a .m-sciezki a .opis { color: var(--tekst-trzeci); font-size: 12px; margin-left: auto; letter-spacing: .1em; text-transform: uppercase; }
+    .w-a .stopka-mobile {
+      position: relative; z-index: 2;
+      display: flex; justify-content: space-between;
+      padding: 0 clamp(20px, 4vw, 56px) 18px;
+    }
+
+    /* B */
+    .w-b .rzut { left: 50%; width: min(255vh, 320vw); top: 58%; transform: translate(-50%, -50%) rotate(-38deg); }
+    /* hasło siada w górnej części kadru, nad głownią — nie na środku */
+    .w-b .tresc {
+      align-items: flex-start; text-align: left;
+      justify-content: flex-start; padding-top: 15vh;
+    }
+    .w-b .tresc .tekst-l { margin-left: 0; font-size: 15px; }
+    .w-b .akcje { justify-content: flex-start; margin-top: 24px; }
+    .w-b .akcje .btn:not(.btn-glowny) { display: none; }
+    .w-b .listwa { flex-wrap: wrap; gap: 12px 20px; }
+
+    /* Połysk na telefonie: nie ma kursora, który poprowadziłby światło, więc
+       pasmo idzie samo — od rękojeści do sztychu, raz na 5 s, przejazd ok. 0,8 s.
+       Zamiast pozycji z --lx/--ly steruje nim background-position: kafel jest
+       3× większy od noża, więc pasmo startuje i kończy poza kadrem i skok
+       animacji z powrotem na start jest niewidoczny. */
+    .w-a .m-ostrze .polysk {
+      background: linear-gradient(179deg,
+        transparent 42%, rgba(240,247,255,.55) 50%, transparent 58%);
+      background-size: 100% 300%;
+      background-repeat: no-repeat;
+      background-position: 50% 100%;
+      animation: przeblysk-pion 5s infinite;
+    }
+    .w-b .rzut .polysk {
+      background: linear-gradient(96deg,
+        transparent 45%, rgba(238,246,255,.55) 50%, transparent 55%);
+      background-size: 300% 100%;
+      background-repeat: no-repeat;
+      background-position: 0% 50%;
+      animation: przeblysk-poziom 5s infinite;
+    }
+  }
+
+  /* rękojeść (poza kadrem u góry) → sztych (poza kadrem u dołu) */
+  @keyframes przeblysk-pion {
+    0%   { background-position: 50% 100%; animation-timing-function: cubic-bezier(.4,0,.3,1); }
+    16%  { background-position: 50% 0%; }
+    100% { background-position: 50% 0%; }
+  }
+  /* rękojeść (prawa krawędź) → sztych (lewa krawędź) */
+  @keyframes przeblysk-poziom {
+    0%   { background-position: 0% 50%; animation-timing-function: cubic-bezier(.4,0,.3,1); }
+    16%  { background-position: 100% 50%; }
+    100% { background-position: 100% 50%; }
+  }
+
+  @media (max-width: 720px) {
+    .pasek { padding-bottom: 12px; gap: 10px 14px; }
+    .przel { padding: 8px 12px; font-size: 10px; letter-spacing: .1em; }
+  }
+
+  /* ================= panel wariantów na telefonie: schowany, wysuwany gestem ================= */
+
+  .strzalka-wiecej { display: none; }
+
+  @media (max-width: 900px) {
+    /* Nawigacja marki zostaje na ekranie na stałe. Chowa się tylko pasek
+       z wyborem wariantu i tła — wsuwa się pod nawigację, która go zasłania. */
+    .panel-gorny {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 20;
+    }
+    .panel-gorny .nawigacja {
+      position: relative;
+      z-index: 2;
+      background: var(--tlo-baza);
+    }
+    .panel-gorny .pasek {
+      position: absolute;
+      top: 100%; left: 0; right: 0;
+      z-index: 1;
+      padding-bottom: 14px;
+      background: linear-gradient(180deg,
+        rgba(10,10,11,.97) 0%, rgba(10,10,11,.94) 66%, rgba(10,10,11,0) 100%);
+      transform: translateY(-100%);
+      visibility: hidden;
+      transition: transform .4s cubic-bezier(.16,1,.3,1), visibility .4s;
+    }
+    body.panel-widoczny .panel-gorny .pasek {
+      transform: translateY(0);
+      visibility: visible;
+    }
+
+    .strzalka-wiecej {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 0;
+      width: 40px;
+      height: 24px;
+      padding: 0;
+      color: var(--tekst-drugi);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      animation: mrugniecie 1.8s ease-in-out infinite;
+    }
+    .strzalka-wiecej svg { width: 18px; height: 11px; }
+    body.panel-widoczny .strzalka-wiecej { display: none; }
+  }
+
+  @keyframes mrugniecie {
+    0%, 100% { opacity: .28; transform: translateX(-50%) translateY(2px); }
+    50%      { opacity: .9;  transform: translateX(-50%) translateY(-2px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .strzalka-wiecej { animation: none; opacity: .6; }
+  }
+</style>
+</head>
+<body data-wariant="a" data-tlo="safe">
+
+<div id="tlo" aria-hidden="true"></div>
+
+<div class="panel-gorny" id="panelGorny">
+  <div class="nawigacja">
+    <a class="sygnet" href="#">Venomous Steel</a>
+    <nav>
+      <a class="link" href="#">Modele</a>
+      <a class="link" href="#">Unikaty</a>
+      <a class="link chowaj" href="#">Zamówienie</a>
+      <span class="link jezyk"><b>PL</b> / EN</span>
+      <button class="menu" type="button" aria-label="Menu">
+        <svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="M3 7h16M3 12h16M3 17h16"/></svg>
+      </button>
+    </nav>
+  </div>
+
+  <div class="pasek">
+    <div class="grupa" role="group" aria-label="Wariant hero">
+      <button class="przel" type="button" data-wariant="a" aria-pressed="true"><span class="kod">A</span>Mix</button>
+      <button class="przel" type="button" data-wariant="b" aria-pressed="false"><span class="kod">B</span>Widmo</button>
+    </div>
+    <div class="grupa" role="group" aria-label="Tło">
+      <button class="przel przel-arachno" type="button" data-tlo="arachno" aria-pressed="false">Arachno</button>
+      <button class="przel" type="button" data-tlo="safe" aria-pressed="true">Safe</button>
+    </div>
+  </div>
+
+  <button class="strzalka-wiecej" id="strzalkaWiecej" type="button" aria-label="Pokaż wybór wariantu — przesuń w dół">
+    <svg viewBox="0 0 20 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10 L10 2 L18 10"/></svg>
+  </button>
+</div>
+
+<div class="scena-hosta">
+
+  <!-- ============ A: Mix — telefon: grzbiet, komputer: karta pomiarowa ============ -->
+  <section class="plansza w-a" data-plansza="a">
+    <div class="hero">
+      <div class="desktop-blok">
+        <div class="gora">
+          <div>
+            <h1 class="haslo">Kuty ręcznie.<br>Na pokolenia.</h1>
+            <div class="akcje">
+              <a class="btn btn-glowny" href="#">
+                Zobacz modele
+                <svg class="grot" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+              <a class="btn" href="#">Zamów swój nóż</a>
+            </div>
+          </div>
+          <p class="tekst-l">Każdy egzemplarz jedzie do klienta ze swoimi wymiarami.
+            Ten jest jeden — drugiego takiego nie będzie.</p>
+        </div>
+
+        <div class="karta">
+          <div class="wymiar"><span class="mikro liczba">268 mm</span></div>
+
+          <figure class="noz-box" data-swiatlo-lokalne>
+            <picture><img src="assets/noz-trim.png" alt="Nóż myśliwski Venomous Steel w widoku z boku — satynowe ostrze, kuty grzbiet, rękojeść z wenge z mosiężnymi nitami i czerwonym linerem"></picture>
+            <span class="polysk"></span>
+          </figure>
+
+          <div class="odnosniki" aria-hidden="true">
+            <span class="wyn" style="--p: 13%"><b class="liczba">142 mm</b><i>ostrze</i></span>
+            <span class="wyn" style="--p: 38%"><b class="liczba">4,2 mm</b><i>grubość</i></span>
+            <span class="wyn" style="--p: 58%"><b>kuty</b><i>grzbiet</i></span>
+            <span class="wyn" style="--p: 76%"><b>wenge</b><i>rękojeść</i></span>
+            <span class="wyn krew" style="--p: 92%"><b>041 / 041</b><i>egzemplarz</i></span>
+          </div>
+        </div>
+
+        <div class="stopka-desktop">
+          <nav>
+            <a href="#">Modele stałe</a>
+            <a href="#">Egzemplarze unikatowe</a>
+            <a href="#">Zamówienie indywidualne</a>
+          </nav>
+          <p class="mikro">Pomiary suwmiarką, egzemplarz po egzemplarzu</p>
+        </div>
+      </div>
+
+      <div class="mobile-blok">
+        <span class="m-os" aria-hidden="true"></span>
+        <div class="m-scena">
+          <div class="m-lewa">
+            <h1 class="haslo">Kuty ręcznie.<br>Na pokolenia.</h1>
+            <p class="tekst-l">Stal wychodzi z ognia raz. To, co z niej zostanie, zależy od
+              kilkuset uderzeń i jednej pary rąk.</p>
+            <div class="m-akcje">
+              <a class="btn btn-glowny" href="#">
+                Zobacz modele
+                <svg class="grot" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <figure class="m-ostrze" data-swiatlo-lokalne>
+            <img src="assets/noz-pion.png" alt="Nóż myśliwski Venomous Steel ustawiony pionowo — satynowe ostrze, kuty grzbiet, rękojeść z wenge z mosiężnymi nitami">
+            <span class="polysk"></span>
+          </figure>
+
+          <div class="m-prawa">
+            <ul class="m-sciezki">
+              <li><a href="#">Modele stałe <span class="opis">na stanie</span></a></li>
+              <li><a href="#">Egzemplarze unikatowe <span class="opis">1 z 1</span></a></li>
+              <li><a href="#">Zamówienie indywidualne <span class="opis">wycena</span></a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="stopka-mobile">
+          <p class="mikro">Warsztat · Polska</p>
+          <p class="mikro">Przesuń kursorem po ostrzu</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ B: Widmo (przekątna z fotograficznym tłem pająka) ============ -->
+  <section class="plansza w-b" data-plansza="b">
+    <div class="hero">
+      <figure class="rzut" data-swiatlo-lokalne>
+        <img src="assets/noz-trim.png" alt="Nóż myśliwski Venomous Steel leżący po przekątnej — satynowe ostrze, kuty grzbiet, rękojeść z wenge z mosiężnymi nitami">
+        <span class="polysk"></span>
+      </figure>
+
+      <div class="tresc">
+        <div>
+          <h1 class="haslo">Kuty ręcznie.<br>Na pokolenia.</h1>
+          <p class="tekst-l">Stal wychodzi z ognia raz. To, co z niej zostanie, zależy od
+            kilkuset uderzeń i jednej pary rąk.</p>
+          <div class="akcje">
+            <a class="btn btn-glowny" href="#">
+              Zobacz modele
+              <svg class="grot" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a class="btn" href="#">Zamów swój nóż</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="listwa">
+        <a href="#">Modele stałe <span class="stan">na stanie</span></a>
+        <a href="#">Egzemplarze unikatowe <span class="stan">1 z 1</span></a>
+        <a href="#">Zamówienie indywidualne <span class="stan">wycena</span></a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* Przełączniki: wariant hero i tło. Wybór zostaje w URL (#a/arachno),
+   żeby odświeżenie strony nie gubiło tego, co akurat oglądasz. */
+(function () {
+  'use strict';
+  var body = document.body;
+  var przelaczniki = document.querySelectorAll('.przel');
+
+  function pokaz(wariant, tlo) {
+    body.dataset.wariant = wariant;
+    body.dataset.tlo = tlo;
+
+    document.querySelectorAll('.plansza').forEach(function (p) {
+      p.classList.toggle('aktywna', p.dataset.plansza === wariant);
+    });
+    przelaczniki.forEach(function (b) {
+      var moje = b.dataset.wariant ? b.dataset.wariant === wariant : b.dataset.tlo === tlo;
+      b.setAttribute('aria-pressed', moje ? 'true' : 'false');
+    });
+
+    location.replace('#' + wariant + '/' + tlo);
+  }
+
+  przelaczniki.forEach(function (b) {
+    b.addEventListener('click', function () {
+      pokaz(b.dataset.wariant || body.dataset.wariant, b.dataset.tlo || body.dataset.tlo);
+    });
+  });
+
+  var z = (location.hash || '').replace('#', '').split('/');
+  var w = ['a','b'].indexOf(z[0]) > -1 ? z[0] : 'a';
+  var t = ['safe','arachno'].indexOf(z[1]) > -1 ? z[1] : 'safe';
+  pokaz(w, t);
+})();
+
+/* Telefon: panel z wariantami jest domyślnie schowany nad kadrem — strona
+   zaczyna się od hasła. Przesunięcie palcem w dół wysuwa panel, w górę go
+   chowa. Strzałka na górze robi to samo na tap, dla kogoś kto nie zgadnie
+   gestu, i miga, dopóki panel jest schowany. */
+(function () {
+  'use strict';
+  var mobile = window.matchMedia('(max-width: 900px)');
+  var body = document.body;
+  var strzalka = document.getElementById('strzalkaWiecej');
+  var startY = null;
+
+  function pokazPanel() { body.classList.add('panel-widoczny'); }
+  function schowajPanel() { body.classList.remove('panel-widoczny'); }
+
+  strzalka.addEventListener('click', function () {
+    body.classList.toggle('panel-widoczny');
+  });
+
+  document.addEventListener('touchstart', function (e) {
+    if (!mobile.matches || e.touches.length !== 1) { startY = null; return; }
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+
+  document.addEventListener('touchend', function (e) {
+    if (startY === null) return;
+    var koniecY = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientY : startY;
+    var delta = koniecY - startY;
+    if (delta > 40) pokazPanel();
+    else if (delta < -40) schowajPanel();
+    startY = null;
+  }, { passive: true });
+})();
+</script>
+<script src="assets/steel.js"></script>
+</body>
+</html>

@@ -1,495 +1,700 @@
-/* Portfolio grid — translated from design/Portfolio Grid.dc.html (option 1b).
-   Every visual value comes from @portfolio/shared/tokens.css. */
+/* The livery.
+   Every visual value comes from @portfolio/shared/tokens.css.
+
+   Panels are the layout. Separation is always a seam — a gap showing the dark
+   body beneath — never a shadow and never a gap of empty page. Every graphic
+   on the car leans by the same angle (--lean). */
 
 body {
-  padding: clamp(14px, 4vw, 56px) clamp(10px, 4vw, 64px);
-}
-
-.panel {
-  max-width: 1080px;
-  margin: 0 auto;
-  background: var(--surface-1);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-panel);
-  padding: 40px;
-  box-shadow: var(--shadow-panel);
-}
-
-/* Header */
-.header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 26px;
-}
-
-.header__badge {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-}
-
-.header__pulse {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent);
-  animation: livepulse 2.4s infinite;
-}
-
-.header__badgetext {
-  font: 600 10.5px/1 var(--font-mono);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-}
-
-.header__name {
-  margin: 12px 0 0;
-  font: 600 32px/1 var(--font-display);
-  color: var(--text-strong);
-  letter-spacing: -0.02em;
-}
-
-.header__sub {
-  margin: 7px 0 0;
-  font: 400 14.5px var(--font-body);
-  color: var(--text-muted);
-}
-
-.header__years {
-  font: 500 12px var(--font-mono);
-  color: var(--text-dimmer);
-  white-space: nowrap;
-  padding-top: 6px;
-}
-
-/* Filter pills */
-.pills {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
-
-.pill {
-  font: 500 12.5px var(--font-mono);
-  letter-spacing: 0.02em;
-  padding: 8px 16px;
-  border-radius: var(--radius-pill);
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.02);
-  color: var(--text-muted);
-  border: 1px solid var(--border-strong);
-  transition: transform 0.2s, border-color 0.2s, background 0.2s;
-  text-transform: capitalize;
-}
-
-.pill:hover {
-  transform: translateY(-1px);
-  border-color: var(--accent);
-}
-
-.pill--on {
-  color: var(--ink);
-}
-
-.pill[data-cat='default'].pill--on {
-  background: var(--accent);
-  border-color: var(--accent);
-}
-
-.pill[data-cat='app'].pill--on {
-  background: var(--cat-app);
-  border-color: var(--cat-app);
-}
-
-.pill[data-cat='tool'].pill--on {
-  background: var(--cat-tool);
-  border-color: var(--cat-tool);
-}
-
-.pill[data-cat='game'].pill--on {
-  background: var(--cat-game);
-  border-color: var(--cat-game);
-}
-
-.pill[data-cat='mobile'].pill--on {
-  background: var(--cat-mobile);
-  border-color: var(--cat-mobile);
-}
-
-/* Card grid */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: 284px;
-  gap: 18px;
-  /* Let mixed tile sizes backfill gaps left by larger tiles. */
-  grid-auto-flow: dense;
-}
-
-.card {
+  min-height: 100vh;
+  padding: var(--gap);
   display: flex;
   flex-direction: column;
-  border-radius: var(--radius-card);
-  overflow: hidden;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  cursor: pointer;
-  transition: transform 0.3s var(--ease-card), box-shadow 0.3s, border-color 0.3s;
-  color: inherit;
+  gap: var(--gap);
 }
 
-.card:hover {
-  transform: translateY(-7px);
-  box-shadow: var(--shadow-card);
-  border-color: var(--accent-border);
-  color: inherit;
-}
-
-.card--featured {
-  border-radius: var(--radius-card-lg);
-}
-
-.card--featured:hover {
-  box-shadow: var(--shadow-card-hover);
-  border-color: var(--accent-border-strong);
-}
-
-/* Tile size spans — set by app "size" ("<cols>x<rows>", each 1-3). */
-.card--w2 {
-  grid-column: span 2;
-}
-
-.card--w3 {
-  grid-column: span 3;
-}
-
-.card--h2 {
-  grid-row: span 2;
-}
-
-.card--h3 {
-  grid-row: span 3;
-}
-
-/* Tiles taller than one row let the cover grow to fill the extra height. */
-.card--h2 .card__cover,
-.card--h3 .card__cover {
+#app {
   flex: 1;
-  height: auto;
-  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
 }
 
-.card--archived {
-  opacity: 0.55;
+/* ── The panel: one piece of painted bodywork, used at every scale ────── */
+
+.panel {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(168deg, var(--body-2), var(--body) 42%, var(--body-2));
 }
 
-/* Highlight glow — 3 levels, tinted to each card's --card-hue (set inline).
-   Used to draw the eye to the most interesting apps. */
-.card--glow1 {
-  box-shadow: 0 0 26px -8px oklch(0.72 0.2 var(--card-hue) / 0.55);
+/* Clear coat: one raking highlight across the whole panel. */
+.panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(163deg, var(--lacquer) 0 18%, transparent 46%);
 }
 
-.card--glow2 {
-  box-shadow: 0 0 36px -6px oklch(0.74 0.22 var(--card-hue) / 0.7);
-  border-color: oklch(0.74 0.2 var(--card-hue) / 0.5);
+/* The gloss band that travels the panel on hover — damped, with mass. */
+.panel::after {
+  content: '';
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: -40%;
+  width: 26%;
+  z-index: 4;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent, var(--gloss), transparent);
+  transform: skewX(-12deg);
+  transition: left 0.62s var(--ease);
 }
 
-.card--glow3 {
-  border-color: oklch(0.78 0.22 var(--card-hue) / 0.6);
-  animation: cardglow 2.6s var(--ease-card) infinite;
-}
-
-@keyframes cardglow {
-  0%,
-  100% {
-    box-shadow: 0 0 30px -8px oklch(0.75 0.24 var(--card-hue) / 0.6);
-  }
-  50% {
-    box-shadow: 0 0 54px -2px oklch(0.8 0.26 var(--card-hue) / 0.92);
-  }
+.panel:hover::after,
+.panel:focus-visible::after {
+  left: 130%;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card--glow3 {
-    animation: none;
-    box-shadow: 0 0 40px -4px oklch(0.78 0.24 var(--card-hue) / 0.8);
+  .panel::after {
+    transition: none;
   }
 }
 
-.card__cover {
+/* ── The hood: one sheet of bodywork, cut by seams on the deck's own column
+   rhythm, so the wordmark breaks across a real panel joint and the last
+   column stays bare paint. ──────────────────────────────────────────────── */
+
+.hood {
   position: relative;
-  height: 156px;
-  flex: none;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: stretch;
 }
 
-.card--featured .card__cover {
+.hood > .panel {
   flex: 1;
-  height: auto;
-  min-height: 0;
+  display: flex;
+  align-items: stretch;
 }
 
-.card__tag {
-  position: absolute;
-  top: 13px;
-  left: 13px;
-  font: 600 10px/1 var(--font-mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+/* Darker under the wordmark: the clear-coat highlight runs the other way on
+   the hood panel only, so GYEBOOROVSKY sits on paint that reads darker on
+   its left than its right — every other panel keeps the standard sheen. */
+.hood > .panel::before {
+  background: linear-gradient(197deg, var(--lacquer) 0 18%, transparent 46%);
+}
+
+.roundel {
+  flex: none;
+  width: clamp(130px, 16vw, 245px);
+  display: grid;
+  place-items: center;
+}
+
+.roundel span {
+  width: clamp(74px, 8vw, 118px);
+  height: clamp(74px, 8vw, 118px);
+  border-radius: 50%;
+  background: var(--body);
+  border: 5px solid var(--ink);
+  display: grid;
+  place-items: center;
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(46px, 5.4vw, 78px);
+  line-height: 1;
   color: var(--ink);
-  padding: 5px 9px;
-  border-radius: var(--radius-pill);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  transform: skewX(var(--lean));
 }
 
-.card__tag--app {
-  background: var(--cat-app);
-}
-
-.card__tag--tool {
-  background: var(--cat-tool);
-}
-
-.card__tag--game {
-  background: var(--cat-game);
-}
-
-.card__tag--mobile {
-  background: var(--cat-mobile);
-}
-
-.card__tag--default {
-  background: var(--cat-default);
-}
-
-.card__status {
-  position: absolute;
-  top: 13px;
-  right: 13px;
-  font: 600 10px/1 var(--font-mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 5px 9px;
-  border-radius: var(--radius-pill);
-}
-
-.card__status--wip {
-  background: var(--accent);
-  color: var(--ink);
-}
-
-.card__status--archived {
-  background: rgba(0, 0, 0, 0.4);
-  color: var(--text-faint);
-  border: 1px solid var(--border-bright);
-}
-
-.card__num {
-  position: absolute;
-  bottom: 10px;
-  right: 14px;
-  font: 600 34px/1 var(--font-mono);
-  color: rgba(255, 255, 255, 0.16);
-}
-
-.card--featured .card__num {
-  font-size: 62px;
-  bottom: 14px;
-  right: 20px;
-  color: rgba(255, 255, 255, 0.14);
-}
-
-.card__body {
-  padding: 16px 17px 18px;
+.hoodplate {
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  justify-content: center;
+  padding: 18px clamp(16px, 2.4vw, 30px);
 }
 
-.card--featured .card__body {
-  padding: 22px 24px 24px;
-  gap: 9px;
+.mark {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(38px, 6.6vw, 92px);
+  line-height: 0.84;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  transform: skewX(var(--lean));
+  color: var(--paint-red);
 }
 
-.card__row {
+/* The strap wraps inside the hood's FIRST column instead of being cut by the
+   seam: the wordmark is 92px and reads as bodywork through a joint, but a 12px
+   tracked line just loses a character there. Width is the column the plate
+   actually owns — the panel third, less the roundel and the padding. */
+.strap {
+  position: relative;
+  z-index: 2;
+  margin: 10px 0 0;
+  max-width: calc(33.333vw - clamp(130px, 16vw, 245px) - clamp(16px, 2.4vw, 30px) - 14px);
+  font-size: clamp(10px, 1vw, 12px);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  transform: skewX(var(--lean));
+}
+
+/* The seams that cut the wordmark — real panel gaps, drawn over the paint. */
+.cut {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--gap);
+  background: var(--seam);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.cut--a {
+  left: calc(33.333% - 1.6px);
+}
+
+.cut--b {
+  left: calc(66.667% - 3.3px);
+}
+
+/* Both toggles sit on bare structure, stacked over the same corner. */
+.hood__controls {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  z-index: 5;
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 10px;
+  gap: 6px;
 }
 
-.card__title {
-  margin: 0;
-  font: 600 18px/1.1 var(--font-display);
-  color: var(--text-strong);
-  letter-spacing: -0.01em;
+.theme,
+.lang {
+  cursor: pointer;
+  border: 0;
+  padding: 8px 14px 6px;
+  background: var(--seam);
+  color: var(--on-seam);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
-.card--featured .card__title {
-  font: 600 28px/1.05 var(--font-display);
-  letter-spacing: -0.02em;
+/* ── The sill: sponsor strips repeating as an exact ruler ─────────────── */
+
+.sill {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: var(--gap);
 }
 
-.card__year {
-  font: 500 11px var(--font-mono);
-  color: var(--text-dim);
+.strip {
+  --strip-paint: var(--ink);
+  --strip-on: var(--body);
+  border: 0;
+  cursor: pointer;
+  padding: 12px 4px 9px;
+  background: var(--body-2);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(14px, 1.5vw, 19px);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  filter: saturate(0.25);
+  opacity: 0.68;
+  transition: filter 0.2s var(--ease), opacity 0.2s var(--ease), transform 0.2s var(--ease);
 }
 
-.card--featured .card__year {
-  font-size: 12px;
+.strip span {
+  display: block;
+  transform: skewX(var(--lean));
 }
 
-.card__desc {
-  margin: 0;
-  font: 400 12.5px/1.5 var(--font-body);
-  color: var(--text-soft);
+.strip[data-on] {
+  filter: none;
+  opacity: 1;
+  transform: translateY(-2px);
+  background: var(--strip-paint);
+  color: var(--strip-on);
 }
 
-.card--featured .card__desc {
-  font: 400 14px/1.55 var(--font-body);
-  color: var(--text-body);
-  max-width: 58ch;
+.strip[data-on]::before {
+  opacity: 0.3;
 }
 
-.card__role {
+.strip[data-paint='red'] {
+  --strip-paint: var(--paint-red);
+  --strip-on: var(--on-red);
+}
+
+.strip[data-paint='teal'] {
+  --strip-paint: var(--paint-teal);
+  --strip-on: var(--on-teal);
+}
+
+.strip[data-paint='amber'] {
+  --strip-paint: var(--paint-amber);
+  --strip-on: var(--on-amber);
+}
+
+/* ── The deck: body panels, the seam showing through every gap ─────────── */
+
+.deck {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* Fixed row height, never `1fr`: with `1fr` the rows split the deck's spare
+     height, so a panel grew or shrank purely because a filter changed how many
+     rows there were. A panel's size must depend on its own `size`, nothing
+     else. `align-content: start` keeps the rows from stretching to fill. */
+  grid-auto-rows: 180px;
+  align-content: start;
+  /* Let mixed panel sizes backfill the gaps left by larger ones. */
+  grid-auto-flow: dense;
+  gap: var(--gap);
+}
+
+.car {
+  --car-paint: var(--paint-red);
+  --car-on: var(--on-red);
+  --car-text: var(--red-text);
+  display: flex;
+  flex-direction: column;
+  color: inherit;
+  cursor: pointer;
+  border: 2px solid var(--frame);
+}
+
+.car[data-paint='teal'] {
+  --car-paint: var(--paint-teal);
+  --car-on: var(--on-teal);
+  --car-text: var(--teal-text);
+}
+
+.car[data-paint='amber'] {
+  --car-paint: var(--paint-amber);
+  --car-on: var(--on-amber);
+  --car-text: var(--amber-text);
+}
+
+/* Panel sizes — set by the app's "size" ("<cols>x<rows>", each 1-3). */
+.car--w2 {
+  grid-column: span 2;
+}
+
+.car--w3 {
+  grid-column: span 3;
+}
+
+.car--h2 {
+  grid-row: span 2;
+}
+
+.car--h3 {
+  grid-row: span 3;
+}
+
+.car--retired {
+  opacity: 0.6;
+}
+
+/* The artwork is the panel's paint. It never carries lettering over it. */
+.car__art {
+  position: relative;
+  flex: 1;
+  /* The paint never collapses, however tall the caption below it grows. */
+  min-height: 104px;
+  z-index: 1;
+  background-size: cover;
+  background-position: center;
+}
+
+.car__art--flat {
+  background: linear-gradient(135deg, var(--paint-teal), var(--paint-amber));
+}
+
+/* The caption is its own strip of bodywork, stacked below the artwork rather
+   than laid over it — no title can ever collide with a cover, at any length. */
+.car__name {
+  position: relative;
+  z-index: 3;
+  flex: none;
+  padding: 10px 15px 12px;
+  background: var(--body-2);
+}
+
+.car__t {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(19px, 2vw, 26px);
+  line-height: 0.92;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  transform: skewX(var(--lean));
+}
+
+.car--lead .car__t {
+  font-size: clamp(28px, 3.6vw, 48px);
+}
+
+/* A sponsor line is a line, not a paragraph: descriptions are trimmed to the
+   caption strip so no panel's paint gets squeezed by a long one. */
+.car__d {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
   margin-top: 4px;
-  font: 500 11px var(--font-mono);
-  color: var(--text-faint);
-  letter-spacing: 0.02em;
+  font-size: clamp(11px, 1.1vw, 12px);
+  font-weight: 600;
+  color: var(--ink-2);
+  transform: skewX(var(--lean));
 }
 
-.card--featured .card__role {
-  font-size: 12px;
+.car--lead .car__d {
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  margin-top: 7px;
+  font-size: clamp(12.5px, 1.3vw, 14px);
+  max-width: 54ch;
 }
+
+/* The stat is a sponsor line: the project's one true fact, in its own paint. */
+.car__stat {
+  display: block;
+  margin-top: 5px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--car-text);
+  transform: skewX(var(--lean));
+}
+
+.car--lead .car__stat {
+  margin-top: 9px;
+  font-size: clamp(11px, 1.2vw, 13px);
+}
+
+.car--lead .car__name {
+  padding: 15px 22px 19px;
+}
+
+/* The category decal, top-left, exactly where a sponsor patch sits. */
+.car__tag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  padding: 5px 13px 3px;
+  background: var(--car-paint);
+  color: var(--car-on);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.car__tag span {
+  display: block;
+  transform: skewX(var(--lean));
+}
+
+.car__status {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 3;
+  padding: 5px 13px 3px;
+  background: var(--seam);
+  color: var(--on-seam);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* The race number, cut out of the paint. */
+.car__no {
+  position: absolute;
+  top: 6px;
+  right: 12px;
+  z-index: 3;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(40px, 4.4vw, 62px);
+  line-height: 1;
+  color: var(--decal);
+  opacity: 0.92;
+  transform: skewX(var(--lean));
+  -webkit-text-stroke: 3px var(--seam);
+}
+
+.car--lead .car__no {
+  font-size: clamp(64px, 7.6vw, 108px);
+  top: 8px;
+  right: 20px;
+  -webkit-text-stroke-width: 4px;
+}
+
+.car__status ~ .car__no {
+  top: 34px;
+}
+
+/* ── The gate on a sealed client preview: one stamp that covers the whole
+   panel. A click swaps its word for the password field in the same spot;
+   leaving the panel without submitting swaps it back (see wireGate). ────── */
+
+.car__gate {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  background: color-mix(in srgb, var(--body) 86%, transparent);
+}
+
+.car__gateword,
+.car__gateinput {
+  padding: 8px 20px 6px;
+  border: 4px solid var(--paint-red);
+  color: var(--paint-red);
+  background: var(--body);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(17px, 2.2vw, 26px);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transform: rotate(-6deg);
+}
+
+.car--lead .car__gateword,
+.car--lead .car__gateinput {
+  font-size: clamp(24px, 3.4vw, 40px);
+}
+
+.car__gate[data-state='editing'] .car__gateword,
+.car__gate[data-state='sealed'] .car__gateinput {
+  display: none;
+}
+
+.car__gateinput {
+  width: min(85%, 20ch);
+  text-align: center;
+  cursor: text;
+}
+
+.car__gateinput:focus {
+  outline: none;
+  border-color: var(--ink);
+}
+
+.car__err {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--paint-red);
+}
+
+/* ── Empty state and colophon ─────────────────────────────────────────── */
 
 .empty {
   grid-column: 1 / -1;
-  color: var(--text-faint);
-  font: 400 14px var(--font-body);
+  margin: 0;
+  padding: 44px 20px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
 }
 
-.footer {
-  margin-top: 28px;
+/* The whole strip is the link — clicking anywhere in it opens LinkedIn. */
+.colophon {
   display: flex;
-  justify-content: flex-end;
-  font: 500 12px var(--font-mono);
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  padding: 12px var(--gutter);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  cursor: pointer;
 }
 
-/* Tablet: 2 columns — clamp any 3-wide tile so it can't overflow the grid. */
+/* The blurb never wraps: it truncates rather than growing the strip to two
+   lines, so the footer is one line at every width. */
+.colophon span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.colophon span:last-child {
+  flex: none;
+  color: var(--ink);
+  border-bottom: 3px solid var(--paint-red);
+  padding-bottom: 1px;
+}
+
+/* ── Two columns ──────────────────────────────────────────────────────── */
+
 @media (max-width: 1023px) {
-  .grid {
+  .deck {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .card--w3 {
+  .car--w3 {
     grid-column: span 2;
+  }
+
+  .cut--a {
+    left: calc(50% - 2.5px);
+  }
+
+  .cut--b {
+    display: none;
   }
 }
 
-/* Mobile — per the comp's 392px view */
+/* ── Phone ────────────────────────────────────────────────────────────── */
+
 @media (max-width: 719px) {
-  .panel {
-    padding: 20px 16px;
-    border-radius: 20px;
+  .hood {
+    flex-direction: column;
   }
 
-  .header {
-    margin: 4px 2px 20px;
+  /* Phone hood: the roundel sits on the wordmark's own line, centred against
+     it, instead of stacking above at full width. The panel clears the toggles
+     overhead, so the row never runs under them. */
+  .hood > .panel {
+    align-items: center;
+    padding-top: 44px;
   }
 
-  .header__name {
+  .roundel {
+    width: auto;
+    padding: 0 0 0 14px;
+  }
+
+  .roundel span {
+    width: 58px;
+    height: 58px;
+    border-width: 4px;
     font-size: 26px;
   }
 
-  .header__sub {
-    font-size: 13px;
+  .hoodplate {
+    padding: 10px 14px 12px;
+    min-width: 0;
   }
 
-  .pills {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    padding-bottom: 2px;
-    margin-bottom: 18px;
-    scrollbar-width: none;
+  /* One line, always: the strap is a tag line, not a paragraph. It takes the
+     width the plate actually has and truncates rather than wrapping. */
+  .strap {
+    max-width: 100%;
+    margin-top: 6px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    letter-spacing: 0.14em;
   }
 
-  .pills::-webkit-scrollbar {
+  .cut {
     display: none;
   }
 
-  .pill {
-    flex: 0 0 auto;
-    font-size: 12px;
-    padding: 8px 15px;
+  .hood__controls {
+    top: 12px;
+    right: 12px;
   }
 
-  .grid {
+  .theme,
+  .lang {
+    font-size: 13px;
+  }
+
+  /* The strips wrap rather than scroll, so every category stays reachable
+     from the first viewport. */
+  .sill {
+    grid-auto-flow: row;
     grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: 176px;
-    gap: 12px;
   }
 
-  /* Keep wide tiles at most 2 columns and cap very tall tiles at 2 rows. */
-  .card--w3 {
+  .deck {
+    grid-auto-rows: 150px;
+  }
+
+  .car--w3 {
     grid-column: span 2;
   }
 
-  .card--h3 {
+  .car--h3 {
     grid-row: span 2;
   }
 
-  .card__cover {
-    height: 88px;
+  /* At phone scale a panel is barely wider than the number, and covers carry
+     their own titles in that corner — so the number steps down with the panel. */
+  /* Covers carry their own wordmarks along the top, and at phone scale the
+     panel is barely wider than the number — so on phones it moves to the foot
+     of the paint, where no cover puts its title. */
+  .car__no {
+    font-size: 32px;
+    top: auto;
+    bottom: 4px;
+    right: 9px;
+    -webkit-text-stroke-width: 2px;
   }
 
-  .card__num {
-    font-size: 26px;
-    bottom: 6px;
-    right: 11px;
+  .car--lead .car__no {
+    font-size: 54px;
+    -webkit-text-stroke-width: 3px;
   }
 
-  .card--featured .card__num {
-    font-size: 50px;
+  .car__status ~ .car__no {
+    top: auto;
   }
 
-  .card__body {
-    padding: 12px 13px 14px;
-    gap: 5px;
+  .car__name {
+    padding: 8px 12px 10px;
   }
 
-  .card--featured .card__body {
-    padding: 15px 16px 17px;
-    gap: 6px;
+  .car--lead .car__name {
+    padding: 11px 14px 13px;
   }
 
-  .card__title {
-    font-size: 15px;
-  }
-
-  .card--featured .card__title {
-    font-size: 21px;
-  }
-
-  .card__desc {
-    font-size: 11.5px;
-    line-height: 1.42;
-  }
-
-  .card--featured .card__desc {
-    font-size: 13px;
-    line-height: 1.5;
-  }
-
-  .card__role {
-    display: none;
-  }
-
-  .card--featured .card__role {
-    display: block;
-    font-size: 10.5px;
+  /* Stays one row on phones too — the blurb truncates instead of stacking. */
+  .colophon {
+    gap: 10px;
   }
 }

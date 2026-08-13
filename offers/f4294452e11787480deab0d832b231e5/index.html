@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MoKu Boho — dwa kierunki do wyboru</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=Azeret+Mono:wght@400;600&display=swap&subset=latin,latin-ext" rel="stylesheet">
+<style>
+  :root {
+    --tlo: #16171a;
+    --tlo-2: #1e2024;
+    --linia: #303338;
+    --tekst: #e8e6e1;
+    --tekst-cichy: #9b968c;
+    --akcent: #d4a15a;
+    --u: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    background: var(--tlo);
+    color: var(--tekst);
+    font-family: 'Archivo', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    padding: calc(var(--u) * 5) calc(var(--u) * 3) calc(var(--u) * 10);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--akcent); color: #16171a; }
+
+  ::-webkit-scrollbar { width: 12px; }
+  ::-webkit-scrollbar-track { background: var(--tlo); }
+  ::-webkit-scrollbar-thumb { background: var(--linia); border: 3px solid var(--tlo); border-radius: 6px; }
+  ::-webkit-scrollbar-thumb:hover { background: #4a4e55; }
+
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--akcent);
+    outline-offset: 4px;
+  }
+
+  .obszar { max-width: 1080px; margin: 0 auto; }
+
+  header {
+    border-bottom: 1px solid var(--linia);
+    padding-bottom: calc(var(--u) * 4);
+    margin-bottom: calc(var(--u) * 6);
+  }
+
+  h1 {
+    font-size: clamp(1.9rem, 5vw, 3.1rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    max-width: 20ch;
+  }
+
+  header p {
+    color: var(--tekst-cichy);
+    max-width: 62ch;
+    margin-top: calc(var(--u) * 2.5);
+    font-size: 1.0625rem;
+  }
+
+  .uwaga {
+    font-family: 'Azeret Mono', ui-monospace, monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+    color: var(--tekst-cichy);
+    border-left: 1px solid var(--akcent);
+    padding-left: calc(var(--u) * 2);
+    margin-top: calc(var(--u) * 4);
+    max-width: 68ch;
+    line-height: 1.7;
+  }
+
+  .lista { display: grid; gap: calc(var(--u) * 2); }
+
+  .wariant {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: calc(var(--u) * 2);
+    background: var(--tlo-2);
+    border: 1px solid var(--linia);
+    padding: calc(var(--u) * 4);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color .45s cubic-bezier(.16,1,.3,1),
+                transform .45s cubic-bezier(.16,1,.3,1),
+                box-shadow .45s cubic-bezier(.16,1,.3,1);
+  }
+
+  .wariant:hover {
+    border-color: var(--akcent);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px -12px rgba(0,0,0,.75);
+  }
+
+  .naglowek-wariantu {
+    display: flex;
+    align-items: baseline;
+    gap: calc(var(--u) * 2);
+    flex-wrap: wrap;
+  }
+
+  .numer {
+    font-family: 'Azeret Mono', ui-monospace, monospace;
+    font-size: 0.75rem;
+    color: var(--akcent);
+    letter-spacing: 0.08em;
+  }
+
+  .wariant h2 {
+    font-size: clamp(1.25rem, 3vw, 1.6rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .wariant .teza {
+    color: var(--tekst-cichy);
+    max-width: 72ch;
+    font-size: 0.9375rem;
+  }
+
+  .paski { display: flex; gap: 0; height: 22px; width: 100%; max-width: 320px; }
+  .paski span { flex: 1; }
+
+  .meta {
+    font-family: 'Azeret Mono', ui-monospace, monospace;
+    font-size: 0.6875rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--tekst-cichy);
+  }
+
+  .meta b { color: var(--tekst); font-weight: 600; }
+
+  footer {
+    margin-top: calc(var(--u) * 8);
+    padding-top: calc(var(--u) * 4);
+    border-top: 1px solid var(--linia);
+    color: var(--tekst-cichy);
+    font-size: 0.875rem;
+    max-width: 70ch;
+  }
+
+  footer strong { color: var(--tekst); font-weight: 600; }
+
+  @media (min-width: 760px) {
+    .wariant { grid-template-columns: 1fr 320px; align-items: start; column-gap: calc(var(--u) * 5); }
+    .naglowek-wariantu, .teza { grid-column: 1; }
+    .prawa { grid-column: 2; grid-row: 1 / span 3; display: grid; gap: calc(var(--u) * 1.5); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+    .wariant:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+<div class="obszar">
+
+  <header>
+    <h1>MoKu Boho — dwa kierunki do wyboru</h1>
+    <p>Dwa osobne światy wizualne dla tej samej strony. Ta sama treść, te same
+       kategorie oferty, ten sam cel: żeby ktoś napisał albo zadzwonił. Różni się to,
+       czym strona jest zrobiona i jak się ją czyta.</p>
+    <p class="uwaga">Zdjęcia nie są jeszcze podmienione. Każde miejsce na zdjęcie to opisany
+       placeholder o właściwych proporcjach — po wybraniu kierunku wstawiam realne zdjęcia
+       i układ się nie rozjedzie. Nigdzie nie ma cen, terminów ani opinii, bo nie są ustalone.</p>
+  </header>
+
+  <div class="lista">
+
+    <a class="wariant" href="warianty/1-zielnik/index.html">
+      <div class="naglowek-wariantu">
+        <span class="numer">01</span>
+        <h2>Zielnik</h2>
+      </div>
+      <p class="teza">Arkusz zielnikowy. Każda praca to okaz zamontowany na papierowych narożnikach
+         i opisany etykietą z rubrykami: rodzaj, okazja, materiał. Twoja okazja dostaje własny arkusz —
+         pusta rubryka „OKAZJA" jest wezwaniem do działania.</p>
+      <div class="prawa">
+        <div class="paski">
+          <span style="background:#efe9dc"></span>
+          <span style="background:#3b2f26"></span>
+          <span style="background:#6b7355"></span>
+          <span style="background:#3f5c9a"></span>
+          <span style="background:#d9cfb8"></span>
+        </div>
+        <p class="meta">Papier czerpany · <b>Faustina</b> + maszynopis</p>
+        <p class="meta">Ruch: okaz unosi się z arkusza</p>
+      </div>
+    </a>
+
+    <a class="wariant" href="warianty/3-wycinanka/index.html">
+      <div class="naglowek-wariantu">
+        <span class="numer">02</span>
+        <h2>Wycinanka</h2>
+      </div>
+      <p class="teza">Polskie cięcie w papierze: płaskie warstwy nasyconego koloru, symetria osiowa,
+         ząbkowane krawędzie. Każda kategoria ma własną wycinankę i własny kolor tła.
+         Świadome odrzucenie kremowo-beżowego „boho z Pinteresta".</p>
+      <div class="prawa">
+        <div class="paski">
+          <span style="background:#d81b60"></span>
+          <span style="background:#e64a19"></span>
+          <span style="background:#1e51a8"></span>
+          <span style="background:#00796b"></span>
+          <span style="background:#f9a825"></span>
+        </div>
+        <p class="meta">Pełna paleta · <b>Yeseva One</b> + Rubik</p>
+        <p class="meta">Ruch: warstwy papieru rozsuwają się</p>
+      </div>
+    </a>
+
+  </div>
+
+  <footer>
+    <p>Oba warianty niosą tę samą ofertę: <strong>kartki okolicznościowe, zaproszenia,
+       wianki, pudełka i ścianki ozdobne z balonami</strong>. W obu ścianka balonowa jest
+       wyróżniona inaczej niż reszta, bo to usługa na miejscu, a nie przedmiot do wysyłki.</p>
+  </footer>
+
+</div>
+</body>
+</html>

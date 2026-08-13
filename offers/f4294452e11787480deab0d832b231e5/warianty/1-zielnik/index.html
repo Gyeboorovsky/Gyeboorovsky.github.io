@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MoKu Boho — kartki, wianki i ścianki balonowe robione pojedynczo · Tczew</title>
+<meta name="description" content="MoKu Boho z Tczewa: ręcznie robione kartki okolicznościowe, zaproszenia, wianki z suszonych kwiatów, zdobione pudełka i ścianki ozdobne z balonami. Każda rzecz powstaje osobno, dla jednej okazji.">
+<meta name="theme-color" content="#3d3a32">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Faustina:ital,wght@0,400;0,500;0,600;1,400&subset=latin,latin-ext&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────────────────────────
+   MoKu Boho — wariant „arkusz zielnikowy”
+   ───────────────────────────────────────────────────────────── */
+
+:root{
+  /* materiały */
+  --papier:        #efe9dc;   /* arkusz — papier czerpany */
+  --papier-jasny:  #f4efe5;   /* pole okazu, jaśniejsze o pół tonu */
+  --karton:        #3d3a32;   /* teczka — ciemny karton archiwalny */
+  --karton-cien:   #2e2c26;
+  --atrament:      #3b2f26;   /* atrament główny */
+  --atrament-mgla: rgba(59,47,38,.62);
+  --zielen:        #6b7355;   /* zieleń zielnikowa — kreski, ramki */
+  --zielen-tekst:  #575e42;   /* ta sama zieleń ściemniona do tekstu (5.6:1) */
+  --chaber:        #3f5c9a;   /* AKCENT — tylko rubryka do wypełnienia, kursor, focus, CTA */
+  --chaber-jasny:  #8aa6dd;   /* ten sam akcent na ciemnym kartonie */
+  --tasma:         rgba(217,207,184,.78); /* taśma lniana */
+  --tasma-brzeg:   rgba(160,148,122,.45);
+
+  --miara: 62ch;
+  --wypelnienie: clamp(1.35rem, 5vw, 4.25rem);
+  --ease-wyklad: cubic-bezier(.16,1,.3,1);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{
+  -webkit-text-size-adjust:100%;
+  scrollbar-color: var(--zielen) var(--karton-cien);
+  scrollbar-width: thin;
+}
+@media (prefers-reduced-motion: no-preference){
+  html{scroll-behavior:smooth}
+}
+body{
+  margin:0;
+  background:var(--karton);
+  color:var(--atrament);
+  font-family:"Faustina",Georgia,"Times New Roman",serif;
+  font-size:clamp(1rem,.96rem + .22vw,1.1rem);
+  line-height:1.68;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ── faktura: karton teczki ───────────────────────────────── */
+body::before{
+  content:"";
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='k'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23k)'/%3E%3C/svg%3E");
+  opacity:.16;
+  mix-blend-mode:overlay;
+}
+
+::selection{background:var(--zielen-tekst);color:var(--papier);text-shadow:none}
+
+:focus-visible{
+  outline:2px solid var(--chaber);
+  outline-offset:3px;
+  border-radius:2px;
+}
+.teczka :focus-visible,
+.stopka :focus-visible{outline-color:var(--chaber-jasny)}
+
+::-webkit-scrollbar{width:13px;height:13px}
+::-webkit-scrollbar-track{background:var(--karton-cien)}
+::-webkit-scrollbar-thumb{
+  background:var(--zielen);
+  border:3px solid var(--karton-cien);
+  border-radius:8px;
+}
+::-webkit-scrollbar-thumb:hover{background:#7f8867}
+
+img{max-width:100%;display:block}
+
+/* ── pomijanie nawigacji ──────────────────────────────────── */
+.pomin{
+  position:absolute; left:.75rem; top:-6rem; z-index:60;
+  background:var(--papier); color:var(--atrament);
+  padding:.7rem 1.1rem;
+  font-family:"Courier Prime",ui-monospace,monospace;
+  font-size:.8rem; letter-spacing:.06em; text-transform:uppercase;
+  text-decoration:none;
+  box-shadow:0 6px 18px -6px rgba(0,0,0,.6);
+  transition:top .18s var(--ease-wyklad);
+}
+.pomin:focus-visible{top:.75rem}
+
+/* ── teczka: pionowy rejestr arkuszy ──────────────────────── */
+.teczka{
+  display:none;
+  position:fixed; z-index:40;
+  left:clamp(.6rem,1.6vw,1.5rem); top:50%;
+  transform:translateY(-50%);
+}
+.teczka ol{list-style:none;margin:0;padding:0;display:grid;gap:.15rem}
+.teczka a{
+  display:grid;
+  gap:.12rem;
+  padding:.4rem .6rem;
+  font-family:"Courier Prime",ui-monospace,monospace;
+  color:rgba(217,207,184,.84);
+  text-decoration:none;
+  border-left:1px solid rgba(217,207,184,.2);
+  transition:color .3s var(--ease-wyklad), border-color .3s var(--ease-wyklad);
+}
+.teczka .nr{font-size:.72rem;letter-spacing:.12em}
+.teczka .co{font-size:.68rem;letter-spacing:.04em;color:rgba(217,207,184,.62)}
+.teczka a:hover{color:#e9e0cc;border-left-color:rgba(217,207,184,.7)}
+.teczka a:hover .co{color:rgba(217,207,184,.88)}
+.teczka a[aria-current="true"]{
+  color:#efe9dc;
+  border-left-color:var(--zielen);
+  border-left-width:2px;
+}
+.teczka a[aria-current="true"] .co{color:rgba(217,207,184,.92)}
+.teczka-tytul{
+  font-family:"Caveat",cursive;
+  font-size:1.4rem;
+  color:rgba(217,207,184,.88);
+  margin:0 0 .7rem .5rem;
+  line-height:1;
+}
+@media (min-width:1180px){ .teczka{display:block} }
+
+/* ── ARKUSZ ───────────────────────────────────────────────── */
+.arkusze{position:relative;z-index:1;display:grid;gap:5px}
+@media (min-width:760px){ .arkusze{gap:clamp(1.6rem,3.4vw,3.4rem);padding:clamp(1.6rem,3.4vw,3.4rem) 1rem} }
+
+.arkusz{
+  position:relative;
+  isolation:isolate;
+  width:100%;
+  margin:0 auto;
+  padding:var(--wypelnienie);
+  background:var(--papier);
+  scroll-margin-top:1rem;
+}
+.arkusz::before{               /* włókna papieru czerpanego */
+  content:"";
+  position:absolute; inset:0; z-index:-1; pointer-events:none;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.03 0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23w)'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23p)'/%3E%3C/svg%3E");
+  opacity:.075;
+  mix-blend-mode:multiply;
+}
+@media (min-width:760px){
+  .arkusz{
+    max-width:min(1080px,96vw);
+    box-shadow:
+      0 2px 5px rgba(0,0,0,.28),
+      0 22px 46px -20px rgba(0,0,0,.62);
+  }
+  .arkusz--szeroki{max-width:min(1260px,98vw)}
+}
+/* gdy rejestr teczki jest widoczny, arkusz nigdy pod niego nie wchodzi */
+@media (min-width:1180px){
+  .arkusz{max-width:min(1080px,calc(100vw - 380px))}
+  .arkusz--szeroki{max-width:min(1260px,calc(100vw - 360px))}
+}
+
+/* numer arkusza — w rogu, na taśmie */
+.ark-nr{
+  position:absolute; top:0; right:clamp(1rem,4vw,3.2rem);
+  padding:.75rem .85rem .5rem;
+  font-family:"Courier Prime",ui-monospace,monospace;
+  font-size:.72rem; letter-spacing:.2em;
+  color:var(--zielen-tekst);
+  background:var(--tasma);
+  border-left:1px solid var(--tasma-brzeg);
+  border-right:1px solid var(--tasma-brzeg);
+}
+.ark-nr::after{
+  content:"";
+  position:absolute; left:0; right:0; bottom:0; height:6px;
+  background:repeating-linear-gradient(90deg,transparent 0 2px,rgba(160,148,122,.28) 2px 3px);
+}
+
+/* ── MONTAŻ OKAZU ─────────────────────────────────────────── */
+.montaz{
+  position:relative;
+  margin:0;
+  transform:rotate(var(--przechyl,0deg));
+}
+.okaz{
+  position:relative;
+  background:var(--papier-jasny);
+  box-shadow:
+    0 2px 4px rgba(43,34,26,.14),
+    0 9px 16px -9px rgba(43,34,26,.24);
+  transition:transform 620ms var(--ease-wyklad), box-shadow 620ms var(--ease-wyklad);
+}
+.montaz:hover .okaz,
+.montaz:focus-within .okaz{
+  transform:translateY(-4px);
+  box-shadow:
+    0 7px 10px rgba(43,34,26,.15),
+    0 24px 38px -14px rgba(43,34,26,.36);
+  transition-duration:280ms;
+}
+/* papierowe narożniki montażowe — zostają na arkuszu */
+.rog{
+  position:absolute; z-index:2;
+  width:clamp(20px,4.4vw,30px); aspect-ratio:1;
+  background:linear-gradient(135deg,#e6dcc4 0%,#d3c7ab 62%,#c3b696 100%);
+  box-shadow:0 1px 2px rgba(43,34,26,.26);
+  pointer-events:none;
+}
+.rog--lg{top:-1px;left:-1px;clip-path:polygon(0 0,100% 0,0 100%)}
+.rog--pg{top:-1px;right:-1px;clip-path:polygon(100% 0,100% 100%,0 0)}
+.rog--ld{bottom:-1px;left:-1px;clip-path:polygon(0 0,0 100%,100% 100%)}
+.rog--pd{bottom:-1px;right:-1px;clip-path:polygon(100% 0,100% 100%,0 100%)}
+
+/* ── PLACEHOLDER ZDJĘCIA — puste miejsce na arkuszu ───────── */
+.klisza{
+  position:relative;
+  aspect-ratio:var(--ar,4/5);
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:.5rem;
+  padding:clamp(1rem,3vw,1.9rem);
+  text-align:center;
+  background:var(--papier-jasny);
+  border:1px solid var(--atrament-mgla);
+}
+.klisza::before{
+  content:"";
+  position:absolute; inset:8px;
+  border:1px dotted rgba(107,115,85,.6);
+  pointer-events:none;
+}
+.klisza-etykieta{
+  font-family:"Courier Prime",ui-monospace,monospace;
+  font-size:.7rem; letter-spacing:.24em;
+  color:var(--zielen-tekst);
+}
+.klisza-tresc{
+  font-family:"Faustina",serif;
+  font-style:italic;
+  font-size:clamp(.95rem,.9rem + .4vw,1.16rem);
+  line-height:1.42;
+  max-width:26ch;
+  color:var(--atrament);
+  margin:0;
+}
+.klisza-format{
+  font-family:"Courier Prime",ui-monospace,monospace;
+  font-size:.72rem; letter-spacing:.14em;
+  color:var(--zielen-tekst);
+  padding-top:.35rem;
+  border-top:1px solid rgba(107,115,85,.42);
+}
+
+/* ── ETYKIETA OKAZU ───────────────────────────────────────── */
+.etykieta{
+  position:relative;
+  margin:0;
+  padding:clamp(1rem,2.4vw,1.5rem) clamp(1rem,2.4vw,1.5rem) clamp(.9rem,2vw,1.25rem);
+  background:#f6f2e8;
+  border:1px solid rgba(107,115,85,.5);
+  box-shadow:0 1px 3px rgba(43,34,26,.13), 0 10px 20px -14px rgba(43,34,26,.3);
+  font-family:"Courier Prime",ui-monospace,monospace;
+}
+.etykieta::after{                 /* taśma lniana, lewy górny róg */
+  content:"";
+  position:absolute; left:-14px; top:-9px;
+  width:64px; height:20px;
+  background:var(--tasma);
+  border-top:1px solid var(--tasma-brzeg);
+  border-bottom:1px solid var(--tasma-brzeg);
+  transform:rotate(-6deg);
+}
+.etykieta-naglowek{
+  display:flex; align-items:baseline; justify-content:space-between; gap:1rem;
+  padding-bottom:.6rem; margin-bottom:.75rem;
+  border-bottom:1.5px solid var(--zielen);
+  font-size:.72rem; letter-spacing:.2em;
+  color:var(--zielen-tekst);
+}
+.rubryki{margin:0;display:grid;gap:.6rem}
+.rubryki>div{
+  display:grid; gap:.18rem;
+  padding-bottom:.6rem;
+  border-bottom:1px dotted rgba(107,115,85,.5);
+}
+.rubryki>div:last-child{border-bottom:0;padding-bottom:0}
+.rubryki dt{
+  font-size:.7rem; letter-spacing:.2em;
+  color:var(--zielen-tekst);
+}
+.rubryki dd{
+  margin:0;
+  font-size:.85rem; line-height:1.55;
+  color:var(--atrament);
+}
+.rubryki dd em{font-style:italic;color:var(--atrament-mgla)}
+
+/* rubryka pusta — czeka na wypełnienie */
+.do-wpisania dt{color:var(--chaber)}
+.do-wpisania dd{color:var(--chaber)}
+.linia{                          /* pusta linijka rubryki, czeka na wpis */
+  display:block;
+  min-height:1.65em;
+  border-bottom:1.5px solid var(--chaber);
+}
+.kursor{
+  display:inline-block;
+  width:.6ch; height:1.05em;
+  vertical-align:-.18em;
+  background:var(--chaber);
+  animation:mruga 1.08s steps(1,end) infinite;
+}
+@keyframes mruga{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+/* ── EKRAN PIERWSZY ───────────────────────────────────────── */
+.arkusz--tytulowy{
+  min-height:100svh;
+  display:flex; flex-direction:column;
+  justify-content:center;
+  gap:clamp(1.6rem,4vw,2.6rem);
+}
+.sygnatura{
+  margin:0;
+  font-family:"Caveat",cursive;
+  font-weight:600;
+  font-size:clamp(3.2rem,15vw,6rem);
+  line-height:.92;
+  letter-spacing:-.01em;
+  color:var(--atrament);
+}
+.sygnatura::after{               /* pociągnięcie pod podpisem */
+  content:"";
+  display:block;
+  width:clamp(120px,26vw,260px); height:2px;
+  margin-top:.34rem;
+  background:linear-gradient(90deg,var(--atrament) 0%,var(--atrament) 72%,transparent 100%);
+  opacity:.55;
+  border-radius:2px;
+}
+.wprowadzenie{
+  max-width:var(--miara);
+  margin:0;
+  font-size:clamp(1.06rem,1rem + .5vw,1.32rem);
+  line-height:1.62;
+}
+.wprowadzenie strong{font-weight:600}
+.miejsce{
+  font-family:"Courier Prime",ui-monospace,monospace;
+  font-size:.72rem; letter-spacing:.22em;
+  color:var(--zielen-tekst);
+  margin:.6rem 0 0;
+}
+
+.tytul-uklad{display:grid;gap:clamp(1.5rem,4vw,2.6rem)}
+@media (min-width:900px){
+  .tytul-uklad{grid-template-columns:minmax(0,1fr) clamp(230px,23vw,290px);align-items:start}
+}
+
+/* etykieta pionowa przy okazie tytułowym */
+@media (min-width:900px){
+  .etykieta--pionowa{
+    align-self:start;
+    position:sticky; top:clamp(1.5rem,5vh,4rem);
+    transform:rotate(.7deg);
+  }
+}
+.rubryka-cta{
+  display:block;
+  text-decoration:none;
+  color:inherit;
+  border-radius:2px;
+}
+.rubryka-cta .cta-wskaz{
+  display:block;
+  margin-top:.5rem;
+  font-size:.74rem; letter-spacing:.1em;
+  color:var(--chaber);
+  text-decoration:underline;
+  text-decoration-thickness:1px;
+  text-underline-offset:4px;
+}
+.rubryka-cta:hover .cta-wskaz{text-decoration-thickness:2px}
+
+/* ── OPIS ARKUSZA ─────────────────────────────────────────── */
+.arkusz-uklad{display:grid;gap:clamp(1.7rem,4vw,3rem)}
+@media (min-width:900px){
+  .arkusz-uklad{grid-template-columns:minmax(0,1.06fr) minmax(280px,.94fr);align-items:start}
+  .arkusz-uklad--szeroki{grid-template-columns:minmax(0,1.4fr) minmax(290px,.6fr)}
+  .arkusz-uklad>.opis{align-self:end}
+  .arkusz--odwrocony .okazy{order:2}
+  .arkusz--odwrocony .opis{order:1}
+}
+.opis{display:grid;gap:clamp(1rem,2.2vw,1.5rem);max-width:52ch}
+.opis h2{
+  margin:0;
+  font-family:"Faustina",serif;
+  font-weight:600;
+  font-size:clamp(1.85rem,1.5rem + 1.8vw,2.9rem);
+  line-height:1.1;
+  letter-spacing:-.015em;
+  text-wrap:balance;
+}
+.opis p{margin:0;max-width:var(--miara)}
+.opis p+p{margin-top:-.35rem}
+
+.okazy{display:grid;gap:clamp(1.4rem,3.4vw,2.4rem)}
+.okazy>.montaz{max-width:min(460px,100%)}
+.montaz--tytulowy{max-width:min(440px,100%)}
+.okazy--duet{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+.okazy--zbior{grid-template-columns:repeat(2,minmax(0,1fr))}
+.okazy--duet>.montaz,
+.okazy--zbior>.montaz{max-width:100%}
+.okazy--zbior>:first-child{grid-column:1 / -1;max-width:min(400px,100%);justify-self:center}
+.arkusz--szeroki .okazy>.montaz{max-width:100%}
+
+/* ── NOTATKA „jak to powstaje” ────────────────────────────── */
+.notatka{
+  position:relative;
+  width:min(560px,94vw);
+  margin:0 auto;
+  padding:clamp(1.8rem,4.4vw,2.9rem) clamp(1.4rem,4vw,3rem) clamp(1.8rem,4vw,2.6rem);
+  background:#f2ecdf;
+  transform:rotate(-.5deg);
+  box-shadow:0 2px 4px rgba(0,0,0,.24), 0 16px 34px -18px rgba(0,0,0,.55);
+}
+.notatka::before,.notatka::after{
+  content:"";
+  position:absolute; top:-11px;
+  width:88px; height:24px;
+  background:var(--tasma);
+  border-top:1px solid var(--tasma-brzeg);
+  border-bottom:1px solid var(--tasma-brzeg);
+}
+.notatka::before{left:8%;transform:rotate(-3.5deg)}
+.notatka::after{right:8%;transform:rotate(2.5deg)}
+.notatka h2{
+  margin:0 0 1.2rem;
+  font-family:"Caveat",cursive;
+  font-weight:600;
+  font-size:clamp(2rem,1.4rem + 2.4vw,2.9rem);
+  line-height:1;
+}
+.kroki{
+  list-style:none;
+  margin:0; padding:0;
+  display:grid; gap:1rem;
+  counter-reset:krok;
+}
+.kroki li{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  gap:.9rem;
+  align-items:baseline;
+  padding-bottom:1rem;
+  border-bottom:1px dotted rgba(107,115,85,.5);
+}
+.kroki li:last-child{border-bottom:0;padding-bottom:0}
+.kroki li::before{
+  counter-increment:krok;
+  content:counter(krok,upper-roman) ".";
+  font-family:"Courier Prime",ui-monospace,monospace;
+  font-size:.78rem; letter-spacing:.12em;
+  color:var(--zielen-tekst);
+}
+.kroki span{font-size:clamp(1.02rem,.98rem + .3vw,1.18rem)}
+
+/* ── ŚCIANKA — inna logistyka, inna rubryka ───────────────── */
+.uwaga-usluga{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  gap:.85rem;
+  align-items:start;
+  padding:.95rem 0 0;
+  border-top:1.5px solid var(--zielen);
+  font-family:"Courier Prime",ui-monospace,monospace;
+  font-size:.79rem;
+  line-height:1.6;
+  color:var(--zielen-tekst);
+  max-width:46ch;
+}
+.uwaga-usluga svg{width:22px;height:22px;flex:none;margin-top:.1rem}
+
+/* ── ARKUSZ KONTAKTOWY ────────────────────────────────────── */
+/* arkusz pusty — jaśniejszy, bez okazu; czeka */
+.arkusz--kontakt .klisza{background:var(--papier)}
+.arkusz--kontakt .klisza::before{border-style:dashed}
+
+.zgloszenie{
+  list-style:none;
+  margin:0;padding:0;
+  display:grid;gap:.55rem;
+}
+.zgloszenie li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:.6rem;align-items:start}
+.zgloszenie svg{width:19px;height:19px;flex:none;margin-top:.12rem;color:var(--zielen-tekst)}
+.zgloszenie a{
+  color:var(--atrament);
+  text-decoration:underline;
+  text-decoration-thickness:1px;
+  text-underline-offset:3px;
+  text-decoration-color:rgba(107,115,85,.7);
+  border-radius:2px;
+}
+.zgloszenie a:hover{text-decoration-thickness:2px;text-decoration-color:var(--atrament)}
+.brak-danych{
+  font-style:italic;
+  color:var(--zielen-tekst);
+  background:repeating-linear-gradient(90deg,transparent 0 4px,rgba(107,115,85,.25) 4px 5px) bottom/100% 1px no-repeat;
+}
+
+.cta{
+  display:inline-flex; align-items:center; gap:.6rem;
+  align-self:start;
+  padding:.86rem 1.5rem;
+  background:var(--chaber);
+  color:var(--papier);
+  font-family:"Courier Prime",ui-monospace,monospace;
+  font-size:.82rem; letter-spacing:.13em; text-transform:uppercase;
+  text-decoration:none;
+  box-shadow:0 2px 3px rgba(43,34,26,.24), 0 12px 22px -12px rgba(43,34,26,.5);
+  transition:transform 520ms var(--ease-wyklad), box-shadow 520ms var(--ease-wyklad), background-color .3s var(--ease-wyklad);
+}
+.cta:hover{
+  background:#36508a;
+  transform:translateY(-2px);
+  box-shadow:0 4px 5px rgba(43,34,26,.26), 0 18px 30px -14px rgba(43,34,26,.58);
+  transition-duration:220ms;
+}
+.cta svg{width:18px;height:18px}
+
+/* ── STOPKA ───────────────────────────────────────────────── */
+.stopka{
+  position:relative; z-index:1;
+  padding:clamp(2.6rem,7vw,4.6rem) 1.5rem clamp(2rem,5vw,3.4rem);
+  text-align:center;
+  color:rgba(217,207,184,.78);
+}
+.stopka .podpis{
+  font-family:"Caveat",cursive;
+  font-size:clamp(2rem,7vw,2.8rem);
+  color:#e4dbc6;
+  margin:0 0 .3rem;
+  line-height:1;
+}
+.stopka p{
+  margin:0 auto;
+  max-width:44ch;
+  font-family:"Courier Prime",ui-monospace,monospace;
+  font-size:.73rem; letter-spacing:.14em;
+}
+.stopka a{color:#e4dbc6;text-underline-offset:3px}
+
+/* ── ograniczenie ruchu ───────────────────────────────────── */
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .kursor{animation:none;opacity:1}
+  .okaz,.cta,.teczka a,.pomin{transition:box-shadow 200ms linear, color 200ms linear}
+  .montaz:hover .okaz,
+  .montaz:focus-within .okaz,
+  .cta:hover{transform:none}
+}
+</style>
+</head>
+<body>
+
+<!--
+THESIS: Arkusz zielnikowy. Każda rzecz od MoKu to okaz: jeden egzemplarz, jedna okazja, jedno imię, jedna data — zamontowany na arkuszu i opisany etykietą. Strona odmawia siatki jednakowych kart z ofertą; zamiast tego jest teczka arkuszy zielnikowych, gdzie etykieta okazu JEST opisem produktu.
+OWN-WORLD: Papier czerpany o odcieniu bardzo jasnego lnu, atrament sepiowo-brązowy, sucha zieleń zielnikowa, jeden akcent chabrowy z prawdziwego bukieciku. Materiały: papierowe narożniki montażowe, paski taśmy lnianej, wpisana odręcznie sygnatura, drukowana etykieta okazu z rubrykami.
+STORY: Odwiedzająca widzi, że to nie sklep tylko pracownia katalogująca pojedyncze prace; rozumie że jej okazja dostanie własny arkusz; pisze podając okazję i datę.
+FIRST VIEWPORT: Pełnoekranowy arkusz. Duży okaz (placeholder na zdjęcie) zamontowany lekko krzywo na czterech papierowych narożnikach, po prawej pionowa etykieta okazu z rubrykami, gdzie rubryka OKAZJA jest pusta i mruga kursorem — to jest wezwanie do działania. H1 wpisany odręczną sygnaturą u góry arkusza.
+FORM: arkusz zielnikowy, kandydat 1 z uporządkowanej listy, seed f9edb119.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+-->
+
+<a class="pomin" href="#ark-1">Przejdź do arkuszy</a>
+
+<nav class="teczka" aria-label="Rejestr arkuszy">
+  <p class="teczka-tytul">Teczka</p>
+  <ol>
+    <li><a href="#ark-1"><span class="nr">ARK. I</span><span class="co">kartki</span></a></li>
+    <li><a href="#ark-2"><span class="nr">ARK. II</span><span class="co">zaproszenia</span></a></li>
+    <li><a href="#ark-3"><span class="nr">ARK. III</span><span class="co">wianki</span></a></li>
+    <li><a href="#ark-4"><span class="nr">ARK. IV</span><span class="co">pudełka</span></a></li>
+    <li><a href="#ark-5"><span class="nr">ARK. V</span><span class="co">ścianki</span></a></li>
+    <li><a href="#kontakt"><span class="nr">ARK. —</span><span class="co">arkusz pusty</span></a></li>
+  </ol>
+</nav>
+
+<main class="arkusze">
+
+  <!-- ═══ ARKUSZ TYTUŁOWY ═══ -->
+  <section class="arkusz arkusz--tytulowy" aria-labelledby="tytul">
+    <span class="ark-nr">ARK. 0</span>
+
+    <header>
+      <h1 class="sygnatura" id="tytul">MoKu&nbsp;Boho</h1>
+      <p class="miejsce">PRACOWNIA · TCZEW</p>
+    </header>
+
+    <div class="tytul-uklad">
+      <div>
+        <figure class="montaz montaz--tytulowy" style="--przechyl:-1.7deg">
+          <div class="okaz">
+            <div class="klisza" style="--ar:4/5">
+              <span class="klisza-etykieta">ZDJĘCIE</span>
+              <p class="klisza-tresc">serce z suszonych kwiatów „W Dniu Ślubu” — okaz otwierający</p>
+              <span class="klisza-format">pion 4:5</span>
+            </div>
+          </div>
+          <span class="rog rog--lg" aria-hidden="true"></span>
+          <span class="rog rog--pg" aria-hidden="true"></span>
+          <span class="rog rog--ld" aria-hidden="true"></span>
+          <span class="rog rog--pd" aria-hidden="true"></span>
+        </figure>
+
+        <p class="wprowadzenie" style="margin-top:clamp(1.4rem,3.4vw,2.2rem)">
+          Każda rzecz powstaje osobno — dla jednej okazji i dla jednej osoby.
+          <strong>To imię, ta data, te suszone kwiaty, ta wstążka.</strong>
+          Nie wybierasz z katalogu: piszesz, ustalamy szczegóły, a potem składam
+          jeden egzemplarz i podpisuję go Twoją okazją.
+        </p>
+      </div>
+
+      <div class="etykieta etykieta--pionowa">
+        <div class="etykieta-naglowek"><span>ETYKIETA OKAZU</span><span>0</span></div>
+        <dl class="rubryki">
+          <div>
+            <dt>PRACOWNIA</dt>
+            <dd>MoKu Boho, Tczew</dd>
+          </div>
+          <div>
+            <dt>ZBIÓR</dt>
+            <dd>kartki · zaproszenia · wianki · pudełka · ścianki z balonami</dd>
+          </div>
+          <div>
+            <dt>WYKONANIE</dt>
+            <dd>pojedynczo, na zamówienie</dd>
+          </div>
+          <div class="do-wpisania">
+            <dt>OKAZJA</dt>
+            <dd>
+              <a class="rubryka-cta" href="#kontakt">
+                <span class="linia"><span class="kursor" aria-hidden="true"></span></span>
+                <span class="cta-wskaz">wpisz swoją okazję →</span>
+              </a>
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ NOTATKA: jak powstaje okaz ═══ -->
+  <section class="notatka" aria-labelledby="jak">
+    <h2 id="jak">Jak powstaje okaz</h2>
+    <ol class="kroki">
+      <li><span>Piszesz z jaką okazją i na kiedy.</span></li>
+      <li><span>Ustalamy szczegóły: imię, datę, kolory, kwiaty.</span></li>
+      <li><span>Robię ręcznie, sztuka po sztuce.</span></li>
+    </ol>
+  </section>
+
+  <!-- ═══ ARK. I — KARTKI ═══ -->
+  <section class="arkusz" id="ark-1" aria-labelledby="ark-1-tyt">
+    <span class="ark-nr">ARK. I</span>
+    <div class="arkusz-uklad">
+      <div class="okazy">
+        <figure class="montaz" style="--przechyl:1.4deg">
+          <div class="okaz">
+            <div class="klisza" style="--ar:4/5">
+              <span class="klisza-etykieta">ZDJĘCIE</span>
+              <p class="klisza-tresc">kartka „Sto Lat” z koronkowymi skrzydłami</p>
+              <span class="klisza-format">pion 4:5</span>
+            </div>
+          </div>
+          <span class="rog rog--lg" aria-hidden="true"></span>
+          <span class="rog rog--pg" aria-hidden="true"></span>
+          <span class="rog rog--ld" aria-hidden="true"></span>
+          <span class="rog rog--pd" aria-hidden="true"></span>
+        </figure>
+      </div>
+
+      <div class="opis">
+        <h2 id="ark-1-tyt">Kartki okolicznościowe</h2>
+        <p>
+          Składane z papieru czerpanego, z suszkami, koronką i wstążką. Na środku
+          zawsze to jedno imię i ta jedna data — dlatego żadna kartka nie wychodzi
+          dwa razy taka sama.
+        </p>
+        <p>
+          Napisz, co ma być na środku: „Sto Lat”, „W Dniu Ślubu”, „Pamiątka
+          Komunii Świętej” — i w jakich kolorach.
+        </p>
+
+        <div class="etykieta">
+          <div class="etykieta-naglowek"><span>ETYKIETA OKAZU</span><span>I</span></div>
+          <dl class="rubryki">
+            <div><dt>RODZAJ</dt><dd>kartka okolicznościowa, ręcznie składana</dd></div>
+            <div><dt>OKAZJE</dt><dd>ślub · komunia · chrzest · urodziny · rocznica</dd></div>
+            <div><dt>MATERIAŁ</dt><dd>papier czerpany, suszone kwiaty, koronka, wstążka</dd></div>
+            <div><dt>WYKONANIE</dt><dd>pojedynczo, na zamówienie</dd></div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ ARK. II — ZAPROSZENIA ═══ -->
+  <section class="arkusz arkusz--odwrocony" id="ark-2" aria-labelledby="ark-2-tyt">
+    <span class="ark-nr">ARK. II</span>
+    <div class="arkusz-uklad">
+      <div class="okazy okazy--duet">
+        <figure class="montaz" style="--przechyl:-1.1deg">
+          <div class="okaz">
+            <div class="klisza" style="--ar:4/5">
+              <span class="klisza-etykieta">ZDJĘCIE</span>
+              <p class="klisza-tresc">zaproszenie boho z aparatem i suszkami</p>
+              <span class="klisza-format">pion 4:5</span>
+            </div>
+          </div>
+          <span class="rog rog--lg" aria-hidden="true"></span>
+          <span class="rog rog--pg" aria-hidden="true"></span>
+          <span class="rog rog--ld" aria-hidden="true"></span>
+          <span class="rog rog--pd" aria-hidden="true"></span>
+        </figure>
+        <figure class="montaz" style="--przechyl:1.9deg;margin-top:clamp(1.2rem,4vw,3rem)">
+          <div class="okaz">
+            <div class="klisza" style="--ar:4/5">
+              <span class="klisza-etykieta">ZDJĘCIE</span>
+              <p class="klisza-tresc">komplet zaproszeń rozłożony na stole — detal sznurka i pieczęci</p>
+              <span class="klisza-format">pion 4:5</span>
+            </div>
+          </div>
+          <span class="rog rog--lg" aria-hidden="true"></span>
+          <span class="rog rog--pg" aria-hidden="true"></span>
+          <span class="rog rog--ld" aria-hidden="true"></span>
+          <span class="rog rog--pd" aria-hidden="true"></span>
+        </figure>
+      </div>
+
+      <div class="opis">
+        <h2 id="ark-2-tyt">Zaproszenia</h2>
+        <p>
+          Całe komplety na jedną uroczystość — w jednym papierze, jednym sznurku
+          i jednej kolorystyce, żeby wszystkie koperty wyglądały jak z jednego
+          zbioru.
+        </p>
+        <p>
+          Imiona gości, data, miejsce, mapka — wszystko wpisujemy razem, zanim
+          cokolwiek pójdzie do druku i składania.
+        </p>
+
+        <div class="etykieta">
+          <div class="etykieta-naglowek"><span>ETYKIETA OKAZU</span><span>II</span></div>
+          <dl class="rubryki">
+            <div><dt>RODZAJ</dt><dd>komplet zaproszeń na uroczystość</dd></div>
+            <div><dt>OKAZJE</dt><dd>ślub · komunia · chrzest · jubileusz</dd></div>
+            <div><dt>MATERIAŁ</dt><dd>papier czerpany, suszki, sznurek lniany, wstążka</dd></div>
+            <div><dt>WYKONANIE</dt><dd>pojedynczo, na zamówienie</dd></div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ ARK. III — WIANKI ═══ -->
+  <section class="arkusz" id="ark-3" aria-labelledby="ark-3-tyt">
+    <span class="ark-nr">ARK. III</span>
+    <div class="arkusz-uklad">
+      <div class="okazy okazy--zbior">
+        <figure class="montaz" style="--przechyl:-.8deg">
+          <div class="okaz">
+            <div class="klisza" style="--ar:1/1">
+              <span class="klisza-etykieta">ZDJĘCIE</span>
+              <p class="klisza-tresc">wianek jesienny „hello” na drewnianych drzwiach</p>
+              <span class="klisza-format">kwadrat 1:1</span>
+            </div>
+          </div>
+          <span class="rog rog--lg" aria-hidden="true"></span>
+          <span class="rog rog--pg" aria-hidden="true"></span>
+          <span class="rog rog--ld" aria-hidden="true"></span>
+          <span class="rog rog--pd" aria-hidden="true"></span>
+        </figure>
+        <figure class="montaz" style="--przechyl:1.6deg">
+          <div class="okaz">
+            <div class="klisza" style="--ar:1/1">
+              <span class="klisza-etykieta">ZDJĘCIE</span>
+              <p class="klisza-tresc">wianek świąteczny z cynamonem i pomarańczą</p>
+              <span class="klisza-format">kwadrat 1:1</span>
+            </div>
+          </div>
+          <span class="rog rog--lg" aria-hidden="true"></span>
+          <span class="rog rog--pg" aria-hidden="true"></span>
+          <span class="rog rog--ld" aria-hidden="true"></span>
+          <span class="rog rog--pd" aria-hidden="true"></span>
+        </figure>
+        <figure class="montaz" style="--przechyl:-1.9deg">
+          <div class="okaz">
+            <div class="klisza" style="--ar:1/1">
+              <span class="klisza-etykieta">ZDJĘCIE</span>
+              <p class="klisza-tresc">serce z suszonych kwiatów „W Dniu Ślubu”</p>
+              <span class="klisza-format">kwadrat 1:1</span>
+            </div>
+          </div>
+          <span class="rog rog--lg" aria-hidden="true"></span>
+          <span class="rog rog--pg" aria-hidden="true"></span>
+          <span class="rog rog--ld" aria-hidden="true"></span>
+          <span class="rog rog--pd" aria-hidden="true"></span>
+        </figure>
+      </div>
+
+      <div class="opis">
+        <h2 id="ark-3-tyt">Wianki dekoracyjne</h2>
+        <p>
+          Wiązane z suszonych kwiatów i traw — sezonowe, jak jesienne „hello” albo
+          świąteczne z cynamonem i pomarańczą, oraz takie, które zostają na
+          drzwiach cały rok.
+        </p>
+        <p>
+          Kwiaty schną własnym tempem, więc każdy wianek ma inny odcień i inny
+          układ. Ten sam nigdy nie wraca.
+        </p>
+
+        <div class="etykieta">
+          <div class="etykieta-naglowek"><span>ETYKIETA OKAZU</span><span>III</span></div>
+          <dl class="rubryki">
+            <div><dt>RODZAJ</dt><dd>wianek z suszonych kwiatów, wiązany ręcznie</dd></div>
+            <div><dt>OKAZJE</dt><dd>święta · jesień · ślub · dekoracja domu przez cały rok</dd></div>
+            <div><dt>MATERIAŁ</dt><dd>suszone kwiaty i trawy, cynamon, pomarańcza, wstążka</dd></div>
+            <div><dt>WYKONANIE</dt><dd>pojedynczo, na zamówienie</dd></div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ ARK. IV — PUDEŁKA ═══ -->
+  <section class="arkusz arkusz--odwrocony" id="ark-4" aria-labelledby="ark-4-tyt">
+    <span class="ark-nr">ARK. IV</span>
+    <div class="arkusz-uklad">
+      <div class="okazy">
+        <figure class="montaz" style="--przechyl:1.2deg">
+          <div class="okaz">
+            <div class="klisza" style="--ar:4/5">
+              <span class="klisza-etykieta">ZDJĘCIE</span>
+              <p class="klisza-tresc">pudełko komunijne z brązową kokardą</p>
+              <span class="klisza-format">pion 4:5</span>
+            </div>
+          </div>
+          <span class="rog rog--lg" aria-hidden="true"></span>
+          <span class="rog rog--pg" aria-hidden="true"></span>
+          <span class="rog rog--ld" aria-hidden="true"></span>
+          <span class="rog rog--pd" aria-hidden="true"></span>
+        </figure>
+      </div>
+
+      <div class="opis">
+        <h2 id="ark-4-tyt">Pudełka i opakowania</h2>
+        <p>
+          Zdobione ręcznie pudełka na prezent — z kokardą, koronką i suszkami,
+          dobranymi do kartki albo do zaproszeń, żeby całość trzymała się jednej
+          okazji.
+        </p>
+        <p>
+          Robię je też do kompletu z zaproszeniem: ten sam papier, ta sama
+          wstążka, to samo imię.
+        </p>
+
+        <div class="etykieta">
+          <div class="etykieta-naglowek"><span>ETYKIETA OKAZU</span><span>IV</span></div>
+          <dl class="rubryki">
+            <div><dt>RODZAJ</dt><dd>pudełko prezentowe, zdobione ręcznie</dd></div>
+            <div><dt>OKAZJE</dt><dd>komunia · chrzest · ślub · urodziny</dd></div>
+            <div><dt>MATERIAŁ</dt><dd>karton zdobiony, koronka, kokarda, suszone kwiaty</dd></div>
+            <div><dt>WYKONANIE</dt><dd>pojedynczo, na zamówienie</dd></div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ ARK. V — ŚCIANKI Z BALONAMI (usługa na miejscu) ═══ -->
+  <section class="arkusz arkusz--szeroki" id="ark-5" aria-labelledby="ark-5-tyt">
+    <span class="ark-nr">ARK. V</span>
+    <div class="arkusz-uklad arkusz-uklad--szeroki">
+      <div class="okazy">
+        <figure class="montaz" style="--przechyl:-.6deg">
+          <div class="okaz">
+            <div class="klisza" style="--ar:16/9">
+              <span class="klisza-etykieta">ZDJĘCIE</span>
+              <p class="klisza-tresc">ścianka ozdobna z balonami ustawiona na sali — pełne ujęcie tła do zdjęć</p>
+              <span class="klisza-format">poziom 16:9 · materiał do zebrania z profilu</span>
+            </div>
+          </div>
+          <span class="rog rog--lg" aria-hidden="true"></span>
+          <span class="rog rog--pg" aria-hidden="true"></span>
+          <span class="rog rog--ld" aria-hidden="true"></span>
+          <span class="rog rog--pd" aria-hidden="true"></span>
+        </figure>
+      </div>
+
+      <div class="opis">
+        <h2 id="ark-5-tyt">Ścianki ozdobne z balonami</h2>
+        <p>
+          To jedyna rzecz, która nie przyjeżdża do Ciebie w paczce — staje na
+          miejscu, na Twojej uroczystości, jako tło do zdjęć.
+        </p>
+        <p>
+          Dlatego rozmowa wygląda inaczej: potrzebuję adresu i godziny, a nie
+          tylko imienia i daty.
+        </p>
+
+        <p class="uwaga-usluga">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 21s7-5.4 7-11a7 7 0 1 0-14 0c0 5.6 7 11 7 11Z"/>
+            <circle cx="12" cy="10" r="2.6"/>
+          </svg>
+          <span>Usługa na miejscu: przywożę, stawiam i składam po uroczystości. Nie jest to przedmiot do wysyłki.</span>
+        </p>
+
+        <div class="etykieta">
+          <div class="etykieta-naglowek"><span>ETYKIETA OKAZU</span><span>V</span></div>
+          <dl class="rubryki">
+            <div><dt>RODZAJ</dt><dd>ścianka ozdobna z balonami — dekoracja i tło fotograficzne</dd></div>
+            <div><dt>OKAZJE</dt><dd>wesele · komunia · chrzest · urodziny · jubileusz</dd></div>
+            <div><dt>MIEJSCE</dt><dd>u Ciebie, na uroczystości</dd></div>
+            <div><dt>WYKONANIE</dt><dd>pojedynczo, na zamówienie</dd></div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ ARKUSZ PUSTY — KONTAKT ═══ -->
+  <section class="arkusz arkusz--kontakt" id="kontakt" aria-labelledby="kontakt-tyt">
+    <span class="ark-nr">ARK. —</span>
+    <div class="arkusz-uklad">
+      <div class="okazy">
+        <figure class="montaz" style="--przechyl:.9deg">
+          <div class="okaz">
+            <div class="klisza" style="--ar:4/5">
+              <span class="klisza-etykieta">ARKUSZ PUSTY</span>
+              <p class="klisza-tresc">tu trafi zdjęcie Twojego okazu — kartki, wianka albo ścianki zrobionej na Twoją okazję</p>
+              <span class="klisza-format">czeka na okaz</span>
+            </div>
+          </div>
+          <span class="rog rog--lg" aria-hidden="true"></span>
+          <span class="rog rog--pg" aria-hidden="true"></span>
+          <span class="rog rog--ld" aria-hidden="true"></span>
+          <span class="rog rog--pd" aria-hidden="true"></span>
+        </figure>
+      </div>
+
+      <div class="opis">
+        <h2 id="kontakt-tyt">Ten arkusz jest jeszcze pusty</h2>
+        <p>
+          Hey! Napisz albo zadzwoń i powiedz, jaka to okazja i na kiedy — resztę
+          rubryk wypełnimy razem. Chętnie zrobię coś tylko dla Ciebie.
+        </p>
+
+        <a class="cta" href="https://www.instagram.com/moku_boho/" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.5 9.5 0 0 1-3.4-.6L3 21l1.8-4.8A8.2 8.2 0 0 1 3.6 11.5 8.4 8.4 0 0 1 12 3.5a8.4 8.4 0 0 1 9 8Z"/>
+          </svg>
+          Napisz o swojej okazji
+        </a>
+
+        <div class="etykieta">
+          <div class="etykieta-naglowek"><span>ETYKIETA OKAZU</span><span>—</span></div>
+          <dl class="rubryki">
+            <div class="do-wpisania">
+              <dt>OKAZJA</dt>
+              <dd><span class="linia"><span class="kursor" aria-hidden="true"></span></span></dd>
+            </div>
+            <div class="do-wpisania">
+              <dt>DATA</dt>
+              <dd><span class="linia"></span></dd>
+            </div>
+            <div>
+              <dt>ZGŁOSZENIE</dt>
+              <dd>
+                <ul class="zgloszenie">
+                  <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M6.2 3.5h3l1.5 3.8-2 1.4a11 11 0 0 0 6.6 6.6l1.4-2 3.8 1.5v3a2 2 0 0 1-2.2 2A17.5 17.5 0 0 1 4.2 5.7a2 2 0 0 1 2-2.2Z"/>
+                    </svg>
+                    <span>Telefon: <span class="brak-danych">[NUMER DO UZUPEŁNIENIA]</span></span>
+                  </li>
+                  <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.5 9.5 0 0 1-3.4-.6L3 21l1.8-4.8A8.2 8.2 0 0 1 3.6 11.5 8.4 8.4 0 0 1 12 3.5a8.4 8.4 0 0 1 9 8Z"/>
+                    </svg>
+                    <span>Messenger / DM: <a href="https://www.instagram.com/moku_boho/" target="_blank" rel="noopener noreferrer">napisz wiadomość</a></span>
+                  </li>
+                  <li>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect x="3.5" y="3.5" width="17" height="17" rx="5"/>
+                      <circle cx="12" cy="12" r="4"/>
+                      <path d="M16.9 7.1h.01"/>
+                    </svg>
+                    <span>Instagram: <a href="https://www.instagram.com/moku_boho/" target="_blank" rel="noopener noreferrer">@moku_boho</a></span>
+                  </li>
+                </ul>
+              </dd>
+            </div>
+            <div><dt>WYKONANIE</dt><dd>pojedynczo, na zamówienie</dd></div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="stopka">
+  <p class="podpis">MoKu Boho</p>
+  <p>TCZEW · <a href="https://www.instagram.com/moku_boho/" target="_blank" rel="noopener noreferrer">@moku_boho</a></p>
+</footer>
+
+<script>
+/* Rejestr arkuszy podświetla arkusz, który akurat jest na ekranie. */
+(function () {
+  var linki = document.querySelectorAll('.teczka a');
+  if (!linki.length || !('IntersectionObserver' in window)) return;
+
+  var mapa = {};
+  linki.forEach(function (a) {
+    var cel = document.querySelector(a.getAttribute('href'));
+    if (cel) mapa[cel.id] = a;
+  });
+
+  var obs = new IntersectionObserver(function (wpisy) {
+    wpisy.forEach(function (w) {
+      if (w.isIntersecting) {
+        linki.forEach(function (a) { a.removeAttribute('aria-current'); });
+        mapa[w.target.id].setAttribute('aria-current', 'true');
+      }
+    });
+  }, { rootMargin: '-45% 0px -45% 0px' });
+
+  Object.keys(mapa).forEach(function (id) {
+    obs.observe(document.getElementById(id));
+  });
+})();
+</script>
+
+</body>
+</html>

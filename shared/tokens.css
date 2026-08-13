@@ -1,63 +1,129 @@
 /* Design tokens — the single source of truth for every visual value on the site.
    Swapping the design system means replacing the values in this file only.
-   Vibrant-dark palette: dark base, distinct vivid hue per app category
-   (app/tool/game/mobile), used for tag chips, filter pills, and card covers. */
+
+   World: printed vinyl over racing bodywork. Panels are the layout and the
+   graphic breaks across the seams between them; sponsor strips along the sill
+   are the controls; one number roundel sits on bare paint. Nothing floats:
+   separation is a panel gap showing the dark body beneath, never a shadow.
+   Two printings of the same car — pearl by day, midnight by night. */
 :root {
-  /* Surfaces — dark with a touch of indigo depth, not flat black */
-  --bg: #0a0a14;
-  --surface-1: #16141f;
-  --surface-2: #201d2e;
-  --surface-3: #110f1a;
+  color-scheme: light dark;
 
-  /* Text */
-  --text: #f0eef7;
-  --text-strong: #ffffff;
-  --text-body: #cdc8de;
-  --text-muted: #b6b0c7;
-  --text-soft: #a89fc0;
-  --text-faint: #948da8;
-  --text-dim: #837c96;
-  --text-dimmer: #6f6884;
+  /* Bodywork — pearl paint */
+  --body: #ece8e0;
+  --body-2: #dcd7cc;
+  /* The gap between panels: the dark structure under the shell */
+  --seam: #12151a;
 
-  /* Primary accent — vivid cyan, used for interactive UI (pulse, links, focus, hover) */
-  --accent: #22d3ee;
-  --accent-hover: #67e8f9;
-  --accent-glow: rgba(34, 211, 238, 0.55);
-  --accent-border: rgba(34, 211, 238, 0.65);
-  --accent-border-strong: rgba(34, 211, 238, 0.75);
+  /* Lettering */
+  --ink: #12151a;
+  /* Carries every panel description and the colophon, so it clears 4.5:1
+     against the panel's shaded tone, not just against its lit face. */
+  --ink-2: #4a4f58;
+  /* Text on a panel of bare paint */
+  --on-seam: #ece8e0;
 
-  /* Category accents — one distinct vivid hue per app tag/category */
-  --cat-app: #fb7185; /* rose */
-  --cat-tool: #a78bfa; /* violet */
-  --cat-game: #fbbf24; /* amber */
-  --cat-mobile: #34d399; /* emerald */
-  --cat-default: #22d3ee; /* falls back to the primary accent */
+  /* Clear coat: one raking highlight, and the gloss band that travels a seam */
+  --lacquer: rgba(255, 255, 255, 0.42);
+  --gloss: rgba(255, 255, 255, 0.9);
 
-  /* Dark ink for text placed on top of any vivid accent/category color */
-  --ink: #12101c;
+  /* The three printed vinyl colours. Everything coloured is one of these. */
+  --paint-red: #d81b3f;
+  --paint-teal: #00897a;
+  --paint-amber: #d99000;
 
-  /* Borders */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.13);
-  --border-bright: rgba(255, 255, 255, 0.16);
+  /* A race number is cut out of the paint in white and outlined in the
+     structure colour, on every car ever built — so it stays light in BOTH
+     printings, unlike the bodywork it sits on. */
+  --decal: #f4f3ef;
+
+  /* Lettering placed on top of a painted field */
+  --on-red: #ffffff;
+  --on-teal: #ffffff;
+  --on-amber: #241a00;
+
+  /* The same paints set as small type against the bodywork, where the field
+     colours are too light to hold a caption on their own */
+  --red-text: #b8102f;
+  --teal-text: #006b5f;
+  --amber-text: #8a5c00;
 
   /* Typography */
-  --font-display: 'Space Grotesk', system-ui, sans-serif;
-  --font-body: 'Instrument Sans', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-display: 'Big Shoulders Display', 'Arial Narrow', sans-serif;
+  --font-body: Saira, system-ui, sans-serif;
 
-  /* Radii */
-  --radius-card: 16px;
-  --radius-card-lg: 18px;
-  --radius-panel: 24px;
-  --radius-pill: 999px;
+  /* The livery's shear. Every graphic on the car leans by the same angle. */
+  --lean: -9deg;
 
-  /* Shadows */
-  --shadow-card: 0 20px 44px rgba(0, 0, 0, 0.5);
-  --shadow-card-hover: 0 24px 54px rgba(0, 0, 0, 0.55);
-  --shadow-panel: 0 40px 90px rgba(0, 0, 0, 0.45);
+  /* Rhythm — the panel gap is the only spacing unit that shows */
+  --gap: 5px;
+  --gutter: clamp(12px, 2vw, 22px);
 
-  /* Motion */
-  --ease-card: cubic-bezier(0.2, 0.7, 0.2, 1);
+  /* The frame around a deck tile: it carries the printing's own tone —
+     light on pearl, black on midnight. */
+  --frame: #ffffff;
+
+  /* Motion — damped, with mass; never bouncing */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Midnight printing: the same car, the same vinyl, painted dark. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --body: #10151d;
+    --body-2: #191f2a;
+    --seam: #000104;
+
+    --ink: #f2f1ed;
+    --ink-2: #949aa6;
+    --on-seam: #f2f1ed;
+    --decal: #f4f3ef;
+
+    --lacquer: rgba(255, 255, 255, 0.1);
+    --gloss: rgba(255, 255, 255, 0.38);
+
+    --paint-red: #ff3d5a;
+    --paint-teal: #17d4bb;
+    --paint-amber: #ffc61a;
+
+    --on-red: #1a0308;
+    --on-teal: #04211d;
+    --on-amber: #241a00;
+
+    --red-text: #ff3d5a;
+    --teal-text: #17d4bb;
+    --amber-text: #ffc61a;
+
+    --frame: #000000;
+  }
+}
+
+/* The manual choice. Every token the media block above redefines must be
+   redefined here too, or a hand-toggled midnight printing keeps a pearl value. */
+:root[data-theme='dark'] {
+  --body: #10151d;
+  --body-2: #191f2a;
+  --seam: #000104;
+
+  --ink: #f2f1ed;
+  --ink-2: #949aa6;
+  --on-seam: #f2f1ed;
+  --decal: #f4f3ef;
+
+  --lacquer: rgba(255, 255, 255, 0.1);
+  --gloss: rgba(255, 255, 255, 0.38);
+
+  --paint-red: #ff3d5a;
+  --paint-teal: #17d4bb;
+  --paint-amber: #ffc61a;
+
+  --on-red: #1a0308;
+  --on-teal: #04211d;
+  --on-amber: #241a00;
+
+  --red-text: #ff3d5a;
+  --teal-text: #17d4bb;
+  --amber-text: #ffc61a;
+
+  --frame: #000000;
 }
